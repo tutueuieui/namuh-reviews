@@ -1,0 +1,27 @@
+name: 리뷰 수집
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # 6시간마다 (UTC 기준)
+  workflow_dispatch: {} # Actions 탭에서 수동 실행 가능
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python scripts/collect.py
+      - name: 변경사항 커밋
+        run: |
+          git config user.name "review-bot"
+          git config user.email "review-bot@users.noreply.github.com"
+          git add data/reviews.json
+          git diff --cached --quiet || git commit -m "리뷰 데이터 업데이트 $(date -u +'%Y-%m-%d %H:%M')"
+          git push
