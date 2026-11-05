@@ -2,7 +2,7 @@ name: 리뷰 수집
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # 6시간마다 (UTC 기준)
+    - cron: "7 * * * *" # 매시 7분 (GitHub 사정에 따라 수 분~수십 분 지연될 수 있음)
   workflow_dispatch: {} # Actions 탭에서 수동 실행 가능
 
 permissions:

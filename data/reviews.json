@@ -1,10 +1,10 @@
 {
 "meta": {
-"updated": "2026-11-05T09:07:59.425691+00:00",
+"updated": "2026-11-05T09:13:42.572072+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 500
+"new": 0
 },
 "ios": {
 "fetched": 0,
@@ -12,7 +12,19 @@
 }
 },
 "android_id": "com.wooriwm.txsmart",
-"ios_id": "486312400"
+"ios_id": "486312400",
+"store_stats": {
+"android": {
+"score": 2.447873,
+"ratings": 12493,
+"version": "9.95"
+},
+"ios": {
+"score": 2.5068,
+"ratings": 3161,
+"version": "12.73"
+}
+}
 },
 "reviews": [
 {

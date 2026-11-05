@@ -3,70 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>나무증권 리뷰 보드</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
-  --bg:#f6f7f9; --surface:#fff; --line:#e6e8ec; --text:#191c21; --sub:#6b7280; --faint:#9aa1ad;
-  --accent:#0a7f5a; --accent-soft:#e3f4ec; --bad:#d9443a; --bad-soft:#fdecea; --mid:#e3a008;
-  --chip:#eef0f3; --barc:#d5dae1; --shadow:0 1px 2px rgba(16,24,40,.04);
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#0f1115; --surface:#171a20; --line:#262a33; --text:#eceef2; --sub:#9aa1ad; --faint:#6b7280;
-    --accent:#34c48b; --accent-soft:#11291f; --bad:#ff6b5e; --bad-soft:#2e1614; --mid:#f5b83d;
-    --chip:#21252d; --barc:#323946; --shadow:none;
-  }
+  --bg:#f5f6f8; --surface:#fff; --line:#e7e9ee; --text:#17191d; --sub:#646b77; --faint:#9aa1ad;
+  --android:#1a9b5e; --android-soft:#e6f5ed;
+  --ios:#2f62e6; --ios-soft:#e9effd;
+  --bad:#e0483e; --mid:#e8a317; --star:#f2a516;
+  --chip:#f0f2f5; --shadow:0 1px 2px rgba(16,24,40,.04);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1120px;margin:0 auto;padding:28px 16px 64px}
+.wrap{max-width:1160px;margin:0 auto;padding:28px 16px 64px}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
 h1{font-size:22px;margin:0;letter-spacing:-.02em}
 .updated{color:var(--sub);font-size:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
-.kpi{padding:16px 18px}
-.kpi .l{color:var(--sub);font-size:12px}
-.kpi .v{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
-.kpi .s{font-size:12px;color:var(--faint)}
-.grid2{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-.panel{padding:18px}
-.panel h2{font-size:14px;margin:0 0 12px;font-weight:600}
-.legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin:-4px 0 8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-#trend{width:100%;height:220px;display:block}
-.dist-row{display:grid;grid-template-columns:28px 1fr 64px;align-items:center;gap:8px;margin:7px 0;font-size:13px;cursor:pointer;border-radius:6px}
-.dist-row:hover .bar span{filter:brightness(1.08)}
-.dist-row.on{font-weight:700}
-.bar{height:10px;background:var(--chip);border-radius:5px;overflow:hidden}
-.bar span{display:block;height:100%;border-radius:5px}
+h2{font-size:14px;margin:0 0 12px;font-weight:600}
+
+/* 스토어별 카드 */
+.stores{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.store{padding:18px 20px;border-top:3px solid var(--c)}
+.store[data-s=android]{--c:var(--android);--cs:var(--android-soft)}
+.store[data-s=ios]{--c:var(--ios);--cs:var(--ios-soft)}
+.store-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:15px}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.official{font-size:12px;color:var(--sub);background:var(--cs);border-radius:6px;padding:3px 8px}
+.official b{color:var(--text)}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.mini .l{font-size:11px;color:var(--sub)}
+.mini .v{font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mini .s{font-size:11px;color:var(--faint)}
+.dist-row{display:grid;grid-template-columns:26px 1fr 72px;align-items:center;gap:8px;margin:5px 0;font-size:12px;cursor:pointer;border-radius:6px;padding:1px 4px;margin-left:-4px;margin-right:-4px}
+.dist-row:hover{background:var(--chip)}
+.dist-row.on{font-weight:700;background:var(--cs)}
+.bar{height:8px;background:var(--chip);border-radius:4px;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:4px}
 .dist-row .n{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}
-.ver{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
-.ver table{width:100%;border-collapse:collapse;font-size:13px}
-.ver td{padding:4px 0;font-variant-numeric:tabular-nums}
-.ver td:nth-child(n+2){text-align:right;color:var(--sub)}
-.filters{display:flex;flex-wrap:wrap;gap:8px;padding:14px;align-items:center;margin-bottom:12px;position:sticky;top:8px;z-index:5}
+.empty-store{border:1px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--sub);font-size:13px;line-height:1.6}
+
+/* 추이 */
+.panel{padding:18px 20px;margin-bottom:12px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--sub);margin:-4px 0 8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:5px;vertical-align:3px}
+.legend i.box{height:10px;width:10px;vertical-align:-1px;opacity:.25}
+#trend{width:100%;height:230px;display:block}
+
+/* 필터 + 목록 */
+.filters{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;align-items:center;margin-bottom:12px;position:sticky;top:8px;z-index:5}
 .seg{display:inline-flex;background:var(--chip);border-radius:9px;padding:3px}
-.seg button{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;padding:5px 11px;border-radius:7px;cursor:pointer}
-.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.seg button{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;padding:5px 12px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.seg button .dot{width:7px;height:7px;border-radius:50%}
 input[type=search]{flex:1;min-width:180px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:7px 12px;font:inherit;font-size:13px;outline:none}
-input[type=search]:focus{border-color:var(--accent)}
+input[type=search]:focus{border-color:var(--text)}
 .count{font-size:12px;color:var(--sub);margin-left:auto}
+.clear{border:0;background:var(--chip);color:var(--sub);border-radius:6px;font:inherit;font-size:12px;padding:3px 8px;cursor:pointer}
+.body{display:grid;grid-template-columns:1fr 260px;gap:12px;align-items:start}
 .list{display:flex;flex-direction:column;gap:8px}
-.rv{padding:14px 16px}
+.rv{padding:14px 16px;border-left:3px solid var(--c)}
+.rv[data-s=android]{--c:var(--android)} .rv[data-s=ios]{--c:var(--ios)}
 .rv .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--sub)}
-.stars{letter-spacing:1px;font-size:13px}
+.stars{letter-spacing:1px;font-size:13px;color:var(--star)}
+.stars .off{color:var(--line)}
 .tag{background:var(--chip);border-radius:5px;padding:1px 7px;font-size:11px;color:var(--sub)}
-.tag.rep{background:var(--accent-soft);color:var(--accent)}
+.tag.rep{background:var(--android-soft);color:var(--android)}
 .rv .t{font-weight:600;margin-top:6px}
 .rv .c{margin-top:4px;white-space:pre-wrap;word-break:break-word}
-mark{background:#ffe58a;color:inherit;border-radius:2px;padding:0 1px}
-@media (prefers-color-scheme:dark){mark{background:#6b5a12}}
+mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
+.side{padding:16px 18px;position:sticky;top:76px}
+.side table{width:100%;border-collapse:collapse;font-size:13px}
+.side td{padding:5px 0;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--chip)}
+.side td:nth-child(n+2){text-align:right;color:var(--sub)}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
 .empty{padding:40px;text-align:center;color:var(--sub)}
 .note{font-size:12px;color:var(--faint);margin-top:28px;text-align:center}
-@media (max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{position:static}.filters{position:static}}
+@media (max-width:480px){.mini{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -76,174 +92,188 @@ mark{background:#ffe58a;color:inherit;border-radius:2px;padding:0 1px}
       <h1>나무증권 앱 리뷰</h1>
       <div class="updated" id="updated">불러오는 중…</div>
     </div>
+    <div class="seg" id="f-period" aria-label="기간">
+      <button data-v="7">7일</button><button data-v="30">30일</button><button data-v="90">90일</button><button data-v="0" class="on">전체</button>
+    </div>
   </header>
 
-  <section class="kpis">
-    <div class="card kpi"><div class="l">리뷰 수</div><div class="v" id="k-total">–</div><div class="s" id="k-total-s"></div></div>
-    <div class="card kpi"><div class="l">평균 별점</div><div class="v" id="k-avg">–</div><div class="s" id="k-avg-s"></div></div>
-    <div class="card kpi"><div class="l">1~2점 비율</div><div class="v" id="k-neg">–</div><div class="s">불만 리뷰</div></div>
-    <div class="card kpi"><div class="l">최근 7일</div><div class="v" id="k-7d">–</div><div class="s" id="k-7d-s"></div></div>
-  </section>
+  <section class="stores" id="stores"></section>
 
-  <section class="grid2">
-    <div class="card panel">
-      <h2>주간 추이</h2>
-      <div class="legend"><span><i style="background:var(--barc)"></i>리뷰 수</span><span><i style="background:var(--accent)"></i>평균 별점</span></div>
-      <svg id="trend" role="img" aria-label="주간 리뷰 수와 평균 별점 추이"></svg>
+  <section class="card panel">
+    <h2>주간 평균 별점 추이</h2>
+    <div class="legend">
+      <span><i style="background:var(--android)"></i>Android 평균 별점</span>
+      <span><i style="background:var(--ios)"></i>iOS 평균 별점</span>
+      <span><i class="box" style="background:var(--android)"></i><i class="box" style="background:var(--ios);margin-left:-3px"></i>주간 리뷰 수</span>
     </div>
-    <div class="card panel">
-      <h2>별점 분포 <span style="font-weight:400;color:var(--faint);font-size:12px">· 눌러서 필터</span></h2>
-      <div id="dist"></div>
-      <div class="ver">
-        <h2>버전별</h2>
-        <table id="ver"></table>
-      </div>
-    </div>
+    <svg id="trend" role="img" aria-label="스토어별 주간 평균 별점 추이"></svg>
   </section>
 
   <section class="card filters">
-    <div class="seg" id="f-store">
-      <button data-v="all" class="on">전체</button><button data-v="android">Android</button><button data-v="ios">iOS</button>
-    </div>
-    <div class="seg" id="f-period">
-      <button data-v="7">7일</button><button data-v="30">30일</button><button data-v="90">90일</button><button data-v="0" class="on">전체</button>
+    <div class="seg" id="f-store" aria-label="스토어">
+      <button data-v="android" class="on"><span class="dot" style="background:var(--android)"></span>Android</button>
+      <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
     </div>
     <input type="search" id="f-q" placeholder="키워드 검색 (예: 로그인, 체결, 오류)">
     <span class="count" id="count"></span>
   </section>
 
-  <section class="list" id="list"></section>
-  <button class="more" id="more" hidden>더 보기</button>
+  <section class="body">
+    <div>
+      <div class="list" id="list"></div>
+      <button class="more" id="more" hidden>더 보기</button>
+    </div>
+    <aside class="card side">
+      <h2 id="ver-title">버전별 평균</h2>
+      <table id="ver"></table>
+    </aside>
+  </section>
 
-  <p class="note">Google Play 공개 리뷰 기준 · iOS는 애플 공개 피드가 응답할 때만 수집됨 · 6시간마다 자동 갱신</p>
+  <p class="note">Google Play·App Store 공개 데이터 기준 · 스토어 평점은 별점만 남긴 사용자 포함 · 1시간마다 자동 갱신</p>
 </div>
 
 <script>
-const S = { all: [], store: "all", period: 0, rating: 0, q: "", shown: 30 };
+const STORES = { android: "Android", ios: "iOS" };
+const S = { all: [], meta: {}, store: "android", period: 0, rating: 0, q: "", shown: 30 };
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const fmtDate = (d) => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
-const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
-const starColor = (r) => r <= 2 ? "var(--bad)" : r === 3 ? "var(--mid)" : "var(--accent)";
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const tone = (v) => v < 2.5 ? "var(--bad)" : v < 3.5 ? "var(--mid)" : "var(--text)";
 const avg = (a) => a.length ? a.reduce((s, r) => s + r.rating, 0) / a.length : 0;
 
 fetch("data/reviews.json?" + Date.now()).then((r) => r.json()).then((d) => {
   S.all = d.reviews.map((r) => ({ ...r, d: new Date(r.date) }));
-  $("updated").textContent = "마지막 수집 " + new Date(d.meta.updated).toLocaleString("ko-KR");
+  S.meta = d.meta || {};
+  $("updated").textContent = "마지막 수집 " + new Date(S.meta.updated).toLocaleString("ko-KR");
   render();
 }).catch(() => { $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-function base() { // 스토어·기간·키워드 (별점 제외)
-  const now = Date.now(), q = S.q.trim().toLowerCase();
-  return S.all.filter((r) =>
-    (S.store === "all" || r.store === S.store) &&
-    (!S.period || now - r.d < S.period * DAY) &&
-    (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
-}
+const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };
 
 function render() {
-  const b = base();
-  const f = S.rating ? b.filter((r) => r.rating === S.rating) : b;
-  kpis(b); dist(b); trend(b); versions(b); list(f);
+  const p = inPeriod();
+  stores(p); trend(p);
+  const q = S.q.trim().toLowerCase();
+  const mine = p.filter((r) => r.store === S.store);
+  const f = mine.filter((r) => (!S.rating || r.rating === S.rating) && (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
+  versions(mine); list(f);
 }
 
-function kpis(a) {
-  $("k-total").textContent = a.length.toLocaleString();
-  const an = a.filter((r) => r.store === "android").length;
-  $("k-total-s").textContent = `Android ${an} · iOS ${a.length - an}`;
-  $("k-avg").textContent = a.length ? avg(a).toFixed(2) : "–";
-  $("k-avg").style.color = a.length ? starColor(Math.round(avg(a))) : "";
-  const rep = a.filter((r) => r.replied).length;
-  $("k-avg-s").textContent = a.length ? `답변률 ${Math.round(rep / a.length * 100)}%` : "";
-  $("k-neg").textContent = a.length ? Math.round(a.filter((r) => r.rating <= 2).length / a.length * 100) + "%" : "–";
+function stores(p) {
   const now = Date.now();
-  const w = a.filter((r) => now - r.d < 7 * DAY), pw = a.filter((r) => now - r.d >= 7 * DAY && now - r.d < 14 * DAY);
-  $("k-7d").textContent = w.length;
-  $("k-7d-s").textContent = w.length ? `평균 ★${avg(w).toFixed(1)}` + (pw.length ? ` · 전주 ★${avg(pw).toFixed(1)}` : "") : "새 리뷰 없음";
-}
-
-function dist(a) {
-  const max = Math.max(1, ...[1,2,3,4,5].map((n) => a.filter((r) => r.rating === n).length));
-  $("dist").innerHTML = [5,4,3,2,1].map((n) => {
-    const c = a.filter((r) => r.rating === n).length;
-    const pct = a.length ? Math.round(c / a.length * 100) : 0;
-    return `<div class="dist-row ${S.rating === n ? "on" : ""}" data-r="${n}"><span>${n}★</span>
-      <div class="bar"><span style="width:${c / max * 100}%;background:${starColor(n)};opacity:${S.rating && S.rating !== n ? .3 : 1}"></span></div>
-      <span class="n">${c} · ${pct}%</span></div>`;
+  $("stores").innerHTML = Object.entries(STORES).map(([k, name]) => {
+    const a = p.filter((r) => r.store === k);
+    const st = (S.meta.store_stats || {})[k];
+    const official = st && st.score ? `<span class="official">스토어 평점 <b>★${st.score.toFixed(2)}</b> · ${Number(st.ratings).toLocaleString()}명${st.version ? " · v" + esc(st.version) : ""}</span>` : "";
+    const head = `<div class="store-head"><span class="badge"><i></i>${name}</span>${official}</div>`;
+    if (!a.length) {
+      const why = k === "ios" && !S.all.some((r) => r.store === "ios")
+        ? "애플 공개 리뷰 피드가 현재 리뷰를 내려주지 않아 수집된 리뷰가 없어요.<br>피드가 다시 응답하면 자동으로 채워져요."
+        : "이 기간에 수집된 리뷰가 없어요.";
+      return `<div class="card store" data-s="${k}">${head}<div class="empty-store">${why}</div></div>`;
+    }
+    const w = a.filter((r) => now - r.d < 7 * DAY), pw = a.filter((r) => now - r.d >= 7 * DAY && now - r.d < 14 * DAY);
+    const neg = Math.round(a.filter((r) => r.rating <= 2).length / a.length * 100);
+    const rep = Math.round(a.filter((r) => r.replied).length / a.length * 100);
+    const counts = [5,4,3,2,1].map((n) => a.filter((r) => r.rating === n).length);
+    const max = Math.max(1, ...counts);
+    const dist = [5,4,3,2,1].map((n, i) => {
+      const on = S.store === k && S.rating === n;
+      const dim = S.store === k && S.rating && !on;
+      return `<div class="dist-row ${on ? "on" : ""}" data-s="${k}" data-r="${n}" title="${name} ${n}점 리뷰만 보기">
+        <span>${n}★</span>
+        <div class="bar"><span style="width:${counts[i] / max * 100}%;background:${n <= 2 ? "var(--bad)" : "var(--c)"};opacity:${dim ? .3 : 1}"></span></div>
+        <span class="n">${counts[i]} · ${Math.round(counts[i] / a.length * 100)}%</span></div>`;
+    }).join("");
+    return `<div class="card store" data-s="${k}">${head}
+      <div class="mini">
+        <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}</div><div class="s">답변률 ${rep}%</div></div>
+        <div><div class="l">평균 별점</div><div class="v" style="color:${tone(avg(a))}">${avg(a).toFixed(2)}</div><div class="s">수집 리뷰 기준</div></div>
+        <div><div class="l">1~2점 비율</div><div class="v" style="color:${neg >= 50 ? "var(--bad)" : "var(--text)"}">${neg}%</div><div class="s">불만 리뷰</div></div>
+        <div><div class="l">최근 7일</div><div class="v">${w.length}</div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
+      </div>${dist}</div>`;
   }).join("");
-  $("dist").querySelectorAll(".dist-row").forEach((el) => el.onclick = () => {
-    const n = +el.dataset.r; S.rating = S.rating === n ? 0 : n; S.shown = 30; render();
+  $("stores").querySelectorAll(".dist-row").forEach((el) => el.onclick = () => {
+    const s = el.dataset.s, n = +el.dataset.r;
+    S.rating = S.store === s && S.rating === n ? 0 : n;
+    setStore(s); S.shown = 30; render();
   });
 }
 
-function versions(a) {
-  const m = {};
-  a.forEach((r) => { if (!r.version) return; (m[r.version] ||= []).push(r); });
-  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 6);
-  $("ver").innerHTML = rows.length ? rows.map(([v, rs]) =>
-    `<tr><td>${esc(v)}</td><td>${rs.length}건</td><td style="color:${starColor(Math.round(avg(rs)))}">★${avg(rs).toFixed(2)}</td></tr>`).join("")
-    : `<tr><td style="color:var(--faint)">버전 정보 없음</td></tr>`;
-}
-
-function trend(a) {
-  const svg = $("trend"), W = svg.clientWidth || 600, H = 220, P = { l: 30, r: 30, t: 10, b: 24 };
+function trend(p) {
+  const svg = $("trend"), W = svg.clientWidth || 800, H = 230, P = { l: 34, r: 34, t: 12, b: 24 };
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  if (!a.length) { svg.innerHTML = ""; return; }
+  if (!p.length) { svg.innerHTML = ""; return; }
   const wk = (d) => { const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return +x; };
-  const m = new Map();
-  a.forEach((r) => { const k = wk(r.d); (m.get(k) || m.set(k, []).get(k)).push(r); });
-  const start = Math.min(...m.keys()), end = wk(new Date());
-  const weeks = []; for (let t = start; t <= end; t += 7 * DAY) weeks.push(wk(t + DAY));
-  const uniq = [...new Set(weeks)];
-  const data = uniq.map((k) => ({ k, rs: m.get(k) || [] }));
-  const maxN = Math.max(...data.map((d) => d.rs.length), 1);
-  const iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / data.length;
-  const x = (i) => P.l + i * bw + bw / 2, yN = (n) => P.t + ih - n / maxN * ih, yR = (v) => P.t + ih - (v - 1) / 4 * ih;
+  const start = wk(Math.min(...p.map((r) => +r.d))), end = wk(new Date());
+  const weeks = []; for (let t = start; t <= end; t = wk(t + 8 * DAY)) weeks.push(t);
+  const by = {}; Object.keys(STORES).forEach((k) => by[k] = new Map(weeks.map((w) => [w, []])));
+  p.forEach((r) => { const m = by[r.store].get(wk(r.d)); if (m) m.push(r); });
+  const maxN = Math.max(1, ...Object.values(by).flatMap((m) => [...m.values()].map((a) => a.length)));
+  const iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / weeks.length;
+  const x = (i) => P.l + i * bw + bw / 2, yR = (v) => P.t + ih - (v - 1) / 4 * ih;
   let g = "";
-  [1,2,3,4,5].forEach((v) => g += `<line x1="${P.l}" x2="${W-P.r}" y1="${yR(v)}" y2="${yR(v)}" stroke="var(--line)"/><text x="${W-P.r+6}" y="${yR(v)+4}" font-size="10" fill="var(--faint)">${v}★</text>`);
-  g += `<text x="${P.l-6}" y="${P.t+8}" font-size="10" fill="var(--faint)" text-anchor="end">${maxN}</text><text x="${P.l-6}" y="${P.t+ih}" font-size="10" fill="var(--faint)" text-anchor="end">0</text>`;
-  data.forEach((d, i) => {
-    const h = d.rs.length / maxN * ih;
-    g += `<rect x="${x(i) - bw*0.35}" y="${P.t+ih-h}" width="${bw*0.7}" height="${h}" rx="2" fill="var(--barc)"><title>${fmtDate(new Date(d.k))} 주 · ${d.rs.length}건${d.rs.length ? " · ★" + avg(d.rs).toFixed(2) : ""}</title></rect>`;
+  [1,2,3,4,5].forEach((v) => g += `<line x1="${P.l}" x2="${W-P.r}" y1="${yR(v)}" y2="${yR(v)}" stroke="var(--line)"/><text x="${P.l-8}" y="${yR(v)+4}" font-size="10" fill="var(--faint)" text-anchor="end">${v}★</text>`);
+  g += `<text x="${W-P.r+8}" y="${P.t+8}" font-size="10" fill="var(--faint)">${maxN}건</text>`;
+  const keys = Object.keys(STORES), gw = bw * 0.7 / keys.length;
+  weeks.forEach((w, i) => keys.forEach((k, j) => {
+    const a = by[k].get(w), h = a.length / maxN * ih;
+    if (a.length) g += `<rect x="${x(i) - bw*0.35 + j*gw}" y="${P.t+ih-h}" width="${gw}" height="${h}" rx="1.5" fill="var(--${k})" opacity=".16"><title>${STORES[k]} · ${fmtDate(new Date(w))} 주 · ${a.length}건 · ★${avg(a).toFixed(2)}</title></rect>`;
+  }));
+  keys.forEach((k) => {
+    const pts = weeks.map((w, i) => { const a = by[k].get(w); return a.length ? [x(i), yR(avg(a)), a] : null; }).filter(Boolean);
+    if (!pts.length) return;
+    g += `<polyline points="${pts.map((q) => q[0] + "," + q[1]).join(" ")}" fill="none" stroke="var(--${k})" stroke-width="2" stroke-linejoin="round"/>`;
+    pts.forEach((q) => g += `<circle cx="${q[0]}" cy="${q[1]}" r="3" fill="var(--surface)" stroke="var(--${k})" stroke-width="1.5"><title>${STORES[k]} · ★${avg(q[2]).toFixed(2)} (${q[2].length}건)</title></circle>`);
   });
-  const pts = data.map((d, i) => d.rs.length ? [x(i), yR(avg(d.rs))] : null).filter(Boolean);
-  g += `<polyline points="${pts.map((p) => p.join(",")).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
-  pts.forEach((p) => g += `<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--accent)"/>`);
-  const step = Math.ceil(data.length / 8);
-  data.forEach((d, i) => { if (i % step === 0) { const dt = new Date(d.k); g += `<text x="${x(i)}" y="${H-6}" font-size="10" fill="var(--faint)" text-anchor="middle">${dt.getMonth()+1}/${dt.getDate()}</text>`; } });
+  const step = Math.ceil(weeks.length / 9);
+  weeks.forEach((w, i) => { if (i % step === 0) { const dt = new Date(w); g += `<text x="${x(i)}" y="${H-6}" font-size="10" fill="var(--faint)" text-anchor="middle">${dt.getMonth()+1}/${dt.getDate()}</text>`; } });
   svg.innerHTML = g;
 }
 
+function versions(a) {
+  $("ver-title").textContent = `${STORES[S.store]} 버전별 평균`;
+  const m = {};
+  a.forEach((r) => { if (r.version) (m[r.version] ||= []).push(r); });
+  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 10);
+  $("ver").innerHTML = rows.length ? rows.map(([v, rs]) =>
+    `<tr><td>v${esc(v)}</td><td>${rs.length}건</td><td style="color:${tone(avg(rs))};font-weight:600">★${avg(rs).toFixed(2)}</td></tr>`).join("")
+    : `<tr><td style="color:var(--faint)">데이터 없음</td></tr>`;
+}
+
 function list(a) {
-  $("count").textContent = `${a.length.toLocaleString()}건` + (S.rating ? ` · ${S.rating}점만` : "");
+  $("count").innerHTML = `${STORES[S.store]} ${a.length.toLocaleString()}건` + (S.rating ? ` · ${S.rating}점만 <button class="clear" id="clr">해제</button>` : "");
+  if (S.rating) $("clr").onclick = () => { S.rating = 0; render(); };
   const q = S.q.trim();
-  const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
+  const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
   $("list").innerHTML = a.length ? a.slice(0, S.shown).map((r) => `
-    <article class="card rv">
+    <article class="card rv" data-s="${r.store}">
       <div class="top">
-        <span class="stars" style="color:${starColor(r.rating)}">${"★".repeat(r.rating)}<span style="color:var(--line)">${"★".repeat(5 - r.rating)}</span></span>
+        <span class="stars">${"★".repeat(r.rating)}<span class="off">${"★".repeat(5 - r.rating)}</span></span>
         <span>${fmtDate(r.d)}</span>
-        <span class="tag">${r.store === "ios" ? "iOS" : "Android"}</span>
         ${r.version ? `<span class="tag">v${esc(r.version)}</span>` : ""}
         ${r.replied ? `<span class="tag rep">답변 완료</span>` : ""}
         ${r.likes ? `<span>👍 ${r.likes}</span>` : ""}
       </div>
       ${r.title ? `<div class="t">${hl(r.title)}</div>` : ""}
       <div class="c">${hl(r.content)}</div>
-    </article>`).join("") : `<div class="card empty">조건에 맞는 리뷰가 없어요</div>`;
+    </article>`).join("") : `<div class="card empty">${S.store === "ios" && !S.all.some((r) => r.store === "ios") ? "아직 수집된 iOS 리뷰가 없어요" : "조건에 맞는 리뷰가 없어요"}</div>`;
   $("more").hidden = a.length <= S.shown;
 }
 
-function seg(id, key) {
-  $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
-    $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
-    S[key] = key === "period" ? +b.dataset.v : b.dataset.v; S.shown = 30; render();
-  });
+function setStore(s) {
+  S.store = s;
+  $("f-store").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === s));
 }
-seg("f-store", "store"); seg("f-period", "period");
+$("f-store").querySelectorAll("button").forEach((b) => b.onclick = () => { if (S.store !== b.dataset.v) S.rating = 0; setStore(b.dataset.v); S.shown = 30; render(); });
+$("f-period").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  $("f-period").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+  S.period = +b.dataset.v; S.shown = 30; render();
+});
 let t; $("f-q").oninput = (e) => { clearTimeout(t); t = setTimeout(() => { S.q = e.target.value; S.shown = 30; render(); }, 200); };
 $("more").onclick = () => { S.shown += 30; render(); };
-addEventListener("resize", () => trend(base()));
+addEventListener("resize", () => trend(inPeriod()));
 </script>
 </body>
 </html>

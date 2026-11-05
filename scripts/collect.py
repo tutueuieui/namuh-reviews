@@ -80,6 +80,34 @@ def fetch_ios():
     return out
 
 
+def fetch_store_stats():
+    """스토어에 표시되는 전체 평점(리뷰 본문 없이 별점만 남긴 것 포함)."""
+    stats = {}
+    try:
+        from google_play_scraper import app
+
+        a = app(ANDROID_ID, lang="ko", country="kr")
+        stats["android"] = {
+            "score": a.get("score"),
+            "ratings": a.get("ratings"),
+            "version": a.get("version"),
+        }
+    except Exception as e:  # noqa: BLE001
+        print(f"[android] 평점 조회 실패: {e}", file=sys.stderr)
+    try:
+        url = f"https://itunes.apple.com/lookup?id={IOS_ID}&country=kr"
+        with urllib.request.urlopen(url, timeout=20) as res:
+            r = json.load(res)["results"][0]
+        stats["ios"] = {
+            "score": r.get("averageUserRating"),
+            "ratings": r.get("userRatingCount"),
+            "version": r.get("version"),
+        }
+    except Exception as e:  # noqa: BLE001
+        print(f"[ios] 평점 조회 실패: {e}", file=sys.stderr)
+    return stats
+
+
 def main():
     existing = {}
     meta = {}
@@ -106,6 +134,7 @@ def main():
         {
             "updated": datetime.now(timezone.utc).isoformat(),
             "last_run": counts,
+            "store_stats": fetch_store_stats() or meta.get("store_stats", {}),
             "android_id": ANDROID_ID,
             "ios_id": IOS_ID,
         }
