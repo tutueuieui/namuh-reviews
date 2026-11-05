@@ -81,6 +81,29 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
 .empty{padding:40px;text-align:center;color:var(--sub)}
 .note{font-size:12px;color:var(--faint);margin-top:28px;text-align:center}
+/* 카테고리 */
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.cat-head .hint{font-size:12px;color:var(--faint)}
+.cat-grid{display:grid;grid-template-columns:130px 1fr 1fr;gap:4px 16px;align-items:center;font-size:13px}
+.cat-grid .h{font-size:11px;color:var(--sub);padding-bottom:4px;display:flex;align-items:center;gap:6px}
+.cat-grid .h i{width:7px;height:7px;border-radius:50%}
+.cat-row{display:contents;cursor:pointer}
+.cat-row > *{padding:5px 0;border-radius:6px}
+.cat-row:hover > *{background:var(--chip)}
+.cat-row.on > *{background:#fff7e0}
+.cat-name{display:flex;align-items:center;gap:7px;font-weight:500;padding-left:6px!important}
+.cat-name i{width:9px;height:9px;border-radius:3px;flex:none}
+.cat-cell{display:grid;grid-template-columns:1fr 104px;gap:8px;align-items:center;padding-right:6px!important}
+.cat-cell .bar{height:8px}
+.cat-cell .n{font-size:12px;color:var(--sub);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;width:100%;padding-top:8px;border-top:1px solid var(--chip)}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--sub);font:inherit;font-size:12px;padding:3px 10px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.chip i{width:7px;height:7px;border-radius:50%}
+.chip b{font-weight:600;color:var(--faint)}
+.chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+.chip.on b{color:#c9ced6}
+.ctag{border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600}
+@media (max-width:860px){.cat-grid{grid-template-columns:96px 1fr 1fr;gap:4px 8px}.cat-cell{grid-template-columns:1fr}.cat-cell .n{text-align:left}}
 @media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{position:static}.filters{position:static}}
 @media (max-width:480px){.mini{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -100,6 +123,11 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
   <section class="stores" id="stores"></section>
 
   <section class="card panel">
+    <div class="cat-head"><h2>카테고리별 리뷰</h2><span class="hint">눌러서 아래 목록 필터 · 리뷰 하나가 여러 카테고리에 속할 수 있음</span></div>
+    <div class="cat-grid" id="cats"></div>
+  </section>
+
+  <section class="card panel">
     <h2>주간 평균 별점 추이</h2>
     <div class="legend">
       <span><i style="background:var(--android)"></i>Android 평균 별점</span>
@@ -116,6 +144,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
     </div>
     <input type="search" id="f-q" placeholder="키워드 검색 (예: 로그인, 체결, 오류)">
     <span class="count" id="count"></span>
+    <div class="chips" id="chips"></div>
   </section>
 
   <section class="body">
@@ -134,7 +163,14 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 
 <script>
 const STORES = { android: "Android", ios: "iOS" };
-const S = { all: [], meta: {}, store: "android", period: 0, rating: 0, q: "", shown: 30 };
+const S = { all: [], meta: {}, cats: [], store: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
+const ETC = { name: "기타", color: "#adb5bd" };
+const catOf = (name) => S.cats.find((c) => c.name === name) || ETC;
+function classify(r) {
+  const t = (r.title + " " + r.content).toLowerCase();
+  const hit = S.cats.filter((c) => r.rating >= (c.minRating || 1) && c.keywords.some((k) => t.includes(k.toLowerCase()))).map((c) => c.name);
+  return hit.length ? hit : [ETC.name];
+}
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const fmtDate = (d) => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
@@ -142,8 +178,12 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;"
 const tone = (v) => v < 2.5 ? "var(--bad)" : v < 3.5 ? "var(--mid)" : "var(--text)";
 const avg = (a) => a.length ? a.reduce((s, r) => s + r.rating, 0) / a.length : 0;
 
-fetch("data/reviews.json?" + Date.now()).then((r) => r.json()).then((d) => {
-  S.all = d.reviews.map((r) => ({ ...r, d: new Date(r.date) }));
+Promise.all([
+  fetch("data/reviews.json?" + Date.now()).then((r) => r.json()),
+  fetch("categories.json?" + Date.now()).then((r) => r.json()).catch(() => []),
+]).then(([d, cats]) => {
+  S.cats = cats;
+  S.all = d.reviews.map((r) => { const x = { ...r, d: new Date(r.date) }; x.cats = classify(x); return x; });
   S.meta = d.meta || {};
   $("updated").textContent = "마지막 수집 " + new Date(S.meta.updated).toLocaleString("ko-KR");
   render();
@@ -153,11 +193,44 @@ const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.p
 
 function render() {
   const p = inPeriod();
-  stores(p); trend(p);
+  stores(p); cats(p); trend(p);
   const q = S.q.trim().toLowerCase();
   const mine = p.filter((r) => r.store === S.store);
-  const f = mine.filter((r) => (!S.rating || r.rating === S.rating) && (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
-  versions(mine); list(f);
+  const noCat = mine.filter((r) => (!S.rating || r.rating === S.rating) && (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
+  const f = S.cat ? noCat.filter((r) => r.cats.includes(S.cat)) : noCat;
+  versions(mine); chips(noCat); list(f);
+}
+
+const allCats = () => [...S.cats, ETC];
+
+function cats(p) {
+  const by = {}; Object.keys(STORES).forEach((k) => by[k] = p.filter((r) => r.store === k));
+  const rows = allCats().map((c) => {
+    const s = {}; Object.keys(STORES).forEach((k) => s[k] = by[k].filter((r) => r.cats.includes(c.name)));
+    return { c, s, total: Object.values(s).reduce((n, a) => n + a.length, 0) };
+  }).filter((r) => r.total).sort((a, b) => (a.c === ETC) - (b.c === ETC) || b.total - a.total);
+  const max = Math.max(1, ...rows.flatMap((r) => Object.values(r.s).map((a) => a.length)));
+  const head = `<div></div>` + Object.entries(STORES).map(([k, n]) => `<div class="h"><i style="background:var(--${k})"></i>${n} <span style="color:var(--faint)">(${by[k].length}건 중)</span></div>`).join("");
+  $("cats").innerHTML = head + rows.map(({ c, s }) => `
+    <div class="cat-row ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}">
+      <div class="cat-name"><i style="background:${c.color}"></i>${esc(c.name)}</div>
+      ${Object.keys(STORES).map((k) => {
+        const a = s[k], pct = by[k].length ? Math.round(a.length / by[k].length * 100) : 0;
+        return `<div class="cat-cell"><div class="bar"><span style="width:${a.length / max * 100}%;background:var(--${k})"></span></div>
+          <span class="n">${a.length ? `${a.length}건 · ${pct}% · <b style="color:${tone(avg(a))}">★${avg(a).toFixed(1)}</b>` : "–"}</span></div>`;
+      }).join("")}
+    </div>`).join("");
+  $("cats").querySelectorAll(".cat-row").forEach((el) => el.onclick = () => {
+    S.cat = S.cat === el.dataset.c ? "" : el.dataset.c; S.shown = 30; render();
+    if (S.cat) document.querySelector(".filters").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
+function chips(a) {
+  const items = allCats().map((c) => ({ c, n: a.filter((r) => r.cats.includes(c.name)).length })).filter((x) => x.n || S.cat === x.c.name);
+  $("chips").innerHTML = `<button class="chip ${S.cat ? "" : "on"}" data-c="">전체 <b>${a.length}</b></button>` +
+    items.map(({ c, n }) => `<button class="chip ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}"><i style="background:${c.color}"></i>${esc(c.name)} <b>${n}</b></button>`).join("");
+  $("chips").querySelectorAll(".chip").forEach((el) => el.onclick = () => { S.cat = el.dataset.c; S.shown = 30; render(); });
 }
 
 function stores(p) {
@@ -165,13 +238,14 @@ function stores(p) {
   $("stores").innerHTML = Object.entries(STORES).map(([k, name]) => {
     const a = p.filter((r) => r.store === k);
     const st = (S.meta.store_stats || {})[k];
-    const official = st && st.score ? `<span class="official">스토어 평점 <b>★${st.score.toFixed(2)}</b> · ${Number(st.ratings).toLocaleString()}명${st.version ? " · v" + esc(st.version) : ""}</span>` : "";
+    const official = st && st.version ? `<span class="official">최신 버전 <b>v${esc(st.version)}</b></span>` : "";
     const head = `<div class="store-head"><span class="badge"><i></i>${name}</span>${official}</div>`;
+    const storeTile = `<div><div class="l">평균 별점 (스토어)</div><div class="v" style="color:${st && st.score ? tone(st.score) : "var(--faint)"}">${st && st.score ? "★" + st.score.toFixed(2) : "–"}</div><div class="s">${st && st.ratings ? Number(st.ratings).toLocaleString() + "명 평가" : ""}</div></div>`;
     if (!a.length) {
       const why = k === "ios" && !S.all.some((r) => r.store === "ios")
         ? "애플 공개 리뷰 피드가 현재 리뷰를 내려주지 않아 수집된 리뷰가 없어요.<br>피드가 다시 응답하면 자동으로 채워져요."
         : "이 기간에 수집된 리뷰가 없어요.";
-      return `<div class="card store" data-s="${k}">${head}<div class="empty-store">${why}</div></div>`;
+      return `<div class="card store" data-s="${k}">${head}<div class="mini">${storeTile}</div><div class="empty-store">${why}</div></div>`;
     }
     const w = a.filter((r) => now - r.d < 7 * DAY), pw = a.filter((r) => now - r.d >= 7 * DAY && now - r.d < 14 * DAY);
     const neg = Math.round(a.filter((r) => r.rating <= 2).length / a.length * 100);
@@ -188,8 +262,8 @@ function stores(p) {
     }).join("");
     return `<div class="card store" data-s="${k}">${head}
       <div class="mini">
-        <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}</div><div class="s">답변률 ${rep}%</div></div>
-        <div><div class="l">평균 별점</div><div class="v" style="color:${tone(avg(a))}">${avg(a).toFixed(2)}</div><div class="s">수집 리뷰 기준</div></div>
+        ${storeTile}
+        <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}</div><div class="s" title="답변률 ${rep}%">리뷰 평균 ★${avg(a).toFixed(2)}</div></div>
         <div><div class="l">1~2점 비율</div><div class="v" style="color:${neg >= 50 ? "var(--bad)" : "var(--text)"}">${neg}%</div><div class="s">불만 리뷰</div></div>
         <div><div class="l">최근 7일</div><div class="v">${w.length}</div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
       </div>${dist}</div>`;
@@ -243,8 +317,9 @@ function versions(a) {
 }
 
 function list(a) {
-  $("count").innerHTML = `${STORES[S.store]} ${a.length.toLocaleString()}건` + (S.rating ? ` · ${S.rating}점만 <button class="clear" id="clr">해제</button>` : "");
-  if (S.rating) $("clr").onclick = () => { S.rating = 0; render(); };
+  const conds = [S.rating && `${S.rating}점`, S.cat].filter(Boolean);
+  $("count").innerHTML = `${STORES[S.store]} ${a.length.toLocaleString()}건` + (conds.length ? ` · ${esc(conds.join(" · "))} <button class="clear" id="clr">해제</button>` : "");
+  if (conds.length) $("clr").onclick = () => { S.rating = 0; S.cat = ""; render(); };
   const q = S.q.trim();
   const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
   $("list").innerHTML = a.length ? a.slice(0, S.shown).map((r) => `
@@ -252,6 +327,7 @@ function list(a) {
       <div class="top">
         <span class="stars">${"★".repeat(r.rating)}<span class="off">${"★".repeat(5 - r.rating)}</span></span>
         <span>${fmtDate(r.d)}</span>
+        ${r.cats.map((n) => { const c = catOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}
         ${r.version ? `<span class="tag">v${esc(r.version)}</span>` : ""}
         ${r.replied ? `<span class="tag rep">답변 완료</span>` : ""}
         ${r.likes ? `<span>👍 ${r.likes}</span>` : ""}
