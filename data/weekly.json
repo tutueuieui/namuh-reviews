@@ -1,0 +1,128 @@
+[
+ {
+  "week_start": "2026-10-29",
+  "week_end": "2026-11-04",
+  "generated": "2026-11-05T18:20:52.149847+09:00",
+  "store_stats": {
+   "android": {
+    "score": 2.447873,
+    "ratings": 12493,
+    "version": "9.95"
+   },
+   "ios": {
+    "score": 2.5068,
+    "ratings": 3161,
+    "version": "12.73"
+   }
+  },
+  "stores": {
+   "android": {
+    "count": 13,
+    "prev_count": 7,
+    "avg": 2.08,
+    "prev_avg": 1.29,
+    "neg_ratio": 62,
+    "store_score": 2.447873,
+    "prev_store_score": null,
+    "version": "9.95",
+    "top_categories": [
+     {
+      "name": "오류·버그",
+      "count": 6,
+      "prev": 5,
+      "avg": 1.5
+     },
+     {
+      "name": "디자인·UI",
+      "count": 4,
+      "prev": 2,
+      "avg": 2.0
+     },
+     {
+      "name": "해외주식·환전",
+      "count": 3,
+      "prev": 1,
+      "avg": 2.67
+     },
+     {
+      "name": "속도·렉",
+      "count": 2,
+      "prev": 2,
+      "avg": 2.0
+     },
+     {
+      "name": "기기·호환",
+      "count": 2,
+      "prev": 0,
+      "avg": 3.0
+     }
+    ],
+    "rising": [
+     "디자인·UI",
+     "해외주식·환전",
+     "기기·호환"
+    ],
+    "praise": 0,
+    "complaints": [
+     {
+      "rating": 1,
+      "content": "앱을 열고 들여다 보면 디스플레이의 화면이 많은 부분에서 다크모드 전환이 가능하여 다크모드로 앱 화면을 보니 눈도 부시지 않고 참 좋습니다... 그러나, 아직도 몇몇 부분의 화면에서는... 그룹별 정리 화면등은 다크모드로 전환이 되어 앱 화면을 들여다 보기가 무척 편안하여 좋은데... 개별종목 조회 화면, 주식잔고 손익 조회 화면, 주가지수 및 환율조회 화",
+      "date": "2026-10-30T19:04:48+00:00",
+      "likes": 10,
+      "cats": [
+       "디자인·UI",
+       "차트·시세"
+      ]
+     },
+     {
+      "rating": 1,
+      "content": "액면병합한 종목들 정규장만 보기 하면 차트 이상해요 고쳐줘요",
+      "date": "2026-10-29T13:53:31+00:00",
+      "likes": 3,
+      "cats": [
+       "차트·시세"
+      ]
+     },
+     {
+      "rating": 2,
+      "content": "나무증권 앱에서 AI 요약이 표시되는 종목을 클릭하면 즉시 GScriptError가 발생합니다. AI 요약이 없는 종목은 정상적으로 작동합니다. 오류는 line 1062, attempt to index field '?' (a nil value)이며 WebView 관련 조치 후에도 동일합니다.",
+      "date": "2026-11-03T10:26:22+00:00",
+      "likes": 0,
+      "cats": [
+       "오류·버그"
+      ]
+     }
+    ],
+    "compliments": [
+     {
+      "rating": 4,
+      "content": "모바일 증권 프로그램에서 해외주식거래 내역 엑셀이나 csv파일 다운받을수 있게 지원해 주실수 있나요 ?",
+      "date": "2026-10-31T15:20:09+00:00",
+      "likes": 0,
+      "cats": [
+       "해외주식·환전"
+      ]
+     }
+    ]
+   },
+   "ios": {
+    "count": 0,
+    "prev_count": 0,
+    "avg": null,
+    "prev_avg": null,
+    "neg_ratio": null,
+    "store_score": 2.5068,
+    "prev_store_score": null,
+    "version": "12.73",
+    "top_categories": [],
+    "rising": [],
+    "praise": 0,
+    "complaints": [],
+    "compliments": []
+   }
+  },
+  "headline": [
+   "Android 리뷰 13건(전주 대비 +6), 평균 ★2.1(전주 ★1.3). 가장 많이 언급된 주제는 '오류·버그' 6건, 전주보다 늘어난 주제는 '디자인·UI', '해외주식·환전', '기기·호환'."
+  ]
+ }
+]
