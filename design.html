@@ -337,7 +337,7 @@ const pick = (a, ignore) => a.filter((r) => (!S.issue || r.issues.includes(S.iss
 
 function render() {
   const all = scope(), voc = all.filter((r) => r.types.length);
-  kpi(all, voc); heat(voc); detail(pick(voc)); types(pick(voc, "type")); ver(); reqs(pick(voc)); list(pick(voc));
+  kpi(all, voc); heat(voc); detail(pick(voc)); types(pick(voc, "type")); ver(); reqs(voc); list(pick(voc));
 }
 
 function kpi(all, voc) {
@@ -352,7 +352,7 @@ function kpi(all, voc) {
     + tile("디자인 개선 요청", drq, "개", `기능 요청 포함 전체 ${rq}개`);
 }
 
-function select(t, sc, from) { S.issue = ""; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.dtAll = false; S.issue = ""; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -452,7 +452,7 @@ function detail(a) {
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
   const dAll = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r }))), rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
-  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 6);
+  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, S.dtAll ? undefined : 6);
   const more = (S.reqMode === "design" ? dAll : rAll).length - reqs.length;
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
@@ -466,12 +466,12 @@ function detail(a) {
         <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}</span></button></div></div>
         <div class="dt-grid">${reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("")}</div>
         ${reqs.length ? "" : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
-        ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기 ↓</button>` : ""}
+        ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기</button>` : ""}
     </div>
     <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
   $("dt-x").onclick = () => select("", "");
   el.querySelectorAll("#dt-req button").forEach((b) => b.onclick = () => setReqMode(b.dataset.v));
-  if ($("dt-reqs")) $("dt-reqs").onclick = () => $("req-title").scrollIntoView({ behavior: "smooth", block: "start" });
+  if ($("dt-reqs")) $("dt-reqs").onclick = () => { S.dtAll = true; detail(pick(scope().filter((r) => r.types.length))); };
   $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
   const r = el.getBoundingClientRect();
   if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -577,10 +577,10 @@ $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.typ
 function setReqMode(v) {
   S.reqMode = v; S.reqShown = 10;
   $("f-req").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
-  const voc = pick(scope().filter((r) => r.types.length)); detail(voc); reqs(voc);
+  const voc = scope().filter((r) => r.types.length); detail(pick(voc)); reqs(voc);
 }
 seg("f-req", setReqMode);
-$("req-more").onclick = () => { S.reqShown += 10; reqs(pick(scope().filter((r) => r.types.length))); };
+$("req-more").onclick = () => { S.reqShown += 10; reqs(scope().filter((r) => r.types.length)); };
 $("csv").onclick = csv;
 </script>
 </body>
