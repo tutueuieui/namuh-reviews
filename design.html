@@ -49,8 +49,8 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .kpi .s{font-size:13px;color:var(--faint)}
 
 /* 히트맵 */
-.hot-h{font-size:14px;font-weight:600;color:var(--sub);margin:26px 0 8px;padding-top:20px;border-top:1px solid var(--chip)}
-.hot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hot-h{font-size:14px;font-weight:600;color:var(--sub);margin:0 0 8px}
+.hot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:24px}
 .hcard{background:#f8f9fb;border-radius:12px;padding:14px 16px;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
 .hcard:hover{border-color:var(--line)}
 .hcard.on{border-color:var(--text)}
@@ -95,6 +95,7 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .mrow .bar{height:5px;margin-top:5px}
 .mrow .v{text-align:right;font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mrow.on{background:#fff7e0;margin:0 -10px;padding:10px}
+#hot + .detail{margin:-12px 0 24px}
 .detail{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--surface)}
 .dt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
 .dt-t{font-size:18px;font-weight:700}
@@ -222,13 +223,13 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
   <section class="card panel">
     <div class="panel-head inline">
       <h2>화면 × 문제 유형</h2>
-      <span class="hint">칸이나 카드를 누르면 TOP 3 아래에 상세가 열려요</span>
+      <span class="hint">카드나 칸을 누르면 바로 아래에 상세가 열려요</span>
     </div>
-    <div class="heat-wrap"><table class="heat" id="heat"></table></div>
-    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
     <div class="hot-h">가장 많이 언급된 문제 TOP 3</div>
     <div class="hot" id="hot"></div>
     <div class="detail" id="detail" hidden></div>
+    <div class="heat-wrap"><table class="heat" id="heat"></table></div>
+    <div class="heat-legend" id="legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
     <div class="mlist" id="mlist"></div>
   </section>
 
@@ -348,7 +349,7 @@ function kpi(all, voc) {
     + tile("디자인 개선 요청", drq, "개", `기능 요청 포함 전체 ${rq}개`);
 }
 
-function select(t, sc, from) { S.dtAll = false; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.dtAll = false; S.type = t; S.screen = sc; S.from = from || "heat"; S.shown = 20; S.reqShown = 10; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -412,7 +413,7 @@ function heat(voc) {
 
   // 클릭: 칸/카드/리스트 = 조합, 행·열 머리 = 단일 조건
   document.querySelectorAll("#hot [data-t], #heat td[data-t], #mlist [data-t]").forEach((el) => {
-    const from = el.closest("#mlist") ? "m" : "hot";
+    const from = el.closest("#mlist") ? "m" : el.closest("#hot") ? "hot" : "heat";
     const go = () => { const t = el.dataset.t, x = el.dataset.s; S.type === t && S.screen === x ? select("", "") : select(t, x, from); };
     el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
   });
@@ -443,7 +444,7 @@ addEventListener("scroll", () => tip.hidden = true, { passive: true });
 function detail(a) {
   const el = $("detail");
   if (!S.type && !S.screen) { el.hidden = true; return; }
-  const anchor = S.from === "m" ? $("mlist") : $("hot");
+  const anchor = S.from === "m" ? $("mlist") : S.from === "hot" ? $("hot") : $("legend");
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
   const dAll = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r }))), rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
