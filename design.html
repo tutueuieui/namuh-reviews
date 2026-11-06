@@ -31,6 +31,8 @@ h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-wei
 .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .hint{font-size:14px;color:var(--faint)}
+.seg .cnt{font-size:12px;font-weight:500;color:var(--faint);font-variant-numeric:tabular-nums;margin-left:2px}
+.seg button.on .cnt{color:var(--sub)}
 .panel-head.inline{justify-content:flex-start;align-items:baseline;gap:4px 12px}
 .seg{display:inline-flex;background:var(--chip);border-radius:9px;padding:3px}
 .seg button{border:0;background:none;color:var(--sub);font:inherit;font-size:15px;padding:6px 14px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
@@ -240,8 +242,11 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 
   <section class="card panel">
     <div class="panel-head inline">
-      <h2 id="req-title">개선 요청 모음</h2>
-      <span class="hint">"~해주세요", "~했으면" 같은 문장만 뽑았어요 · 공감 많은 순</span>
+      <h2 id="req-title">디자인 개선 요청</h2>
+      <span class="hint" id="req-hint"></span>
+      <div class="seg" id="f-req" aria-label="요청 범위" style="margin-left:auto;align-self:center">
+        <button data-v="design" class="on">디자인 관련<span class="cnt"></span></button><button data-v="all">전체<span class="cnt"></span></button>
+      </div>
     </div>
     <div class="reqs" id="reqs"></div>
     <button class="more" id="req-more" hidden>더 보기</button>
@@ -264,7 +269,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 <script>
 const STORES = { android: "Android", ios: "iOS" };
 const NONE = "화면 미상";
-const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20, reqShown: 10 };
+const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20, reqShown: 10, reqMode: "design" };
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
@@ -274,6 +279,9 @@ const stars = (n) => `<span class="stars">${"★".repeat(n)}<span class="off">${
 const typeOf = (n) => S.D.types.find((t) => t.name === n);
 const has = (t, ks) => (ks || []).some((k) => t.includes(k.toLowerCase()));
 const match = (r, t, list) => list.filter((c) => r.rating >= (c.minRating || 1) && has(t, c.keywords) && !has(t, c.exclude)).map((c) => c.name);
+
+// 요청 문장 자체에 디자인·사용성 표현이 있는지 (긍정 유형 제외)
+const reqTypes = (q) => { const t = q.toLowerCase(); return S.D.types.filter((c) => !c.positive && has(t, c.keywords) && !has(t, c.exclude)).map((c) => c.name); };
 
 // 문장 단위로 나눠 요청 문장만 추출
 function requests(r) {
@@ -296,6 +304,7 @@ Promise.all([
     const sc = match(x, t, D.screens);
     x.screens = sc.length ? sc : [NONE];
     x.reqs = requests(x);
+    x.dreqs = x.reqs.map((q) => ({ q, types: reqTypes(q) })).filter((o) => o.types.length);
     x.score = (x.likes || 0) * 2 + (5 - x.rating) + (x.reqs.length ? 1 : 0);
     return x;
   });
@@ -318,13 +327,13 @@ function render() {
 function kpi(all, voc) {
   const neg = voc.filter((r) => r.types.includes("개편·변경 반발")).length;
   const rq = voc.reduce((s, r) => s + r.reqs.length, 0);
-  const pos = voc.filter((r) => r.types.every((t) => typeOf(t).positive)).length;
+  const drq = voc.reduce((s, r) => s + r.dreqs.length, 0);
   const tile = (l, v, u, s) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`;
   $("kpi").innerHTML =
     tile("디자인·사용성 VOC", voc.length.toLocaleString(), "건", all.length ? `전체 리뷰 ${all.length.toLocaleString()}건 중 ${Math.round(voc.length / all.length * 100)}%` : "")
     + tile("VOC 평균 별점", voc.length ? "★" + avg(voc).toFixed(2) : "–", "", all.length ? `전체 리뷰 평균 ★${avg(all).toFixed(2)}` : "")
     + tile("개편·변경 반발", neg, "건", "“예전이 나았다”류 반응")
-    + tile("개선 요청 문장", rq, "개", `긍정 반응만 있는 리뷰 ${pos}건`);
+    + tile("디자인 개선 요청", drq, "개", `기능 요청 포함 전체 ${rq}개`);
 }
 
 function select(t, sc, from) { S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
@@ -354,7 +363,7 @@ function heat(voc) {
   // TOP 3 카드
   $("hot").innerHTML = combos.slice(0, 3).map((c, i) => {
     const rep = [...c.a].sort((p, q) => q.score - p.score)[0];
-    const quote = rep ? (rep.reqs[0] || rep.content).replace(/\s+/g, " ") : "";
+    const quote = rep ? ((rep.dreqs[0] || {}).q || rep.reqs[0] || rep.content).replace(/\s+/g, " ") : "";
     return `<div class="hcard ${isSel(c) ? "on" : ""}" data-t="${esc(c.t)}" data-s="${esc(c.x)}" role="button" tabindex="0">
       <div class="tt"><span class="rk">${i + 1}</span>${esc(c.x)}<span>×</span>${esc(c.t)}</div>
       <div class="mt">${c.a.length}건 · ${c.avg <= 1.5 ? `<b>★${c.avg.toFixed(1)}</b>` : "★" + c.avg.toFixed(1)}</div>
@@ -423,7 +432,9 @@ function detail(a) {
   const anchor = S.from === "m" ? $("mlist") : $("hot");
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
-  const reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
+  let reqs = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r })));
+  if (!reqs.length) reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
+  reqs = reqs.sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
   const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
@@ -478,11 +489,18 @@ function tags(r) {
 const sdot = (r) => `<span class="sdot" style="background:var(--${r.store})" title="${STORES[r.store]}"></span>`;
 
 function reqs(voc) {
-  const items = voc.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d);
-  $("req-title").textContent = `개선 요청 모음 · ${items.length}개`;
-  $("reqs").innerHTML = items.length ? items.slice(0, S.reqShown).map(({ q, r }) => `
-    <div class="req"><div class="q">${esc(q)}</div>
-      <div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}${tags(r)}</div></div>`).join("")
+  const design = voc.flatMap((r) => r.dreqs.map(({ q, types }) => ({ q, types, r })));
+  const all = voc.flatMap((r) => r.reqs.map((q) => ({ q, types: reqTypes(q), r })));
+  const items = (S.reqMode === "design" ? design : all).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d);
+  const cnt = $("f-req").querySelectorAll(".cnt"); cnt[0].textContent = design.length; cnt[1].textContent = all.length;
+  $("req-title").textContent = S.reqMode === "design" ? "디자인 개선 요청" : "개선 요청 전체";
+  $("req-hint").textContent = S.reqMode === "design" ? "요청 문장 안에 디자인·사용성 표현이 있는 것만 · 공감 많은 순" : "“~해주세요”, “~했으면” 같은 요청 문장 전체 (기능 요청 포함) · 공감 많은 순";
+  const ttags = (o) => o.types.length
+    ? o.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("") + o.r.screens.filter((x) => x !== NONE).map((x) => `<span class="stag">${esc(x)}</span>`).join("")
+    : `<span class="stag">기능 요청</span>` + o.r.screens.filter((x) => x !== NONE).map((x) => `<span class="stag">${esc(x)}</span>`).join("");
+  $("reqs").innerHTML = items.length ? items.slice(0, S.reqShown).map((o) => `
+    <div class="req"><div class="q">${esc(o.q)}</div>
+      <div class="meta">${sdot(o.r)}${stars(o.r.rating)}<span>${fmtDate(o.r.d)}</span>${o.r.likes ? `<span>👍 ${o.r.likes}</span>` : ""}${ttags(o)}</div></div>`).join("")
     : `<div class="empty" style="grid-column:1/-1">해당 조건의 요청 문장이 없어요</div>`;
   $("req-more").hidden = items.length <= S.reqShown;
 }
@@ -532,6 +550,7 @@ seg("f-ver", (v) => { S.ver = v; ver(); });
 seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
 let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
 $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
+seg("f-req", (v) => { S.reqMode = v; S.reqShown = 10; reqs(pick(scope().filter((r) => r.types.length))); });
 $("req-more").onclick = () => { S.reqShown += 10; reqs(pick(scope().filter((r) => r.types.length))); };
 $("csv").onclick = csv;
 </script>
