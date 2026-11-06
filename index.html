@@ -287,7 +287,7 @@ function render() {
   $("f-store").querySelectorAll("button").forEach((b) => {
     const k = b.dataset.v;
     const n = k === S.store ? f.length : p.filter((r) => r.store === k && (!q || (r.title + " " + r.content).toLowerCase().includes(q)) && (!S.cat || r.cats.includes(S.cat))).length;
-    b.querySelector(".cnt").textContent = n.toLocaleString();
+    b.querySelector(".cnt").textContent = n.toLocaleString() + "건";
   });
 }
 
