@@ -91,6 +91,7 @@ h2{font-size:17px;margin:0;font-weight:700}
 .mrow .bar{height:5px;margin-top:5px}
 .mrow .v{text-align:right;font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mrow.on{background:#fff7e0;margin:0 -10px;padding:10px}
+.detail.from-hot{margin:-8px 0 22px}
 .detail{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--surface)}
 .dt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
 .dt-t{font-size:18px;font-weight:700}
@@ -325,7 +326,7 @@ function kpi(all, voc) {
     + tile("개선 요청 문장", rq, "개", `긍정 반응만 있는 리뷰 ${pos}건`);
 }
 
-function select(t, sc) { S.type = t; S.screen = sc; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.type = t; S.screen = sc; S.from = from || "heat"; S.shown = 20; S.reqShown = 10; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -389,7 +390,8 @@ function heat(voc) {
 
   // 클릭: 칸/카드/리스트 = 조합, 행·열 머리 = 단일 조건
   document.querySelectorAll("#hot [data-t], #heat td[data-t], #mlist [data-t]").forEach((el) => {
-    const go = () => { const t = el.dataset.t, x = el.dataset.s; S.type === t && S.screen === x ? select("", "") : select(t, x); };
+    const from = el.closest("#hot") ? "hot" : "heat";
+    const go = () => { const t = el.dataset.t, x = el.dataset.s; S.type === t && S.screen === x ? select("", "") : select(t, x, from); };
     el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
   });
   $("heat").querySelectorAll("th[data-t]").forEach((el) => el.onclick = () => select(S.type === el.dataset.t && !S.screen ? "" : el.dataset.t, ""));
@@ -417,6 +419,9 @@ $("heat").addEventListener("mouseleave", () => tip.hidden = true);
 function detail(a) {
   const el = $("detail");
   if (!S.type && !S.screen) { el.hidden = true; return; }
+  const anchor = S.from === "hot" ? $("hot") : $("mlist");
+  if (anchor.nextElementSibling !== el) anchor.after(el);
+  el.classList.toggle("from-hot", S.from === "hot");
   el.hidden = false;
   const reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
   const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
@@ -434,6 +439,8 @@ function detail(a) {
     <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
   $("dt-x").onclick = () => select("", "");
   $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
+  const r = el.getBoundingClientRect();
+  if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function types(voc) {
