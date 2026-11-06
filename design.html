@@ -152,6 +152,7 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
 .stag{border-radius:5px;padding:1px 7px;font-size:13px;background:var(--chip);color:var(--sub)}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
+.more[hidden],.detail[hidden]{display:none}
 
 /* 목록 */
 .lbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;margin-bottom:12px}
@@ -223,6 +224,18 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
     <div class="mlist" id="mlist"></div>
   </section>
 
+  <section class="card panel">
+    <div class="panel-head inline">
+      <h2 id="req-title">디자인 개선 요청</h2>
+      <span class="hint" id="req-hint"></span>
+      <div class="seg" id="f-req" aria-label="요청 범위" style="margin-left:auto;align-self:center">
+        <button data-v="design" class="on">디자인 관련<span class="cnt"></span></button><button data-v="all">전체<span class="cnt"></span></button>
+      </div>
+    </div>
+    <div class="reqs" id="reqs"></div>
+    <button class="more" id="req-more" hidden>더 보기</button>
+  </section>
+
   <section class="grid2">
     <div class="card panel">
       <div class="panel-head"><h2>문제 유형 순위</h2></div>
@@ -240,18 +253,6 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
       <table class="ver" id="ver"></table>
       <div class="ver-note">디자인 VOC 비율 = 그 버전 리뷰 중 디자인·사용성 언급 비율 · 개편 반발이 많은 버전은 보라색으로 표시</div>
     </div>
-  </section>
-
-  <section class="card panel">
-    <div class="panel-head inline">
-      <h2 id="req-title">디자인 개선 요청</h2>
-      <span class="hint" id="req-hint"></span>
-      <div class="seg" id="f-req" aria-label="요청 범위" style="margin-left:auto;align-self:center">
-        <button data-v="design" class="on">디자인 관련<span class="cnt"></span></button><button data-v="all">전체<span class="cnt"></span></button>
-      </div>
-    </div>
-    <div class="reqs" id="reqs"></div>
-    <button class="more" id="req-more" hidden>더 보기</button>
   </section>
 
   <section class="card lbar">
