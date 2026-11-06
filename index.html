@@ -159,7 +159,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 @media (max-width:600px){.wk-kpi{grid-template-columns:repeat(2,1fr)}.wk-cat{grid-template-columns:100px 1fr 72px}}
 
 /* 카테고리 */
-.chips{display:flex;gap:6px;flex-wrap:wrap;width:100%;padding-top:8px;border-top:1px solid var(--chip)}
+.chips{display:none}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--sub);font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .chip i{width:7px;height:7px;border-radius:50%}
 .chip b{font-weight:600;color:var(--faint)}
@@ -167,7 +167,11 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .chip.on b{color:#c9ced6}
 .ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
 @media (max-width:860px){.cat-grid{grid-template-columns:96px 1fr 1fr;gap:4px 8px}.cat-cell{grid-template-columns:1fr}.cat-cell .n{text-align:left}}
-@media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{position:static}.filters{position:static}}
+@media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{display:none}.filters{position:static}
+  /* 모바일: 사이드 대신 카테고리 칩을 가로 스크롤 한 줄로 */
+  .chips{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;width:calc(100% + 36px);margin:0 -18px;padding:10px 18px 2px;border-top:1px solid var(--chip);scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-padding-inline:18px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;scroll-snap-align:start}}
 @media (max-width:480px){.mini{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
