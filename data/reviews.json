@@ -1,14 +1,14 @@
 {
 "meta": {
-"updated": "2026-11-06T15:24:37.139506+00:00",
+"updated": "2026-11-06T21:46:21.257341+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 1
+"new": 0
 },
 "ios": {
 "fetched": 500,
-"new": 2
+"new": 0
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,7 +20,7 @@
 "version": "9.95"
 },
 "ios": {
-"score": 2.5068,
+"score": 2.50617,
 "ratings": 3161,
 "version": "12.73"
 }
