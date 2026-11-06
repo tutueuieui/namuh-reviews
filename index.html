@@ -19,7 +19,9 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",
 .wrap{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 h1{font-size:25px;margin:0;letter-spacing:-.02em}
-.updated{color:var(--sub);font-size:14px}
+.updated{color:var(--sub);font-size:14px;display:flex;flex-wrap:wrap;gap:0 6px;margin-top:2px}
+.updated .sep{color:var(--faint)}
+.updated b{font-weight:600;color:var(--text)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
 h2{font-size:16px;margin:0 0 12px;font-weight:600}
 
@@ -251,9 +253,21 @@ Promise.all([
   weekly(weeks, 0);
   S.all = d.reviews.map((r) => { const x = { ...r, d: new Date(r.date) }; x.cats = classify(x); return x; });
   S.meta = d.meta || {};
-  $("updated").textContent = "마지막 수집 " + new Date(S.meta.updated).toLocaleString("ko-KR");
+  $("updated").innerHTML = updatedText(new Date(S.meta.updated));
   render();
 }).catch(() => { $("updated").textContent = "데이터를 불러오지 못했어요"; });
+
+// 수집 시각 안내 (한국시간 기준, 매일 08시 / 금요일은 주간 요약 포함)
+function updatedText(last) {
+  const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
+  const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
+  const next = new Date(); next.setUTCHours(23, 0, 0, 0); // 08:00 KST
+  if (next <= new Date()) next.setUTCDate(next.getUTCDate() + 1);
+  const fri = new Date(+next + 9 * 36e5).getUTCDay() === 5;
+  return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`
+    + `<span class="sep">·</span><span>매일 오전 8시 업데이트</span>`
+    + `<span class="sep">·</span><span>다음 업데이트 <b>${day(next)} 오전 8시</b>${fri ? " (주간 요약 포함)" : ""}</span>`;
+}
 
 const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };
 
