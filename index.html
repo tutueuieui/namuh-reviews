@@ -8,11 +8,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
-  --bg:#f5f6f8; --surface:#fff; --line:#e7e9ee; --text:#17191d; --sub:#646b77; --faint:#9aa1ad;
-  --android:#1a9b5e; --android-soft:#e6f5ed;
-  --ios:#2f62e6; --ios-soft:#e9effd;
-  --bad:#e0483e; --mid:#e8a317; --star:#f2a516;
-  --chip:#f0f2f5; --shadow:none;
+  --bg:#EBEDF1; --surface:#fff; --line:#E0E0E0; --text:#000000; --sub:#666666; --faint:#999999;
+  --android:#008E7E; --android-soft:#DCFBD9;
+  --ios:#247EF2; --ios-soft:#E8F2FF;
+  --bad:#D73838; --mid:#D58800; --star:#FFAB17;
+  --chip:#F5F5F5; --shadow:none;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
@@ -86,14 +86,14 @@ input[type=search]:focus{border-color:var(--text)}
 .rv .t{font-weight:600;font-size:17px;margin-top:12px}
 .rv .c{margin-top:12px;font-size:17px;font-weight:500;line-height:1.65;white-space:pre-wrap;word-break:break-word}
 .rv .t + .c{margin-top:4px}
-mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
+mark{background:#FFE0AC;color:inherit;border-radius:2px;padding:0 1px}
 .side{padding:0;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto}
 .side .acc-head{padding:18px 20px}
 .side .acc-body{padding:0 20px 16px}
 .side .acc-peek{flex:1}
 .scat{padding:8px 10px;margin:0 -10px;border-radius:8px;cursor:pointer}
 .scat:hover{background:var(--chip)}
-.scat.on{background:#fff7e0}
+.scat.on{background:#FFF0E0}
 .scat:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
 .scat .top{display:flex;align-items:center;gap:7px;font-size:15px}
 .scat .top i{width:9px;height:9px;border-radius:3px;flex:none}
@@ -156,9 +156,9 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .wk-cat{display:grid;grid-template-columns:110px minmax(0,1fr) 76px;gap:10px;align-items:center;font-size:14px;margin:5px 0}
 .wk-cat .bar{height:7px}
 .wk-cat .n{text-align:right;font-variant-numeric:tabular-nums}
-.quote{font-size:15px;line-height:1.6;padding:10px 14px;border-radius:8px;background:#f8f9fb;margin-bottom:6px}
+.quote{font-size:15px;line-height:1.6;padding:10px 14px;border-radius:8px;background:#F9F9F9;margin-bottom:6px}
 .quote .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.quote.good{background:#fff7e0}
+.quote.good{background:#FFF0E0}
 .wk-empty{color:var(--sub);font-size:15px;padding:6px 0}
 @media (max-width:600px){.wk-kpi{grid-template-columns:repeat(2,1fr)}.wk-cat{grid-template-columns:100px 1fr 72px}}
 
@@ -168,7 +168,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .chip i{width:7px;height:7px;border-radius:50%}
 .chip b{font-weight:600;color:var(--faint)}
 .chip.on{background:var(--text);color:#fff;border-color:var(--text)}
-.chip.on b{color:#c9ced6}
+.chip.on b{color:#C5C5C5}
 .ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
 @media (max-width:860px){.cat-grid{grid-template-columns:96px 1fr 1fr;gap:4px 8px}.cat-cell{grid-template-columns:1fr}.cat-cell .n{text-align:left}}
 @media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{display:none}.filters{position:static}
@@ -247,7 +247,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 <script>
 const STORES = { android: "Android", ios: "iOS" };
 const S = { all: [], meta: {}, cats: [], store: "android", trendStore: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
-const ETC = { name: "기타", color: "#adb5bd" };
+const ETC = { name: "기타", color: "#C5C5C5" };
 const catOf = (name) => S.cats.find((c) => c.name === name) || ETC;
 function classify(r) {
   const t = (r.title + " " + r.content).toLowerCase();
@@ -316,7 +316,7 @@ function weekly(weeks, idx) {
     const d = cur - prev, cls = neutral || Math.abs(d) < (digits ? 0.05 : 1) ? "flat" : d > 0 ? "up" : "down";
     return `<span class="delta ${cls} ${goodWhenUp ? "good" : ""}">${d > 0 ? "▲" : d < 0 ? "▼" : "–"}${Math.abs(d).toFixed(digits)}</span>`;
   };
-  const quote = (q, good) => `<div class="quote ${good ? "good" : ""}"><div class="meta"><span class="stars">${"★".repeat(q.rating)}<span class="off">${"★".repeat(5 - q.rating)}</span></span>${q.likes ? `<span>👍 ${q.likes}</span>` : ""}${q.cats.filter((n) => n !== "기타").map((n) => { const c = catOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}</div>${esc(q.content)}${q.content.length >= 200 ? "…" : ""}</div>`;
+  const quote = (q, good) => `<div class="quote ${good ? "good" : ""}"><div class="meta"><span class="stars">${"★".repeat(q.rating)}<span class="off">${"★".repeat(5 - q.rating)}</span></span>${q.likes ? `<span>👍 ${q.likes}</span>` : ""}${q.cats.filter((n) => n !== "기타").map((n) => { const c = catOf(n); return `<span class="ctag" style="color:#333333;background:${c.color}29">${esc(n)}</span>`; }).join("")}</div>${esc(q.content)}${q.content.length >= 200 ? "…" : ""}</div>`;
   const stores = Object.entries(STORES).map(([k, name]) => {
     const x = w.stores[k];
     if (!x || !x.count) return "";
@@ -484,7 +484,7 @@ function list(a) {
       <div class="top">
         <span class="stars">${"★".repeat(r.rating)}<span class="off">${"★".repeat(5 - r.rating)}</span></span>
         <span>${fmtDate(r.d)}</span>
-        ${r.cats.map((n) => { const c = catOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}
+        ${r.cats.map((n) => { const c = catOf(n); return `<span class="ctag" style="color:#333333;background:${c.color}29">${esc(n)}</span>`; }).join("")}
         ${r.version ? `<span class="tag">v${esc(r.version)}</span>` : ""}
         ${r.replied ? `<span class="tag rep">답변 완료</span>` : ""}
         ${r.likes ? `<span>👍 ${r.likes}</span>` : ""}

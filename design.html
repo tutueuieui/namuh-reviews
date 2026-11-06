@@ -8,11 +8,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
-  --bg:#f5f6f8; --surface:#fff; --line:#e7e9ee; --text:#17191d; --sub:#646b77; --faint:#9aa1ad;
-  --android:#1a9b5e; --android-soft:#e6f5ed;
-  --ios:#2f62e6; --ios-soft:#e9effd;
-  --heat:47,98,230; --good:26,155,94;
-  --bad:#e0483e; --star:#f2a516; --chip:#f0f2f5;
+  --bg:#EBEDF1; --surface:#fff; --line:#E0E0E0; --text:#000000; --sub:#666666; --faint:#999999;
+  --android:#008E7E; --android-soft:#DCFBD9;
+  --ios:#247EF2; --ios-soft:#E8F2FF;
+  --heat:36,126,242; --good:0,142,126;
+  --bad:#D73838; --star:#FFAB17; --chip:#F5F5F5;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
@@ -70,7 +70,7 @@ h2{font-size:17px;margin:0;font-weight:700}
 .grid2 .panel{margin:0}
 .rank{display:grid;grid-template-columns:128px minmax(0,1fr) 54px 54px;gap:10px;align-items:center;font-size:15px;padding:5px 8px;margin:0 -8px;border-radius:8px;cursor:pointer}
 .rank:hover{background:var(--chip)}
-.rank.on{background:#fff7e0;font-weight:600}
+.rank.on{background:#FFF0E0;font-weight:600}
 .rank .nm{display:flex;align-items:center;gap:7px;white-space:nowrap}
 .rank .nm i{width:9px;height:9px;border-radius:3px;flex:none}
 .rank .n,.rank .a{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:14px}
@@ -85,12 +85,12 @@ h2{font-size:17px;margin:0;font-weight:700}
 .ver td.share{width:42%;padding-left:16px}
 .ver .sh{display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center}
 .ver .sh b{font-weight:600;font-size:14px}
-.ver .hot{color:#862e9c;font-weight:700}
+.ver .hot{color:#E0589B;font-weight:700}
 .ver-note{font-size:13px;color:var(--faint);margin-top:10px}
 
 /* 요청 */
 .reqs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.req{background:#f8f9fb;border-radius:10px;padding:12px 14px}
+.req{background:#F9F9F9;border-radius:10px;padding:12px 14px}
 .req .q{font-size:15px;font-weight:500;line-height:1.55;word-break:break-word}
 .req .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--sub);margin-top:6px}
 .stars{letter-spacing:1px;font-size:14px;color:var(--star)}
@@ -117,7 +117,7 @@ input[type=search]:focus{border-color:var(--text)}
 .rv .c{margin-top:12px;font-size:17px;font-weight:500;line-height:1.65;white-space:pre-wrap;word-break:break-word}
 .rv .t + .c{margin-top:4px}
 .rv .sdot{width:7px;height:7px;border-radius:50%;display:inline-block}
-mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
+mark{background:#FFE0AC;color:inherit;border-radius:2px;padding:0 1px}
 .empty{padding:40px;text-align:center;color:var(--sub)}
 .note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center;line-height:1.7}
 
@@ -336,7 +336,7 @@ function ver() {
 }
 
 function tags(r) {
-  return r.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")
+  return r.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:#333333;background:${c.color}29">${esc(n)}</span>`; }).join("")
     + r.screens.filter((s) => s !== NONE).map((s) => `<span class="stag">${esc(s)}</span>`).join("");
 }
 const sdot = (r) => `<span class="sdot" style="background:var(--${r.store})" title="${STORES[r.store]}"></span>`;
