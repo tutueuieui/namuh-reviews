@@ -46,8 +46,8 @@ h2{font-size:17px;margin:0;font-weight:700}
 .kpi .s{font-size:13px;color:var(--faint)}
 
 /* 히트맵 */
-.hot-h{font-size:14px;font-weight:600;color:var(--sub);margin:-2px 0 8px}
-.hot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.hot-h{font-size:14px;font-weight:600;color:var(--sub);margin:26px 0 8px;padding-top:20px;border-top:1px solid var(--chip)}
+.hot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .hcard{background:#f8f9fb;border-radius:12px;padding:14px 16px;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
 .hcard:hover{border-color:var(--line)}
 .hcard.on{border-color:var(--text)}
@@ -91,8 +91,7 @@ h2{font-size:17px;margin:0;font-weight:700}
 .mrow .bar{height:5px;margin-top:5px}
 .mrow .v{text-align:right;font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mrow.on{background:#fff7e0;margin:0 -10px;padding:10px}
-.detail.from-hot{margin:-8px 0 22px}
-.detail{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--surface)}
+.detail{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--surface)}
 .dt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
 .dt-t{font-size:18px;font-weight:700}
 .dt-s{font-size:14px;color:var(--sub);margin-top:2px}
@@ -111,7 +110,8 @@ h2{font-size:17px;margin:0;font-weight:700}
   .heat-wrap{display:none}
   .mlist{display:block}
   .dt-grid{grid-template-columns:1fr}
-  .heat-legend .ramp,.heat-legend > span:nth-child(-n+4){display:none}
+  .heat-legend{display:none}
+  .hot-h{margin-top:0;padding-top:0;border-top:0}
 }
 
 /* 2단 */
@@ -208,14 +208,14 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
   <section class="card panel">
     <div class="panel-head">
       <h2>화면 × 문제 유형</h2>
-      <span class="hint">칸이나 카드를 누르면 바로 아래에 상세가 열려요</span>
+      <span class="hint">칸이나 카드를 누르면 TOP 3 아래에 상세가 열려요</span>
     </div>
+    <div class="heat-wrap"><table class="heat" id="heat"></table></div>
+    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
     <div class="hot-h">가장 많이 언급된 문제 TOP 3</div>
     <div class="hot" id="hot"></div>
-    <div class="heat-wrap"><table class="heat" id="heat"></table></div>
-    <div class="mlist" id="mlist"></div>
     <div class="detail" id="detail" hidden></div>
-    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
+    <div class="mlist" id="mlist"></div>
   </section>
 
   <section class="grid2">
@@ -326,7 +326,7 @@ function kpi(all, voc) {
     + tile("개선 요청 문장", rq, "개", `긍정 반응만 있는 리뷰 ${pos}건`);
 }
 
-function select(t, sc, from) { S.type = t; S.screen = sc; S.from = from || "heat"; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -382,7 +382,7 @@ function heat(voc) {
 
   // 모바일: 4위 이하 조합 리스트
   const rest = combos.slice(3, 12), mmax = Math.max(1, ...rest.map((c) => c.a.length));
-  $("mlist").innerHTML = rest.length ? `<div class="hot-h" style="margin-top:4px">그 외 많이 언급된 조합</div>` + rest.map((c, i) => `
+  $("mlist").innerHTML = rest.length ? `<div class="hot-h" style="margin-top:22px">그 외 많이 언급된 조합</div>` + rest.map((c, i) => `
     <div class="mrow ${isSel(c) ? "on" : ""}" data-t="${esc(c.t)}" data-s="${esc(c.x)}">
       <span class="n">${i + 4}</span>
       <div class="lb">${esc(c.x)} <span>×</span> ${esc(c.t)}<div class="bar"><span style="width:${c.a.length / mmax * 100}%;background:rgb(var(--heat))"></span></div></div>
@@ -390,7 +390,7 @@ function heat(voc) {
 
   // 클릭: 칸/카드/리스트 = 조합, 행·열 머리 = 단일 조건
   document.querySelectorAll("#hot [data-t], #heat td[data-t], #mlist [data-t]").forEach((el) => {
-    const from = el.closest("#hot") ? "hot" : "heat";
+    const from = el.closest("#mlist") ? "m" : "hot";
     const go = () => { const t = el.dataset.t, x = el.dataset.s; S.type === t && S.screen === x ? select("", "") : select(t, x, from); };
     el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
   });
@@ -419,9 +419,8 @@ $("heat").addEventListener("mouseleave", () => tip.hidden = true);
 function detail(a) {
   const el = $("detail");
   if (!S.type && !S.screen) { el.hidden = true; return; }
-  const anchor = S.from === "hot" ? $("hot") : $("mlist");
+  const anchor = S.from === "m" ? $("mlist") : $("hot");
   if (anchor.nextElementSibling !== el) anchor.after(el);
-  el.classList.toggle("from-hot", S.from === "hot");
   el.hidden = false;
   const reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
   const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
