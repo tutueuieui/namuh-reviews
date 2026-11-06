@@ -48,7 +48,9 @@ h2{font-size:16px;margin:0 0 12px;font-weight:600}
 
 /* 추이 */
 .panel{padding:22px 24px;margin-bottom:16px}
-.legend{display:flex;gap:14px;font-size:14px;color:var(--sub);margin:-4px 0 8px;flex-wrap:wrap}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel-head h2{margin:0}
+.legend{display:flex;gap:14px;font-size:14px;color:var(--sub);margin:0 0 8px;flex-wrap:wrap}
 .legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:5px;vertical-align:3px}
 .legend i.box{height:10px;width:10px;vertical-align:-1px;opacity:.25}
 #trend{width:100%;height:270px;display:block}
@@ -176,13 +178,15 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
   </section>
 
   <section class="card panel">
-    <h2>주간 평균 별점 추이</h2>
-    <div class="legend">
-      <span><i style="background:var(--android)"></i>Android 평균 별점</span>
-      <span><i style="background:var(--ios)"></i>iOS 평균 별점</span>
-      <span><i class="box" style="background:var(--android)"></i><i class="box" style="background:var(--ios);margin-left:-3px"></i>주간 리뷰 수</span>
+    <div class="panel-head">
+      <h2>주간 평균 별점 추이</h2>
+      <div class="seg" id="f-trend" aria-label="추이 스토어 선택">
+        <button data-v="android" class="on"><span class="dot" style="background:var(--android)"></span>Android</button>
+        <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
+      </div>
     </div>
-    <svg id="trend" role="img" aria-label="스토어별 주간 평균 별점 추이"></svg>
+    <div class="legend" id="trend-legend"></div>
+    <svg id="trend" role="img" aria-label="주간 평균 별점 추이"></svg>
   </section>
 
   <section class="card filters">
@@ -211,7 +215,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 
 <script>
 const STORES = { android: "Android", ios: "iOS" };
-const S = { all: [], meta: {}, cats: [], store: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
+const S = { all: [], meta: {}, cats: [], store: "android", trendStore: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
 const ETC = { name: "기타", color: "#adb5bd" };
 const catOf = (name) => S.cats.find((c) => c.name === name) || ETC;
 function classify(r) {
@@ -391,14 +395,18 @@ function stores(p) {
   });
 }
 
-function trend(p) {
+function trend(all) {
+  const ts = S.trendStore, tn = STORES[ts];
+  const p = all.filter((r) => r.store === ts);
+  $("trend-legend").innerHTML = `<span><i style="background:var(--${ts})"></i>${tn} 평균 별점</span><span><i class="box" style="background:var(--${ts})"></i>주간 리뷰 수</span>`;
   const svg = $("trend"), W = svg.clientWidth || 800, H = 270, P = { l: 40, r: 44, t: 14, b: 28 };
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  if (!p.length) { svg.innerHTML = ""; return; }
+  svg.setAttribute("aria-label", `${tn} 주간 평균 별점 추이`);
+  if (!p.length) { svg.innerHTML = `<text x="${W/2}" y="${H/2}" font-size="15" fill="var(--sub)" text-anchor="middle">이 기간에 ${tn} 리뷰가 없어요</text>`; return; }
   const wk = (d) => { const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return +x; };
   const start = wk(Math.min(...p.map((r) => +r.d))), end = wk(new Date());
   const weeks = []; for (let t = start; t <= end; t = wk(t + 8 * DAY)) weeks.push(t);
-  const by = {}; Object.keys(STORES).forEach((k) => by[k] = new Map(weeks.map((w) => [w, []])));
+  const by = { [ts]: new Map(weeks.map((w) => [w, []])) };
   p.forEach((r) => { const m = by[r.store].get(wk(r.d)); if (m) m.push(r); });
   const maxN = Math.max(1, ...Object.values(by).flatMap((m) => [...m.values()].map((a) => a.length)));
   const iw = W - P.l - P.r, ih = H - P.t - P.b, bw = iw / weeks.length;
@@ -406,10 +414,10 @@ function trend(p) {
   let g = "";
   [1,2,3,4,5].forEach((v) => g += `<line x1="${P.l}" x2="${W-P.r}" y1="${yR(v)}" y2="${yR(v)}" stroke="var(--line)"/><text x="${P.l-8}" y="${yR(v)+4}" font-size="12" fill="var(--faint)" text-anchor="end">${v}★</text>`);
   g += `<text x="${W-P.r+8}" y="${P.t+8}" font-size="12" fill="var(--faint)">${maxN}건</text>`;
-  const keys = Object.keys(STORES), gw = bw * 0.7 / keys.length;
+  const keys = [ts], gw = bw * 0.7;
   weeks.forEach((w, i) => keys.forEach((k, j) => {
     const a = by[k].get(w), h = a.length / maxN * ih;
-    if (a.length) g += `<rect x="${x(i) - bw*0.35 + j*gw}" y="${P.t+ih-h}" width="${gw}" height="${h}" rx="1.5" fill="var(--${k})" opacity=".16"><title>${STORES[k]} · ${fmtDate(new Date(w))} 주 · ${a.length}건 · ★${avg(a).toFixed(2)}</title></rect>`;
+    if (a.length) g += `<rect x="${x(i) - bw*0.35 + j*gw}" y="${P.t+ih-h}" width="${gw}" height="${h}" rx="1.5" fill="var(--${k})" opacity=".18"><title>${STORES[k]} · ${fmtDate(new Date(w))} 주 · ${a.length}건 · ★${avg(a).toFixed(2)}</title></rect>`;
   }));
   keys.forEach((k) => {
     const pts = weeks.map((w, i) => { const a = by[k].get(w); return a.length ? [x(i), yR(avg(a)), a] : null; }).filter(Boolean);
@@ -459,6 +467,10 @@ function setStore(s) {
   $("f-store").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === s));
 }
 $("f-store").querySelectorAll("button").forEach((b) => b.onclick = () => { if (S.store !== b.dataset.v) S.rating = 0; setStore(b.dataset.v); S.shown = 30; render(); });
+$("f-trend").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  $("f-trend").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+  S.trendStore = b.dataset.v; trend(inPeriod());
+});
 $("f-period").querySelectorAll("button").forEach((b) => b.onclick = () => {
   $("f-period").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
   S.period = +b.dataset.v; S.shown = 30; render();
