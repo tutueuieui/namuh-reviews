@@ -86,8 +86,15 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center}
 /* 주간 요약 (아코디언) */
 .weekly{padding:0;margin-bottom:16px;overflow:hidden}
-.weekly summary{list-style:none;cursor:pointer;user-select:none}
-.weekly summary::-webkit-details-marker{display:none}
+.weekly summary,.acc summary{list-style:none;cursor:pointer;user-select:none}
+.weekly summary::-webkit-details-marker,.acc summary::-webkit-details-marker{display:none}
+.acc-card{margin-bottom:16px;overflow:hidden}
+.acc-head{display:flex;align-items:center;gap:14px;padding:20px 24px}
+.acc-head h2{margin:0;flex:none}
+.acc-peek{flex:1;min-width:0;font-size:14px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc[open] .acc-peek{visibility:hidden}
+.acc-body{padding:0 24px 22px}
+.acc-body .hint{font-size:14px;color:var(--faint);margin:-6px 0 12px}
 .chev{width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .15s}
 .chev::before{content:"";width:7px;height:7px;border-right:2px solid var(--sub);border-bottom:2px solid var(--sub);transform:translateY(-2px) rotate(45deg);transition:transform .2s}
 details[open] > summary .chev::before{transform:translateY(2px) rotate(-135deg)}
@@ -130,8 +137,6 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 @media (max-width:600px){.wk-kpi{grid-template-columns:repeat(2,1fr)}.wk-cat{grid-template-columns:100px 1fr 72px}}
 
 /* 카테고리 */
-.cat-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.cat-head .hint{font-size:14px;color:var(--faint)}
 .cat-grid{display:grid;grid-template-columns:150px 1fr 1fr;gap:4px 20px;align-items:center;font-size:15px}
 .cat-grid .h{font-size:13px;color:var(--sub);padding-bottom:4px;display:flex;align-items:center;gap:6px}
 .cat-grid .h i{width:7px;height:7px;border-radius:50%}
@@ -172,9 +177,18 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 
   <section class="stores" id="stores"></section>
 
-  <section class="card panel">
-    <div class="cat-head"><h2>카테고리별 리뷰</h2><span class="hint">눌러서 아래 목록 필터 · 리뷰 하나가 여러 카테고리에 속할 수 있음</span></div>
-    <div class="cat-grid" id="cats"></div>
+  <section class="card acc-card">
+    <details class="acc" data-k="cats" open>
+      <summary class="acc-head">
+        <h2>카테고리별 리뷰</h2>
+        <span class="acc-peek" id="cats-peek"></span>
+        <span class="chev" aria-hidden="true"></span>
+      </summary>
+      <div class="acc-body">
+        <div class="hint">줄을 누르면 아래 목록이 필터돼요 · 리뷰 하나가 여러 카테고리에 속할 수 있어요</div>
+        <div class="cat-grid" id="cats"></div>
+      </div>
+    </details>
   </section>
 
   <section class="card panel">
@@ -333,6 +347,8 @@ function cats(p) {
   }).filter((r) => r.total).sort((a, b) => (a.c === ETC) - (b.c === ETC) || b.total - a.total);
   const max = Math.max(1, ...rows.flatMap((r) => Object.values(r.s).map((a) => a.length)));
   const head = `<div></div>` + Object.entries(STORES).map(([k, n]) => `<div class="h"><i style="background:var(--${k})"></i>${n} <span style="color:var(--faint)">(${by[k].length}건 중)</span></div>`).join("");
+  const peek = rows.filter((r) => r.c !== ETC).slice(0, 4).map((r) => `${r.c.name} ${r.total}`).join(" · ");
+  $("cats-peek").textContent = peek ? "많은 순 · " + peek : "";
   $("cats").innerHTML = head + rows.map(({ c, s }) => `
     <div class="cat-row ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}">
       <div class="cat-name"><i style="background:${c.color}"></i>${esc(c.name)}</div>
@@ -474,6 +490,10 @@ $("f-trend").querySelectorAll("button").forEach((b) => b.onclick = () => {
 $("f-period").querySelectorAll("button").forEach((b) => b.onclick = () => {
   $("f-period").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
   S.period = +b.dataset.v; S.shown = 30; render();
+});
+document.querySelectorAll("details.acc[data-k]").forEach((d) => {
+  d.open = isOpen(d.dataset.k);
+  d.addEventListener("toggle", () => saveOpen(d.dataset.k, d.open));
 });
 let t; $("f-q").oninput = (e) => { clearTimeout(t); t = setTimeout(() => { S.q = e.target.value; S.shown = 30; render(); }, 200); };
 $("more").onclick = () => { S.shown += 30; render(); };
