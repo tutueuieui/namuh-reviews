@@ -20,6 +20,9 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
 .updated{color:var(--sub);font-size:14px;display:flex;flex-wrap:wrap;gap:0 6px;margin-top:2px}
+.head-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vlink{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);font-size:15px;font-weight:600;text-decoration:none}
+.vlink:hover{background:var(--chip)}
 .updated .sep{color:var(--faint)}
 .updated b{font-weight:600;color:var(--text)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
@@ -182,8 +185,11 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
       <h1>나무증권 앱 리뷰</h1>
       <div class="updated" id="updated">불러오는 중…</div>
     </div>
+    <div class="head-tools">
+    <a class="vlink" href="design.html">디자인·사용성 VOC <span aria-hidden="true">→</span></a>
     <div class="seg" id="f-period" aria-label="기간">
       <button data-v="7">7일</button><button data-v="30">30일</button><button data-v="90">90일</button><button data-v="0" class="on">전체</button>
+    </div>
     </div>
   </header>
 

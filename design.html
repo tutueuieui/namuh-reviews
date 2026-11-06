@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>디자인 VOC 보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#f5f6f8; --surface:#fff; --line:#e7e9ee; --text:#17191d; --sub:#646b77; --faint:#9aa1ad;
+  --android:#1a9b5e; --android-soft:#e6f5ed;
+  --ios:#2f62e6; --ios-soft:#e9effd;
+  --heat:47,98,230; --good:26,155,94;
+  --bad:#e0483e; --star:#f2a516; --chip:#f0f2f5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
+a{color:inherit}
+.back{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--sub);text-decoration:none;margin-bottom:6px}
+.back:hover{color:var(--text)}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
+.updated{color:var(--sub);font-size:14px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.panel{padding:22px 24px;margin-bottom:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+h2{font-size:17px;margin:0;font-weight:700}
+.hint{font-size:14px;color:var(--faint)}
+.seg{display:inline-flex;background:var(--chip);border-radius:9px;padding:3px}
+.seg button{border:0;background:none;color:var(--sub);font:inherit;font-size:15px;padding:6px 14px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.seg button .dot{width:7px;height:7px;border-radius:50%}
+
+/* KPI */
+.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:20px 8px;margin-bottom:16px}
+.kpi > div{padding:2px 20px}
+.kpi > div + div{border-left:1px solid var(--chip)}
+.kpi .l{font-size:14px;color:var(--sub)}
+.kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .unit{font-size:.6em;font-weight:600;margin-left:2px;color:var(--sub)}
+.kpi .s{font-size:13px;color:var(--faint)}
+
+/* 히트맵 */
+.heat-wrap{overflow-x:auto;margin:0 -24px;padding:0 24px}
+.heat{border-collapse:separate;border-spacing:3px;font-size:14px;min-width:100%}
+.heat th{font-weight:500;color:var(--sub);white-space:nowrap;cursor:pointer;border-radius:6px}
+.heat th:hover{color:var(--text);background:var(--chip)}
+.heat thead th{font-size:13px;padding:4px 4px 8px;vertical-align:bottom;line-height:1.3}
+.heat tbody th{text-align:left;padding:0 10px 0 4px;position:sticky;left:0;background:var(--surface);z-index:1}
+.heat tbody th i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:6px}
+.heat th.on{color:var(--text);font-weight:700;background:var(--chip)}
+.heat td{min-width:52px;height:38px;text-align:center;border-radius:6px;font-variant-numeric:tabular-nums;cursor:pointer;font-weight:600;transition:box-shadow .1s}
+.heat td.z{color:var(--line);cursor:default;font-weight:400}
+.heat td:not(.z):hover{box-shadow:inset 0 0 0 2px var(--text)}
+.heat td.on{box-shadow:inset 0 0 0 2px var(--text)}
+.heat td.dim{opacity:.35}
+.heat .tot{color:var(--sub);font-weight:500;background:none;cursor:default}
+.heat tr.pos th{color:var(--android)}
+.heat-legend{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint);margin-top:12px;flex-wrap:wrap}
+.heat-legend .ramp{display:inline-flex;gap:2px}
+.heat-legend .ramp span{width:18px;height:10px;border-radius:2px}
+
+/* 2단 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.grid2 .panel{margin:0}
+.rank{display:grid;grid-template-columns:128px minmax(0,1fr) 54px 54px;gap:10px;align-items:center;font-size:15px;padding:5px 8px;margin:0 -8px;border-radius:8px;cursor:pointer}
+.rank:hover{background:var(--chip)}
+.rank.on{background:#fff7e0;font-weight:600}
+.rank .nm{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.rank .nm i{width:9px;height:9px;border-radius:3px;flex:none}
+.rank .n,.rank .a{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:14px}
+.rank-h{display:grid;grid-template-columns:128px minmax(0,1fr) 54px 54px;gap:10px;font-size:12px;color:var(--faint);padding:0 8px 4px;margin:0 -8px}
+.rank-h span:nth-child(n+3){text-align:right}
+.bar{height:8px;background:var(--chip);border-radius:4px;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:4px}
+.ver{width:100%;border-collapse:collapse;font-size:15px}
+.ver th{font-size:12px;color:var(--faint);font-weight:500;text-align:right;padding:0 0 6px}
+.ver th:first-child,.ver td:first-child{text-align:left}
+.ver td{padding:7px 0;border-top:1px solid var(--chip);text-align:right;font-variant-numeric:tabular-nums}
+.ver td.share{width:42%;padding-left:16px}
+.ver .sh{display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center}
+.ver .sh b{font-weight:600;font-size:14px}
+.ver .hot{color:#862e9c;font-weight:700}
+.ver-note{font-size:13px;color:var(--faint);margin-top:10px}
+
+/* 요청 */
+.reqs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.req{background:#f8f9fb;border-radius:10px;padding:12px 14px}
+.req .q{font-size:15px;font-weight:500;line-height:1.55;word-break:break-word}
+.req .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--sub);margin-top:6px}
+.stars{letter-spacing:1px;font-size:14px;color:var(--star)}
+.stars .off{color:var(--line)}
+.ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
+.stag{border-radius:5px;padding:1px 7px;font-size:13px;background:var(--chip);color:var(--sub)}
+.more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
+
+/* 목록 */
+.lbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;margin-bottom:12px}
+input[type=search]{flex:1;min-width:180px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:9px 14px;font:inherit;font-size:15px;outline:none}
+input[type=search]:focus{border-color:var(--text)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--chip)}
+.filt{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--sub);flex-wrap:wrap;margin:0 0 12px}
+.filt:empty{display:none}
+.filt b{color:var(--text)}
+.clear{border:0;background:var(--chip);color:var(--sub);border-radius:6px;font:inherit;font-size:14px;padding:3px 8px;cursor:pointer}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rv{padding:20px 24px}
+.rv + .rv{border-top:1px solid var(--line)}
+.rv .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--sub)}
+.rv .t{font-weight:600;font-size:17px;margin-top:12px}
+.rv .c{margin-top:12px;font-size:17px;font-weight:500;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.rv .t + .c{margin-top:4px}
+.rv .sdot{width:7px;height:7px;border-radius:50%;display:inline-block}
+mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
+.empty{padding:40px;text-align:center;color:var(--sub)}
+.note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center;line-height:1.7}
+
+@media (max-width:860px){
+  .grid2,.reqs{grid-template-columns:1fr}
+  .kpi{grid-template-columns:repeat(2,1fr);row-gap:16px}
+  .kpi > div:nth-child(3){border-left:0}
+  .panel{padding:20px 18px}
+  .heat-wrap{margin:0 -18px;padding:0 18px}
+  .rank,.rank-h{grid-template-columns:112px minmax(0,1fr) 46px 50px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back" href="./">← 전체 리뷰 보드</a>
+      <h1>디자인·사용성 VOC</h1>
+      <div class="updated" id="updated">불러오는 중…</div>
+    </div>
+    <div class="tools">
+      <div class="seg" id="f-store" aria-label="스토어">
+        <button data-v="" class="on">전체</button>
+        <button data-v="android"><span class="dot" style="background:var(--android)"></span>Android</button>
+        <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
+      </div>
+      <div class="seg" id="f-period" aria-label="기간">
+        <button data-v="7">7일</button><button data-v="30">30일</button><button data-v="90">90일</button><button data-v="0" class="on">전체</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="card kpi" id="kpi"></section>
+
+  <section class="card panel">
+    <div class="panel-head">
+      <h2>화면 × 문제 유형</h2>
+      <span class="hint">칸을 누르면 아래 요청·리뷰가 그 조건으로 걸러져요</span>
+    </div>
+    <div class="heat-wrap"><table class="heat" id="heat"></table></div>
+    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span>· 숫자는 리뷰 수 (한 리뷰가 여러 칸에 들어갈 수 있어요)</span></div>
+  </section>
+
+  <section class="grid2">
+    <div class="card panel">
+      <div class="panel-head"><h2>문제 유형 순위</h2></div>
+      <div class="rank-h"><span>유형</span><span></span><span>리뷰</span><span>평균</span></div>
+      <div id="types"></div>
+    </div>
+    <div class="card panel">
+      <div class="panel-head">
+        <h2>버전별 반응</h2>
+        <div class="seg" id="f-ver">
+          <button data-v="android" class="on"><span class="dot" style="background:var(--android)"></span>Android</button>
+          <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
+        </div>
+      </div>
+      <table class="ver" id="ver"></table>
+      <div class="ver-note">디자인 VOC 비율 = 그 버전 리뷰 중 디자인·사용성 언급 비율 · 개편 반발이 많은 버전은 보라색으로 표시</div>
+    </div>
+  </section>
+
+  <section class="card panel">
+    <div class="panel-head">
+      <h2 id="req-title">개선 요청 모음</h2>
+      <span class="hint">"~해주세요", "~했으면" 같은 문장만 뽑았어요 · 공감 많은 순</span>
+    </div>
+    <div class="reqs" id="reqs"></div>
+    <button class="more" id="req-more" hidden>더 보기</button>
+  </section>
+
+  <section class="card lbar">
+    <input type="search" id="f-q" placeholder="디자인 VOC 안에서 검색 (예: 다크모드, 글씨, 최근조회)">
+    <div class="seg" id="f-sort" aria-label="정렬">
+      <button data-v="impact" class="on">영향도순</button><button data-v="new">최신순</button>
+    </div>
+    <button class="btn" id="csv" title="지금 걸러진 리뷰를 엑셀용 CSV로 저장">CSV 내보내기</button>
+  </section>
+  <div class="filt" id="filt"></div>
+  <div class="list" id="list"></div>
+  <button class="more" id="more" hidden>더 보기</button>
+
+  <p class="note">분류는 design.json 키워드 규칙으로 자동 태깅돼서 일부 오분류가 있을 수 있어요<br>영향도 = 공감(👍) 수와 낮은 별점을 함께 반영한 정렬</p>
+</div>
+
+<script>
+const STORES = { android: "Android", ios: "iOS" };
+const NONE = "화면 미상";
+const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20, reqShown: 10 };
+const $ = (id) => document.getElementById(id);
+const DAY = 864e5;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const fmtDate = (d) => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`;
+const avg = (a) => a.length ? a.reduce((s, r) => s + r.rating, 0) / a.length : 0;
+const stars = (n) => `<span class="stars">${"★".repeat(n)}<span class="off">${"★".repeat(5 - n)}</span></span>`;
+const typeOf = (n) => S.D.types.find((t) => t.name === n);
+const has = (t, ks) => (ks || []).some((k) => t.includes(k.toLowerCase()));
+const match = (r, t, list) => list.filter((c) => r.rating >= (c.minRating || 1) && has(t, c.keywords) && !has(t, c.exclude)).map((c) => c.name);
+
+// 문장 단위로 나눠 요청 문장만 추출
+function requests(r) {
+  const parts = (r.title ? r.title + ". " : "") + r.content;
+  return parts.split(/(?<=[.!?\n~])\s*|(?<=(?:요|다|음|함|됨|셈|임))\s+/).map((s) => (s || "").trim())
+    .filter((s) => s.length >= 14 && has(s.toLowerCase(), S.D.request))
+    .map((s) => s.length > 150 ? s.slice(0, 148) + "…" : s);
+}
+
+Promise.all([
+  fetch("data/reviews.json?" + Date.now()).then((r) => r.json()),
+  fetch("design.json?" + Date.now()).then((r) => r.json()),
+]).then(([d, D]) => {
+  S.D = D;
+  S.all = d.reviews.map((r) => {
+    const x = { ...r, d: new Date(r.date) };
+    const t = (r.title + " " + r.content).toLowerCase();
+    x.types = match(x, t, D.types);
+    if (!x.types.length) return x;
+    const sc = match(x, t, D.screens);
+    x.screens = sc.length ? sc : [NONE];
+    x.reqs = requests(x);
+    x.score = (x.likes || 0) * 2 + (5 - x.rating) + (x.reqs.length ? 1 : 0);
+    return x;
+  });
+  const u = new Date((d.meta || {}).updated);
+  $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })} · 매일 오전 8시 업데이트`;
+  $("ramp").innerHTML = [.08, .25, .45, .7, 1].map((a) => `<span style="background:rgba(var(--heat),${a})"></span>`).join("");
+  render();
+}).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
+
+const scope = () => { const now = Date.now(); return S.all.filter((r) => (!S.store || r.store === S.store) && (!S.period || now - r.d < S.period * DAY)); };
+const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.types.includes(S.type)) && (ignore === "screen" || !S.screen || r.screens.includes(S.screen)));
+
+function render() {
+  const all = scope(), voc = all.filter((r) => r.types.length);
+  kpi(all, voc); heat(voc); types(pick(voc, "type")); ver(); reqs(pick(voc)); list(pick(voc));
+}
+
+function kpi(all, voc) {
+  const neg = voc.filter((r) => r.types.includes("개편·변경 반발")).length;
+  const rq = voc.reduce((s, r) => s + r.reqs.length, 0);
+  const pos = voc.filter((r) => r.types.every((t) => typeOf(t).positive)).length;
+  const tile = (l, v, u, s) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`;
+  $("kpi").innerHTML =
+    tile("디자인·사용성 VOC", voc.length.toLocaleString(), "건", all.length ? `전체 리뷰 ${all.length.toLocaleString()}건 중 ${Math.round(voc.length / all.length * 100)}%` : "")
+    + tile("VOC 평균 별점", voc.length ? "★" + avg(voc).toFixed(2) : "–", "", all.length ? `전체 리뷰 평균 ★${avg(all).toFixed(2)}` : "")
+    + tile("개편·변경 반발", neg, "건", "“예전이 나았다”류 반응")
+    + tile("개선 요청 문장", rq, "개", `긍정 반응만 있는 리뷰 ${pos}건`);
+}
+
+function heat(voc) {
+  const T = S.D.types.map((t) => t.name);
+  const sc = {}; voc.forEach((r) => r.screens.forEach((s) => sc[s] = (sc[s] || 0) + 1));
+  const cols = Object.keys(sc).filter((s) => s !== NONE).sort((a, b) => sc[b] - sc[a]);
+  if (sc[NONE]) cols.push(NONE);
+  const cell = {}; let max = 1;
+  voc.forEach((r) => r.types.forEach((t) => r.screens.forEach((s) => { const k = t + "|" + s; cell[k] = (cell[k] || 0) + 1; })));
+  T.forEach((t) => { if (!typeOf(t).positive) cols.forEach((s) => { if (s !== NONE) max = Math.max(max, cell[t + "|" + s] || 0); }); });
+  const sel = S.type || S.screen;
+  let h = `<thead><tr><th style="cursor:default;background:none"></th>${cols.map((s) =>
+    `<th data-s="${esc(s)}" class="${S.screen === s ? "on" : ""}">${esc(s).replace("·", "·<br>")}</th>`).join("")}<th class="tot" style="cursor:default">합계</th></tr></thead><tbody>`;
+  T.forEach((t) => {
+    const ty = typeOf(t), rgb = ty.positive ? "var(--good)" : "var(--heat)";
+    const tot = voc.filter((r) => r.types.includes(t)).length;
+    if (!tot) return;
+    h += `<tr class="${ty.positive ? "pos" : ""}"><th data-t="${esc(t)}" class="${S.type === t ? "on" : ""}"><i style="background:${ty.color}"></i>${esc(t)}</th>`;
+    cols.forEach((s) => {
+      const n = cell[t + "|" + s] || 0;
+      if (!n) { h += `<td class="z">·</td>`; return; }
+      const a = Math.min(1, .08 + n / max * .92);
+      const on = S.type === t && S.screen === s;
+      const dim = sel && !on && !((S.type === t && !S.screen) || (S.screen === s && !S.type));
+      h += `<td data-t="${esc(t)}" data-s="${esc(s)}" class="${on ? "on" : ""} ${dim ? "dim" : ""}" style="background:rgba(${rgb},${a});color:${a > .5 ? "#fff" : "var(--text)"}" title="${esc(t)} · ${esc(s)} ${n}건">${n}</td>`;
+    });
+    h += `<td class="tot">${tot}</td></tr>`;
+  });
+  $("heat").innerHTML = h + "</tbody>";
+  $("heat").querySelectorAll("[data-t],[data-s]").forEach((el) => el.onclick = () => {
+    const t = el.dataset.t || "", s = el.dataset.s || "";
+    if (el.tagName === "TD") { const same = S.type === t && S.screen === s; S.type = same ? "" : t; S.screen = same ? "" : s; }
+    else if (t) { S.type = S.type === t && !S.screen ? "" : t; S.screen = ""; }
+    else { S.screen = S.screen === s && !S.type ? "" : s; S.type = ""; }
+    S.shown = 20; S.reqShown = 10; render();
+  });
+}
+
+function types(voc) {
+  const rows = S.D.types.map((t) => ({ t, a: voc.filter((r) => r.types.includes(t.name)) })).filter((x) => x.a.length).sort((x, y) => y.a.length - x.a.length);
+  const max = Math.max(1, ...rows.map((x) => x.a.length));
+  $("types").innerHTML = rows.length ? rows.map(({ t, a }) => `
+    <div class="rank ${S.type === t.name ? "on" : ""}" data-t="${esc(t.name)}">
+      <span class="nm"><i style="background:${t.color}"></i>${esc(t.name)}</span>
+      <div class="bar"><span style="width:${a.length / max * 100}%;background:${t.color}"></span></div>
+      <span class="n">${a.length}건</span><span class="a">★${avg(a).toFixed(1)}</span>
+    </div>`).join("") : `<div class="empty">해당 리뷰가 없어요</div>`;
+  $("types").querySelectorAll(".rank").forEach((el) => el.onclick = () => { S.type = S.type === el.dataset.t ? "" : el.dataset.t; S.shown = 20; S.reqShown = 10; render(); });
+}
+
+function ver() {
+  const now = Date.now();
+  const a = S.all.filter((r) => r.store === S.ver && (!S.period || now - r.d < S.period * DAY) && r.version);
+  const m = {}; a.forEach((r) => (m[r.version] ||= []).push(r));
+  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 8);
+  if (!rows.length) { $("ver").innerHTML = `<tr><td class="empty" colspan="5">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
+  const color = S.ver === "android" ? "var(--android)" : "var(--ios)";
+  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th style="padding-left:16px;text-align:left">디자인 VOC 비율</th><th>개편 반발</th><th>평균</th></tr>` + rows.map(([v, rs]) => {
+    const voc = rs.filter((r) => r.types.length), p = Math.round(voc.length / rs.length * 100);
+    const neg = voc.filter((r) => r.types.includes("개편·변경 반발")).length;
+    return `<tr><td>v${esc(v)}</td><td>${rs.length}건</td>
+      <td class="share"><div class="sh"><div class="bar"><span style="width:${p}%;background:${color}"></span></div><b>${p}%</b></div></td>
+      <td class="${neg >= 3 && neg / rs.length >= .08 ? "hot" : ""}">${neg}건</td><td>★${avg(rs).toFixed(2)}</td></tr>`;
+  }).join("");
+}
+
+function tags(r) {
+  return r.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")
+    + r.screens.filter((s) => s !== NONE).map((s) => `<span class="stag">${esc(s)}</span>`).join("");
+}
+const sdot = (r) => `<span class="sdot" style="background:var(--${r.store})" title="${STORES[r.store]}"></span>`;
+
+function reqs(voc) {
+  const items = voc.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d);
+  $("req-title").textContent = `개선 요청 모음 · ${items.length}개`;
+  $("reqs").innerHTML = items.length ? items.slice(0, S.reqShown).map(({ q, r }) => `
+    <div class="req"><div class="q">${esc(q)}</div>
+      <div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}${tags(r)}</div></div>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">해당 조건의 요청 문장이 없어요</div>`;
+  $("req-more").hidden = items.length <= S.reqShown;
+}
+
+function filtered(voc) {
+  const q = S.q.trim().toLowerCase();
+  const a = voc.filter((r) => !q || (r.title + " " + r.content).toLowerCase().includes(q));
+  return a.sort(S.sort === "impact" ? (x, y) => y.score - x.score || y.d - x.d : (x, y) => y.d - x.d);
+}
+
+function list(voc) {
+  const a = filtered(voc);
+  const conds = [S.type && `유형 <b>${esc(S.type)}</b>`, S.screen && `화면 <b>${esc(S.screen)}</b>`].filter(Boolean);
+  $("filt").innerHTML = `<span>${conds.length ? conds.join(" · ") + " · " : ""}리뷰 <b>${a.length}</b>건</span>` + (conds.length ? `<button class="clear" id="clr">필터 해제</button>` : "");
+  if (conds.length) $("clr").onclick = () => { S.type = S.screen = ""; S.shown = 20; S.reqShown = 10; render(); };
+  const q = S.q.trim();
+  const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
+  $("list").innerHTML = a.length ? a.slice(0, S.shown).map((r) => `
+    <article class="rv">
+      <div class="top">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${tags(r)}
+        ${r.version ? `<span class="stag">v${esc(r.version)}</span>` : ""}${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>
+      ${r.title ? `<div class="t">${hl(r.title)}</div>` : ""}
+      <div class="c">${hl(r.content)}</div>
+    </article>`).join("") : `<div class="empty">조건에 맞는 리뷰가 없어요</div>`;
+  $("more").hidden = a.length <= S.shown;
+}
+
+function csv() {
+  const a = filtered(pick(scope().filter((r) => r.types.length)));
+  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const rows = [["날짜", "스토어", "별점", "버전", "문제 유형", "화면", "개선 요청 문장", "공감", "제목", "내용"]].concat(a.map((r) => [
+    fmtDate(r.d), STORES[r.store], r.rating, r.version || "", r.types.join(", "), r.screens.join(", "), r.reqs.join(" / "), r.likes || 0, r.title, r.content]));
+  const blob = new Blob(["﻿" + rows.map((x) => x.map(cell).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const el = document.createElement("a");
+  el.href = URL.createObjectURL(blob);
+  el.download = `나무증권_디자인VOC_${[S.store && STORES[S.store], S.type, S.screen].filter(Boolean).join("_") || "전체"}_${fmtDate(new Date()).replace(/\./g, "")}.csv`;
+  el.click(); setTimeout(() => URL.revokeObjectURL(el.href), 1000);
+}
+
+const seg = (id, fn) => $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
+  $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); fn(b.dataset.v);
+});
+const setVer = (v) => { S.ver = v; $("f-ver").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); };
+seg("f-store", (v) => { S.store = v; if (v) setVer(v); S.shown = 20; S.reqShown = 10; render(); });
+seg("f-period", (v) => { S.period = +v; S.shown = 20; S.reqShown = 10; render(); });
+seg("f-ver", (v) => { S.ver = v; ver(); });
+seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
+let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
+$("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
+$("req-more").onclick = () => { S.reqShown += 10; reqs(pick(scope().filter((r) => r.types.length))); };
+$("csv").onclick = csv;
+</script>
+</body>
+</html>
