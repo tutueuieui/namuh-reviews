@@ -61,7 +61,6 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .hcard .mt{font-size:14px;color:var(--sub);margin:4px 0 8px;font-variant-numeric:tabular-nums}
 .hcard .mt b{color:var(--bad);font-weight:600}
 .itag{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;border-radius:999px;padding:2px 9px}
-.hcard .itag{margin:0 0 8px}
 .issues{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
 .issues:empty{display:none}
 .issues .l{font-size:14px;font-weight:600;color:var(--sub);margin-right:2px}
@@ -387,7 +386,6 @@ function heat(voc) {
     return `<div class="hcard ${isSel(c) ? "on" : ""}" data-t="${esc(c.t)}" data-s="${esc(c.x)}" role="button" tabindex="0">
       <div class="tt"><span class="rk">${i + 1}</span>${esc(c.x)}<span>×</span>${esc(c.t)}</div>
       <div class="mt">${c.a.length}건 · ${c.avg <= 1.5 ? `<b>★${c.avg.toFixed(1)}</b>` : "★" + c.avg.toFixed(1)}</div>
-      ${(S.D.issues || []).map((I) => { const k = c.a.filter((r) => r.issues.includes(I.name)).length; return k >= 2 ? itag(I.name, k) : ""; }).join("")}
       <div class="qt">“${esc(quote)}”</div></div>`;
   }).join("") || `<div class="dt-none">해당 기간에 문제 리뷰가 없어요</div>`;
 
@@ -477,7 +475,6 @@ function detail(a) {
     <div class="dt-head"><div>
       <div class="dt-t">${S.issue ? "#" + esc(S.issue) : esc(comboName(S.type, S.screen))}</div>
       <div class="dt-s">리뷰 <b>${a.length}건</b> · 평균 <b>★${avg(a).toFixed(1)}</b>${likes ? ` · 공감 ${likes}` : ""}${S.screen === OTHER ? ` · ${esc(S.others.join(", "))}` : ""}${S.issue ? ` · ${esc(issueScreens(a))}` : ""}</div>
-      ${!S.issue ? (S.D.issues || []).map((I) => { const k = a.filter((r) => r.issues.includes(I.name)).length; return k ? `<div style="margin-top:8px">${itag(I.name, k)}</div>` : ""; }).join("") : ""}
     </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
     <div class="dt-grid">
       <div><div class="dt-h">대표 요청</div>${reqs.length ? reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("") : `<div class="dt-none">요청 문장이 없어요</div>`}</div>
