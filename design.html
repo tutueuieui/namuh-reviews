@@ -104,6 +104,11 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .x{border:0;background:var(--chip);width:32px;height:32px;border-radius:8px;font-size:18px;color:var(--sub);cursor:pointer;flex:none}
 .x:hover{color:var(--text)}
 .dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dt-hrow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.seg.sm{padding:2px;border-radius:8px}
+.seg.sm button{font-size:13px;padding:3px 10px;border-radius:6px}
+.linkbtn{border:0;background:none;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
+.linkbtn:hover{color:var(--text)}
 .dt-h{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:8px}
 .dt-q{font-size:15px;line-height:1.55;padding:10px 12px;border-radius:8px;background:#f8f9fb;margin-bottom:6px;word-break:break-word}
 .dt-q .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
@@ -444,9 +449,9 @@ function detail(a) {
   const anchor = S.from === "m" ? $("mlist") : $("hot");
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
-  let reqs = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r })));
-  if (!reqs.length) reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
-  reqs = reqs.sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
+  const dAll = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r }))), rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
+  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
+  const more = (S.reqMode === "design" ? dAll : rAll).length - reqs.length;
   const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
@@ -456,11 +461,16 @@ function detail(a) {
       <div class="dt-s">리뷰 <b>${a.length}건</b> · 평균 <b>★${avg(a).toFixed(1)}</b>${likes ? ` · 공감 ${likes}` : ""}${S.screen === OTHER ? ` · ${esc(S.others.join(", "))}` : ""}${S.issue ? ` · ${esc(issueScreens(a))}` : ""}</div>
     </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
     <div class="dt-grid">
-      <div><div class="dt-h">대표 요청</div>${reqs.length ? reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("") : `<div class="dt-none">요청 문장이 없어요</div>`}</div>
+      <div><div class="dt-h dt-hrow">대표 요청
+        <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}</span></button></div></div>
+        ${reqs.length ? reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("") : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
+        ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기 ↓</button>` : ""}</div>
       <div><div class="dt-h">대표 리뷰 · 영향도순</div>${top.map((r) => `<div class="dt-q">${meta(r)}<div class="dt-q c" style="padding:0;background:none;margin:0">${esc(r.content)}</div></div>`).join("") || `<div class="dt-none">리뷰가 없어요</div>`}</div>
     </div>
     <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
   $("dt-x").onclick = () => select("", "");
+  el.querySelectorAll("#dt-req button").forEach((b) => b.onclick = () => setReqMode(b.dataset.v));
+  if ($("dt-reqs")) $("dt-reqs").onclick = () => $("req-title").scrollIntoView({ behavior: "smooth", block: "start" });
   $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
   const r = el.getBoundingClientRect();
   if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -562,7 +572,13 @@ seg("f-ver", (v) => { S.ver = v; ver(); });
 seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
 let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
 $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
-seg("f-req", (v) => { S.reqMode = v; S.reqShown = 10; reqs(pick(scope().filter((r) => r.types.length))); });
+// 상세 패널과 디자인 개선 요청 섹션의 토글은 같은 상태를 공유
+function setReqMode(v) {
+  S.reqMode = v; S.reqShown = 10;
+  $("f-req").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
+  const voc = pick(scope().filter((r) => r.types.length)); detail(voc); reqs(voc);
+}
+seg("f-req", setReqMode);
 $("req-more").onclick = () => { S.reqShown += 10; reqs(pick(scope().filter((r) => r.types.length))); };
 $("csv").onclick = csv;
 </script>
