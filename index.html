@@ -305,8 +305,8 @@ function weekly(weeks, idx) {
       <div>
         <div class="wk-kpi">
           <div><div class="l">리뷰</div><div class="v">${x.count}${delta(x.count, x.prev_count, 0, false, true)}</div></div>
-          <div><div class="l">리뷰 평균</div><div class="v" style="color:${tone(x.avg)}">★${x.avg.toFixed(1)}${delta(x.avg, x.prev_avg, 1, true)}</div></div>
-          <div><div class="l">스토어 평점</div><div class="v">${x.store_score ? "★" + x.store_score.toFixed(2) : "–"}${delta(x.store_score, x.prev_store_score, 2, true)}</div></div>
+          <div><div class="l">리뷰 평균</div><div class="v" style="color:var(--${k})">★${x.avg.toFixed(1)}${delta(x.avg, x.prev_avg, 1, true)}</div></div>
+          <div><div class="l">스토어 평점</div><div class="v" style="color:var(--${k})">${x.store_score ? "★" + x.store_score.toFixed(2) : "–"}${delta(x.store_score, x.prev_store_score, 2, true)}</div></div>
           <div><div class="l">1~2점 비율</div><div class="v">${x.neg_ratio}%</div></div>
         </div>
       </div>
