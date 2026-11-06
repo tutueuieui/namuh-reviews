@@ -356,7 +356,7 @@ function weekly(weeks, idx) {
     </div>`;
   }).join("");
   el.innerHTML = `
-    <details class="wk" data-k="wk-all" ${isOpen("wk-all") ? "open" : ""}>
+    <details class="wk" ${wkOpen ? "open" : ""}>
       <summary class="wk-head">
         <span class="wk-title"><h2>📋 ${idx === 0 ? "이번 주" : ""} 리뷰 요약</h2><span class="period">${md(w.week_start)} ~ ${md(w.week_end)}</span></span>
         <span class="chev" aria-hidden="true"></span>
@@ -366,11 +366,13 @@ function weekly(weeks, idx) {
         <div class="wk-grid">${stores}</div>
       </div>
     </details>`;
-  el.querySelectorAll("details[data-k]").forEach((d) => d.addEventListener("toggle", () => saveOpen(d.dataset.k, d.open)));
+  // 주간 요약은 들어올 때마다 접힌 상태로 시작 (지난 주 선택 시엔 열린 상태 유지)
+  el.querySelector("details.wk").addEventListener("toggle", (e) => { wkOpen = e.target.open; });
   const sel = $("wk-sel"); if (sel) sel.onchange = () => weekly(weeks, +sel.value);
 }
 
 // 접기/펴기 상태는 이 브라우저에만 기억 (기본: 펼침)
+let wkOpen = false;
 function isOpen(k) { try { return localStorage.getItem("acc:" + k) !== "0"; } catch { return true; } }
 function saveOpen(k, open) { try { localStorage.setItem("acc:" + k, open ? "1" : "0"); } catch {} }
 
