@@ -20,14 +20,13 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",
 a{color:inherit}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
-.nav{position:fixed;left:0;top:0;bottom:0;width:216px;background:var(--surface);border-right:1px solid var(--line);padding:28px 14px;display:flex;flex-direction:column;gap:4px;z-index:20}
+.nav{position:fixed;left:0;top:0;bottom:0;width:216px;background:var(--bg);padding:28px 14px;display:flex;flex-direction:column;gap:4px;z-index:20}
 .nav .brand{font-size:13px;font-weight:700;color:var(--faint);padding:0 12px 14px}
-.nav a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:600;color:var(--sub);text-decoration:none;transition:background .15s,color .15s}
-.nav a svg{width:18px;height:18px;flex:none}
-.nav a:hover{background:var(--chip);color:var(--text)}
-.nav a.on{background:var(--text);color:#fff}
+.nav a{display:block;padding:9px 12px;font-size:15px;font-weight:500;color:var(--faint);text-decoration:none;transition:color .15s}
+.nav a:hover{color:var(--sub)}
+.nav a.on{color:var(--text);font-weight:700}
 body{padding-left:216px}
-@media (max-width:860px){body{padding-left:0}.nav{position:sticky;bottom:auto;width:auto;flex-direction:row;padding:8px 16px;border-right:0;border-bottom:1px solid var(--line)}.nav .brand{display:none}.nav a{flex:1;justify-content:center;font-size:14px;padding:9px}}
+@media (max-width:860px){body{padding-left:0}.nav{position:sticky;bottom:auto;width:auto;flex-direction:row;padding:8px 16px}.nav .brand{display:none}.nav a{flex:1;text-align:center;font-size:14px;padding:9px}}
 .updated{color:var(--sub);font-size:14px}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
@@ -201,8 +200,8 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 <body>
 <nav class="nav" aria-label="보드 전환">
   <div class="brand">나무증권 리뷰 보드</div>
-  <a href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>전체 리뷰</a>
-  <a class="on" aria-current="page" href="design.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>디자인·사용성 VOC</a>
+  <a href="./">전체 리뷰</a>
+  <a class="on" aria-current="page" href="design.html">디자인·사용성 VOC</a>
 </nav>
 <div class="wrap">
   <header>
