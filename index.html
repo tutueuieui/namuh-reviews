@@ -374,7 +374,7 @@ function stores(p) {
       const dim = S.store === k && S.rating && !on;
       return `<div class="dist-row ${on ? "on" : ""}" data-s="${k}" data-r="${n}" title="${name} ${n}점 리뷰만 보기">
         <span>${n}★</span>
-        <div class="bar"><span style="width:${counts[i] / max * 100}%;background:${n <= 2 ? "var(--bad)" : "var(--c)"};opacity:${dim ? .3 : 1}"></span></div>
+        <div class="bar"><span style="width:${counts[i] / max * 100}%;background:var(--c);opacity:${dim ? .3 : 1}"></span></div>
         <span class="n">${counts[i]} · ${Math.round(counts[i] / a.length * 100)}%</span></div>`;
     }).join("");
     return `<div class="card store" data-s="${k}">${head}
