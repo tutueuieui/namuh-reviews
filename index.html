@@ -33,7 +33,7 @@ h2{font-size:16px;margin:0 0 12px;font-weight:600}
 .badge i{width:8px;height:8px;border-radius:50%;background:var(--c)}
 .official{font-size:14px;color:var(--sub);background:var(--cs);border-radius:6px;padding:3px 8px}
 .official b{color:var(--text)}
-.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .mini .l{font-size:13px;color:var(--sub)}
 .mini .v{font-size:25px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .mini .s{font-size:13px;color:var(--faint)}
@@ -357,7 +357,7 @@ function stores(p) {
     const st = (S.meta.store_stats || {})[k];
     const official = st && st.version ? `<span class="official">최신 버전 <b>v${esc(st.version)}</b></span>` : "";
     const head = `<div class="store-head"><span class="badge"><i></i>${name}</span>${official}</div>`;
-    const storeTile = `<div><div class="l">평균 별점 (스토어)</div><div class="v" style="color:${st && st.score ? tone(st.score) : "var(--faint)"}">${st && st.score ? "★" + st.score.toFixed(2) : "–"}</div><div class="s">${st && st.ratings ? Number(st.ratings).toLocaleString() + "명 평가" : ""}</div></div>`;
+    const storeTile = `<div><div class="l">평균 별점 (스토어)</div><div class="v" style="color:${st && st.score ? "var(--text)" : "var(--faint)"}">${st && st.score ? "★" + st.score.toFixed(2) : "–"}</div><div class="s">${st && st.ratings ? Number(st.ratings).toLocaleString() + "명 평가" : ""}</div></div>`;
     if (!a.length) {
       const why = k === "ios" && !S.all.some((r) => r.store === "ios")
         ? "애플 공개 리뷰 피드가 현재 리뷰를 내려주지 않아 수집된 리뷰가 없어요.<br>피드가 다시 응답하면 자동으로 채워져요."
@@ -365,7 +365,6 @@ function stores(p) {
       return `<div class="card store" data-s="${k}">${head}<div class="mini">${storeTile}</div><div class="empty-store">${why}</div></div>`;
     }
     const w = a.filter((r) => now - r.d < 7 * DAY), pw = a.filter((r) => now - r.d >= 7 * DAY && now - r.d < 14 * DAY);
-    const neg = Math.round(a.filter((r) => r.rating <= 2).length / a.length * 100);
     const rep = Math.round(a.filter((r) => r.replied).length / a.length * 100);
     const counts = [5,4,3,2,1].map((n) => a.filter((r) => r.rating === n).length);
     const max = Math.max(1, ...counts);
@@ -381,7 +380,6 @@ function stores(p) {
       <div class="mini">
         ${storeTile}
         <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}</div><div class="s" title="답변률 ${rep}%">리뷰 평균 ★${avg(a).toFixed(2)}</div></div>
-        <div><div class="l">1~2점 비율</div><div class="v" style="color:${neg >= 50 ? "var(--bad)" : "var(--text)"}">${neg}%</div><div class="s">불만 리뷰</div></div>
         <div><div class="l">최근 7일</div><div class="v">${w.length}</div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
       </div>${dist}</div>`;
   }).join("");
