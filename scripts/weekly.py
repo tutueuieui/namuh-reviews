@@ -122,6 +122,10 @@ def main(force=False):
 
     hist = json.loads(WEEKLY.read_text(encoding="utf-8")) if WEEKLY.exists() else []
     key = start.strftime("%Y-%m-%d")
+    # 3시간마다 수집하므로 금요일엔 여러 번 불림 → 이번 주 요약이 이미 있으면 건너뜀
+    if not force and any(h["week_start"] == key for h in hist):
+        print("이번 주 요약이 이미 있어서 건너뜀")
+        return
     # 같은 주이거나 기간이 겹치는 이전 요약(수동 실행분 등)은 교체
     hist = [
         h for h in hist

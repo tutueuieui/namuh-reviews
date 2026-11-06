@@ -2,7 +2,7 @@ name: 리뷰 수집
 
 on:
   schedule:
-    - cron: "45 22 * * *" # 매일 한국시간 07:45 실행 → GitHub 지연 감안해 8시 전후 반영 (cron은 UTC 기준)
+    - cron: "45 1-22/3 * * *" # 3시간마다, 한국시간 02·05·08·11·14·17·20·23시 전후 반영 (UTC 기준, 지연 감안해 15분 일찍)
   workflow_dispatch: {} # Actions 탭에서 수동 실행 가능
 
 permissions:
@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python scripts/collect.py
-      - run: python scripts/weekly.py # 금요일(KST)에만 주간 요약 생성
+      - run: python scripts/weekly.py # 금요일(KST) 첫 실행에서만 주간 요약 생성
       - name: 변경사항 커밋
         run: |
           git config user.name "review-bot"

@@ -327,7 +327,7 @@ Promise.all([
     return x;
   });
   const u = new Date((d.meta || {}).updated);
-  $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })} · 매일 오전 8시 업데이트`;
+  $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })} · 3시간마다 업데이트`;
   $("ramp").innerHTML = [.08, .25, .45, .7, 1].map((a) => `<span style="background:rgba(var(--heat),${a})"></span>`).join("");
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });

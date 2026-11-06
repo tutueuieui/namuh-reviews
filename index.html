@@ -250,7 +250,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
     </aside>
   </section>
 
-  <p class="note">Google Play·App Store 공개 데이터 기준 · 스토어 평점은 별점만 남긴 사용자 포함 · 매일 아침 8시 자동 갱신</p>
+  <p class="note">Google Play·App Store 공개 데이터 기준 · 스토어 평점은 별점만 남긴 사용자 포함 · 3시간마다 자동 갱신</p>
 </div>
 
 <script>
@@ -283,16 +283,17 @@ Promise.all([
   render();
 }).catch(() => { $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-// 수집 시각 안내 (한국시간 기준, 매일 08시 / 금요일은 주간 요약 포함)
+// 수집 시각 안내 (한국시간 기준 3시간마다: 02·05·08·11·14·17·20·23시 / 금요일 첫 수집에 주간 요약)
 function updatedText(last) {
   const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
   const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
-  const next = new Date(); next.setUTCHours(23, 0, 0, 0); // 08:00 KST
-  if (next <= new Date()) next.setUTCDate(next.getUTCDate() + 1);
-  const fri = new Date(+next + 9 * 36e5).getUTCDay() === 5;
+  const next = new Date(); next.setUTCMinutes(0, 0, 0);
+  do next.setUTCHours(next.getUTCHours() + 1); while ((next.getUTCHours() + 9 - 2) % 3); // KST 2시부터 3시간 간격
+  const kst = new Date(+next + 9 * 36e5), fri = kst.getUTCDay() === 5 && kst.getUTCHours() < 3;
+  const hh = kst.getUTCHours(), hm = (hh < 12 ? "오전 " : "오후 ") + (hh % 12 || 12) + "시";
   return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`
-    + `<span class="sep">·</span><span>매일 오전 8시 업데이트</span>`
-    + `<span class="sep">·</span><span>다음 업데이트 <b>${day(next)} 오전 8시</b>${fri ? " (주간 요약 포함)" : ""}</span>`;
+    + `<span class="sep">·</span><span>3시간마다 업데이트</span>`
+    + `<span class="sep">·</span><span>다음 업데이트 <b>${day(next)} ${hm}</b>${fri ? " (주간 요약 포함)" : ""}</span>`;
 }
 
 const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };
