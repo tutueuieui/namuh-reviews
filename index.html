@@ -77,10 +77,25 @@ input[type=search]:focus{border-color:var(--text)}
 .rv .t{font-weight:600;margin-top:6px}
 .rv .c{margin-top:4px;white-space:pre-wrap;word-break:break-word}
 mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
-.side{padding:20px 22px;position:sticky;top:90px}
-.side table{width:100%;border-collapse:collapse;font-size:15px}
-.side td{padding:7px 0;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--chip)}
-.side td:nth-child(n+2){text-align:right;color:var(--sub)}
+.side{padding:0;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto}
+.side .acc-head{padding:18px 20px}
+.side .acc-body{padding:0 20px 16px}
+.side .acc-peek{flex:1}
+.scat{padding:8px 10px;margin:0 -10px;border-radius:8px;cursor:pointer}
+.scat:hover{background:var(--chip)}
+.scat.on{background:#fff7e0}
+.scat:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
+.scat .top{display:flex;align-items:center;gap:7px;font-size:15px}
+.scat .top i{width:9px;height:9px;border-radius:3px;flex:none}
+.scat .top .n{margin-left:auto;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.scat .bar{height:6px;margin-top:6px}
+.store-ver{margin-top:16px;padding-top:14px;border-top:1px solid var(--chip)}
+.store-ver .sub-h{font-size:13px;color:var(--sub);font-weight:600;margin-bottom:4px}
+.store-ver .sub-h span{font-weight:400;color:var(--faint)}
+.store-ver table{width:100%;border-collapse:collapse;font-size:15px}
+.store-ver td{padding:5px 0;font-variant-numeric:tabular-nums}
+.store-ver td:nth-child(2){color:var(--sub);text-align:right}
+.store-ver td:nth-child(3){text-align:right;font-weight:600;width:84px}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
 .empty{padding:40px;text-align:center;color:var(--sub)}
 .note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center}
@@ -137,18 +152,6 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 @media (max-width:600px){.wk-kpi{grid-template-columns:repeat(2,1fr)}.wk-cat{grid-template-columns:100px 1fr 72px}}
 
 /* 카테고리 */
-.cat-grid{display:grid;grid-template-columns:150px 1fr 1fr;gap:4px 20px;align-items:center;font-size:15px}
-.cat-grid .h{font-size:13px;color:var(--sub);padding-bottom:4px;display:flex;align-items:center;gap:6px}
-.cat-grid .h i{width:7px;height:7px;border-radius:50%}
-.cat-row{display:contents;cursor:pointer}
-.cat-row > *{padding:7px 0;border-radius:6px}
-.cat-row:hover > *{background:var(--chip)}
-.cat-row.on > *{background:#fff7e0}
-.cat-name{display:flex;align-items:center;gap:7px;font-weight:500;padding-left:6px!important}
-.cat-name i{width:9px;height:9px;border-radius:3px;flex:none}
-.cat-cell{display:grid;grid-template-columns:1fr 124px;gap:8px;align-items:center;padding-right:6px!important}
-.cat-cell .bar{height:8px}
-.cat-cell .n{font-size:14px;color:var(--sub);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .chips{display:flex;gap:6px;flex-wrap:wrap;width:100%;padding-top:8px;border-top:1px solid var(--chip)}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--sub);font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .chip i{width:7px;height:7px;border-radius:50%}
@@ -176,20 +179,6 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
   <section class="card weekly" id="weekly" hidden></section>
 
   <section class="stores" id="stores"></section>
-
-  <section class="card acc-card">
-    <details class="acc" data-k="cats" open>
-      <summary class="acc-head">
-        <h2>카테고리별 리뷰</h2>
-        <span class="acc-peek" id="cats-peek"></span>
-        <span class="chev" aria-hidden="true"></span>
-      </summary>
-      <div class="acc-body">
-        <div class="hint">줄을 누르면 아래 목록이 필터돼요 · 리뷰 하나가 여러 카테고리에 속할 수 있어요</div>
-        <div class="cat-grid" id="cats"></div>
-      </div>
-    </details>
-  </section>
 
   <section class="card panel">
     <div class="panel-head">
@@ -219,8 +208,17 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
       <button class="more" id="more" hidden>더 보기</button>
     </div>
     <aside class="card side">
-      <h2 id="ver-title">버전별 평균</h2>
-      <table id="ver"></table>
+      <details class="acc" data-k="cats" open>
+        <summary class="acc-head">
+          <h2 id="cats-title">카테고리별 리뷰</h2>
+          <span class="acc-peek"></span>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
+        <div class="acc-body">
+          <div class="hint">누르면 목록이 필터돼요</div>
+          <div id="cats"></div>
+        </div>
+      </details>
     </aside>
   </section>
 
@@ -261,12 +259,12 @@ const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.p
 
 function render() {
   const p = inPeriod();
-  stores(p); cats(p); trend(p);
+  stores(p); trend(p);
   const q = S.q.trim().toLowerCase();
   const mine = p.filter((r) => r.store === S.store);
   const noCat = mine.filter((r) => (!S.rating || r.rating === S.rating) && (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
   const f = S.cat ? noCat.filter((r) => r.cats.includes(S.cat)) : noCat;
-  versions(mine); chips(noCat); list(f);
+  cats(mine); chips(noCat); list(f);
 }
 
 const allCats = () => [...S.cats, ETC];
@@ -339,28 +337,19 @@ function weekly(weeks, idx) {
 function isOpen(k) { try { return localStorage.getItem("acc:" + k) !== "0"; } catch { return true; } }
 function saveOpen(k, open) { try { localStorage.setItem("acc:" + k, open ? "1" : "0"); } catch {} }
 
-function cats(p) {
-  const by = {}; Object.keys(STORES).forEach((k) => by[k] = p.filter((r) => r.store === k));
-  const rows = allCats().map((c) => {
-    const s = {}; Object.keys(STORES).forEach((k) => s[k] = by[k].filter((r) => r.cats.includes(c.name)));
-    return { c, s, total: Object.values(s).reduce((n, a) => n + a.length, 0) };
-  }).filter((r) => r.total).sort((a, b) => (a.c === ETC) - (b.c === ETC) || b.total - a.total);
-  const max = Math.max(1, ...rows.flatMap((r) => Object.values(r.s).map((a) => a.length)));
-  const head = `<div></div>` + Object.entries(STORES).map(([k, n]) => `<div class="h"><i style="background:var(--${k})"></i>${n} <span style="color:var(--faint)">(${by[k].length}건 중)</span></div>`).join("");
-  const peek = rows.filter((r) => r.c !== ETC).slice(0, 4).map((r) => `${r.c.name} ${r.total}`).join(" · ");
-  $("cats-peek").textContent = peek ? "많은 순 · " + peek : "";
-  $("cats").innerHTML = head + rows.map(({ c, s }) => `
-    <div class="cat-row ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}">
-      <div class="cat-name"><i style="background:${c.color}"></i>${esc(c.name)}</div>
-      ${Object.keys(STORES).map((k) => {
-        const a = s[k], pct = by[k].length ? Math.round(a.length / by[k].length * 100) : 0;
-        return `<div class="cat-cell"><div class="bar"><span style="width:${a.length / max * 100}%;background:var(--${k})"></span></div>
-          <span class="n">${a.length ? `${a.length}건 · ${pct}% · <b style="color:${tone(avg(a))}">★${avg(a).toFixed(1)}</b>` : "–"}</span></div>`;
-      }).join("")}
-    </div>`).join("");
-  $("cats").querySelectorAll(".cat-row").forEach((el) => el.onclick = () => {
-    S.cat = S.cat === el.dataset.c ? "" : el.dataset.c; S.shown = 30; render();
-    if (S.cat) document.querySelector(".filters").scrollIntoView({ behavior: "smooth", block: "start" });
+function cats(a) {
+  $("cats-title").textContent = `${STORES[S.store]} 카테고리별 리뷰`;
+  const rows = allCats().map((c) => { const rs = a.filter((r) => r.cats.includes(c.name)); return { c, rs }; })
+    .filter((r) => r.rs.length).sort((x, y) => (x.c === ETC) - (y.c === ETC) || y.rs.length - x.rs.length);
+  const max = Math.max(1, ...rows.map((r) => r.rs.length));
+  $("cats").innerHTML = rows.length ? rows.map(({ c, rs }) => `
+    <div class="scat ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}" role="button" tabindex="0">
+      <div class="top"><i style="background:${c.color}"></i>${esc(c.name)}<span class="n">${rs.length}건 · ${Math.round(rs.length / a.length * 100)}% · <b style="color:var(--text)">★${avg(rs).toFixed(1)}</b></span></div>
+      <div class="bar"><span style="width:${rs.length / max * 100}%;background:var(--${S.store})"></span></div>
+    </div>`).join("") : `<div class="hint">데이터 없음</div>`;
+  $("cats").querySelectorAll(".scat").forEach((el) => {
+    const go = () => { S.cat = S.cat === el.dataset.c ? "" : el.dataset.c; S.shown = 30; render(); };
+    el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
   });
 }
 
@@ -402,13 +391,22 @@ function stores(p) {
         ${storeTile}
         <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}<span class="unit">개</span></div><div class="s" title="답변률 ${rep}%">리뷰 평균 ★${avg(a).toFixed(2)}</div></div>
         <div><div class="l">최근 7일</div><div class="v">${w.length}<span class="unit">개</span></div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
-      </div>${dist}</div>`;
+      </div>${dist}${verTable(a)}</div>`;
   }).join("");
   $("stores").querySelectorAll(".dist-row").forEach((el) => el.onclick = () => {
     const s = el.dataset.s, n = +el.dataset.r;
     S.rating = S.store === s && S.rating === n ? 0 : n;
     setStore(s); S.shown = 30; render();
   });
+}
+
+function verTable(a) {
+  const m = {};
+  a.forEach((r) => { if (r.version) (m[r.version] ||= []).push(r); });
+  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 5);
+  if (!rows.length) return "";
+  return `<div class="store-ver"><div class="sub-h">버전별 평균 별점 <span>· 최근 5개 버전</span></div><table>${rows.map(([v, rs]) =>
+    `<tr><td>v${esc(v)}</td><td>${rs.length}건</td><td>★${avg(rs).toFixed(2)}</td></tr>`).join("")}</table></div>`;
 }
 
 function trend(all) {
@@ -446,15 +444,6 @@ function trend(all) {
   svg.innerHTML = g;
 }
 
-function versions(a) {
-  $("ver-title").textContent = `${STORES[S.store]} 버전별 평균`;
-  const m = {};
-  a.forEach((r) => { if (r.version) (m[r.version] ||= []).push(r); });
-  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 10);
-  $("ver").innerHTML = rows.length ? rows.map(([v, rs]) =>
-    `<tr><td>v${esc(v)}</td><td>${rs.length}건</td><td style="color:${tone(avg(rs))};font-weight:600">★${avg(rs).toFixed(2)}</td></tr>`).join("")
-    : `<tr><td style="color:var(--faint)">데이터 없음</td></tr>`;
-}
 
 function list(a) {
   const conds = [S.rating && `${S.rating}점`, S.cat].filter(Boolean);
