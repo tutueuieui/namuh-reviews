@@ -103,8 +103,9 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .dt-s b{color:var(--text)}
 .x{border:0;background:var(--chip);width:32px;height:32px;border-radius:8px;font-size:18px;color:var(--sub);cursor:pointer;flex:none}
 .x:hover{color:var(--text)}
-.dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.dt-hrow{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.dt-grid:empty{display:none}
+.dt-hrow{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap}
 .seg.sm{padding:2px;border-radius:8px}
 .seg.sm button{font-size:13px;padding:3px 10px;border-radius:6px}
 .linkbtn{border:0;background:none;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
@@ -439,6 +440,7 @@ $("heat").addEventListener("mousemove", (e) => {
   tip.style.top = (e.clientY + 16 + hh > innerHeight ? e.clientY - hh - 10 : e.clientY + 16) + "px";
 });
 $("heat").addEventListener("mouseleave", () => tip.hidden = true);
+addEventListener("scroll", () => tip.hidden = true, { passive: true });
 
 const issueScreens = (a) => { const sc = {}; a.forEach((r) => r.screens.forEach((x) => { if (x !== NONE) sc[x] = (sc[x] || 0) + 1; })); return Object.entries(sc).sort((p, q) => q[1] - p[1]).map(([x, n]) => `${x} ${n}`).join(" · "); };
 
@@ -450,9 +452,8 @@ function detail(a) {
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
   const dAll = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r }))), rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
-  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
+  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 6);
   const more = (S.reqMode === "design" ? dAll : rAll).length - reqs.length;
-  const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
   el.innerHTML = `
@@ -460,12 +461,12 @@ function detail(a) {
       <div class="dt-t">${S.issue ? "#" + esc(S.issue) : esc(comboName(S.type, S.screen))}</div>
       <div class="dt-s">리뷰 <b>${a.length}건</b> · 평균 <b>★${avg(a).toFixed(1)}</b>${likes ? ` · 공감 ${likes}` : ""}${S.screen === OTHER ? ` · ${esc(S.others.join(", "))}` : ""}${S.issue ? ` · ${esc(issueScreens(a))}` : ""}</div>
     </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
-    <div class="dt-grid">
-      <div><div class="dt-h dt-hrow">대표 요청
+    <div>
+      <div class="dt-h dt-hrow">대표 요청
         <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}</span></button></div></div>
-        ${reqs.length ? reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("") : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
-        ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기 ↓</button>` : ""}</div>
-      <div><div class="dt-h">대표 리뷰 · 영향도순</div>${top.map((r) => `<div class="dt-q">${meta(r)}<div class="dt-q c" style="padding:0;background:none;margin:0">${esc(r.content)}</div></div>`).join("") || `<div class="dt-none">리뷰가 없어요</div>`}</div>
+        <div class="dt-grid">${reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("")}</div>
+        ${reqs.length ? "" : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
+        ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기 ↓</button>` : ""}
     </div>
     <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
   $("dt-x").onclick = () => select("", "");
