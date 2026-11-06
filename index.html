@@ -335,7 +335,6 @@ function weekly(weeks, idx) {
           <span class="gen">${gen.toLocaleDateString("ko-KR")} ${gen.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })} 생성 · 매주 금요일 아침 8시 업데이트</span>
           ${weeks.length > 1 ? `<select id="wk-sel" aria-label="지난 주간 요약">${weeks.map((h, i) => `<option value="${i}" ${i === idx ? "selected" : ""}>${md(h.week_start)} ~ ${md(h.week_end)}</option>`).join("")}</select>` : ""}
         </div>
-        <ul class="wk-lines">${w.headline.map((l) => `<li>${esc(l)}</li>`).join("")}</ul>
         <div class="wk-grid">${stores}</div>
       </div>
     </details>`;
