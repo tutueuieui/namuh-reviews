@@ -18,10 +18,12 @@
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
 a{color:inherit}
-.back{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--sub);text-decoration:none;margin-bottom:6px}
-.back:hover{color:var(--text)}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-weight:800}
+.tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin:-12px 0 28px}
+.tabs a{padding:12px 0;font-size:17px;font-weight:600;color:var(--faint);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a:hover{color:var(--sub)}
+.tabs a.on{color:var(--text);border-color:var(--text)}
 .updated{color:var(--sub);font-size:14px}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
@@ -131,9 +133,12 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 </head>
 <body>
 <div class="wrap">
+  <nav class="tabs" aria-label="보드 전환">
+    <a href="./">전체 리뷰</a>
+    <a class="on" aria-current="page" href="design.html">디자인·사용성 VOC</a>
+  </nav>
   <header>
     <div>
-      <a class="back" href="./">← 전체 리뷰 보드</a>
       <h1>디자인·사용성 VOC</h1>
       <div class="updated" id="updated">불러오는 중…</div>
     </div>
