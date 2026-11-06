@@ -131,11 +131,9 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .wk-acc{border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .wk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 @media (max-width:860px){.wk-grid{grid-template-columns:1fr}}
-.wk-acc-head{display:flex;align-items:center;gap:14px;padding:12px 14px 12px 20px}
+.wk-acc-head{display:flex;align-items:center;gap:14px;padding:16px 20px 8px}
 .wk-acc-head .sname{display:flex;align-items:center;gap:6px;font-weight:700;flex:none}
 .wk-acc-head .sname i{width:8px;height:8px;border-radius:50%}
-.wk-peek{flex:1;font-size:15px;color:var(--sub);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wk-acc[open] .wk-peek{visibility:hidden}
 .wk-store{display:flex;flex-direction:column;padding:4px 20px 20px}
 .wk-store > div + div{margin-top:18px;padding-top:18px;border-top:1px solid var(--chip)}
 .wk-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -300,13 +298,10 @@ function weekly(weeks, idx) {
     const x = w.stores[k];
     if (!x || !x.count) return "";
     const max = Math.max(1, ...x.top_categories.map((c) => c.count));
-    const top = x.top_categories.find((c) => c.name !== "기타");
-    return `<details class="wk-acc" data-k="wk-${k}" ${isOpen("wk-" + k) ? "open" : ""}>
-      <summary class="wk-acc-head">
+    return `<div class="wk-acc">
+      <div class="wk-acc-head">
         <span class="sname"><i style="background:var(--${k})"></i>${name}</span>
-        <span class="wk-peek">리뷰 ${x.count}건 · <b style="color:${tone(x.avg)}">★${x.avg.toFixed(1)}</b>${top ? ` · 주요 주제 ${esc(top.name)}` : ""}</span>
-        <span class="chev" aria-hidden="true"></span>
-      </summary>
+      </div>
       <div class="wk-store">
       <div>
         <div class="wk-kpi">
@@ -326,7 +321,7 @@ function weekly(weeks, idx) {
         ${x.compliments.length ? `<div class="wk-sub" style="margin-top:12px">좋았던 점</div>${quote(x.compliments[0], true)}` : ""}
       </div>
       </div>
-    </details>`;
+    </div>`;
   }).join("");
   const gen = new Date(w.generated);
   el.innerHTML = `
