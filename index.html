@@ -123,7 +123,6 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .wk-title .period{font-size:15px;color:var(--sub)}
 .wk-body{padding:0 24px 22px}
 .wk-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.wk-tools .gen{font-size:13px;color:var(--faint)}
 .wk-tools select{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--surface);color:var(--text)}
 .wk-lines{margin:0 0 14px;padding:0;list-style:none;font-size:16px;line-height:1.7}
 .wk-lines li{padding-left:14px;position:relative}
@@ -323,7 +322,6 @@ function weekly(weeks, idx) {
       </div>
     </div>`;
   }).join("");
-  const gen = new Date(w.generated);
   el.innerHTML = `
     <details class="wk" data-k="wk-all" ${isOpen("wk-all") ? "open" : ""}>
       <summary class="wk-head">
@@ -331,10 +329,7 @@ function weekly(weeks, idx) {
         <span class="chev" aria-hidden="true"></span>
       </summary>
       <div class="wk-body">
-        <div class="wk-tools">
-          <span class="gen">${gen.toLocaleDateString("ko-KR")} ${gen.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })} 생성 · 매주 금요일 아침 8시 업데이트</span>
-          ${weeks.length > 1 ? `<select id="wk-sel" aria-label="지난 주간 요약">${weeks.map((h, i) => `<option value="${i}" ${i === idx ? "selected" : ""}>${md(h.week_start)} ~ ${md(h.week_end)}</option>`).join("")}</select>` : ""}
-        </div>
+        ${weeks.length > 1 ? `<div class="wk-tools"><select id="wk-sel" aria-label="지난 주간 요약">${weeks.map((h, i) => `<option value="${i}" ${i === idx ? "selected" : ""}>${md(h.week_start)} ~ ${md(h.week_end)}</option>`).join("")}</select></div>` : ""}
         <div class="wk-grid">${stores}</div>
       </div>
     </details>`;
