@@ -46,24 +46,72 @@ h2{font-size:17px;margin:0;font-weight:700}
 .kpi .s{font-size:13px;color:var(--faint)}
 
 /* 히트맵 */
+.hot-h{font-size:14px;font-weight:600;color:var(--sub);margin:-2px 0 8px}
+.hot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.hcard{background:#f8f9fb;border-radius:12px;padding:14px 16px;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+.hcard:hover{border-color:var(--line)}
+.hcard.on{border-color:var(--text)}
+.hcard .rk{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--text);color:#fff;font-size:13px;font-weight:700;align-items:center;justify-content:center;margin-right:8px;vertical-align:1px}
+.hcard .tt{font-size:16px;font-weight:700;line-height:1.4}
+.hcard .tt span{color:var(--faint);font-weight:500;margin:0 2px}
+.hcard .mt{font-size:14px;color:var(--sub);margin:4px 0 8px;font-variant-numeric:tabular-nums}
+.hcard .mt b{color:var(--bad);font-weight:600}
+.hcard .qt{font-size:14px;line-height:1.55;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .heat-wrap{overflow-x:auto;margin:0 -24px;padding:0 24px}
-.heat{border-collapse:separate;border-spacing:3px;font-size:14px;min-width:100%}
+.heat{border-collapse:separate;border-spacing:4px;font-size:14px;min-width:100%}
 .heat th{font-weight:500;color:var(--sub);white-space:nowrap;cursor:pointer;border-radius:6px}
 .heat th:hover{color:var(--text);background:var(--chip)}
-.heat thead th{font-size:13px;padding:4px 4px 8px;vertical-align:bottom;line-height:1.3}
-.heat tbody th{text-align:left;padding:0 10px 0 4px;position:sticky;left:0;background:var(--surface);z-index:1}
-.heat tbody th i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:6px}
+.heat thead th{font-size:13px;padding:4px 6px 8px;vertical-align:bottom}
+.heat tbody th{text-align:left;padding:0 12px 0 6px;position:sticky;left:0;background:var(--surface);z-index:1}
+.heat tbody th i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:7px}
 .heat th.on{color:var(--text);font-weight:700;background:var(--chip)}
-.heat td{min-width:52px;height:38px;text-align:center;border-radius:6px;font-variant-numeric:tabular-nums;cursor:pointer;font-weight:600;transition:box-shadow .1s}
-.heat td.z{color:var(--line);cursor:default;font-weight:400}
+.heat td{position:relative;min-width:56px;height:42px;text-align:center;border-radius:7px;font-variant-numeric:tabular-nums;cursor:pointer;font-weight:500;font-size:14px;transition:box-shadow .1s,opacity .15s}
+.heat td.big{font-weight:700;font-size:16px}
+.heat td.lo{color:transparent !important}
+.heat td.lo::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:var(--faint)}
+.heat td.z{cursor:default}
 .heat td:not(.z):hover{box-shadow:inset 0 0 0 2px var(--text)}
 .heat td.on{box-shadow:inset 0 0 0 2px var(--text)}
-.heat td.dim{opacity:.35}
-.heat .tot{color:var(--sub);font-weight:500;background:none;cursor:default}
-.heat tr.pos th{color:var(--android)}
-.heat-legend{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--faint);margin-top:12px;flex-wrap:wrap}
+.heat td.dim{opacity:.3}
+.heat td .hd{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 1.5px #fff}
+.heat .tot{color:var(--sub);font-weight:500;background:none;cursor:default;font-size:13px}
+.heat-legend{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--faint);margin-top:12px;flex-wrap:wrap}
+.heat-legend .sep{margin:0 2px}
 .heat-legend .ramp{display:inline-flex;gap:2px}
 .heat-legend .ramp span{width:18px;height:10px;border-radius:2px}
+.hd-l{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--bad);margin-right:5px;vertical-align:1px}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--text);color:#fff;font-size:13px;line-height:1.5;padding:8px 11px;border-radius:8px;max-width:260px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.tip b{font-weight:700}
+.tip .s{color:#c9ced6}
+.mlist{display:none}
+.mrow{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--chip);cursor:pointer;font-size:15px}
+.mrow .n{color:var(--faint);font-size:13px;font-weight:600}
+.mrow .lb{min-width:0}
+.mrow .lb span{color:var(--faint)}
+.mrow .bar{height:5px;margin-top:5px}
+.mrow .v{text-align:right;font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mrow.on{background:#fff7e0;margin:0 -10px;padding:10px}
+.detail{margin-top:18px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--surface)}
+.dt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.dt-t{font-size:18px;font-weight:700}
+.dt-s{font-size:14px;color:var(--sub);margin-top:2px}
+.dt-s b{color:var(--text)}
+.x{border:0;background:var(--chip);width:32px;height:32px;border-radius:8px;font-size:18px;color:var(--sub);cursor:pointer;flex:none}
+.x:hover{color:var(--text)}
+.dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dt-h{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:8px}
+.dt-q{font-size:15px;line-height:1.55;padding:10px 12px;border-radius:8px;background:#f8f9fb;margin-bottom:6px;word-break:break-word}
+.dt-q .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dt-q.c{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.dt-none{font-size:14px;color:var(--faint)}
+.dt-foot{margin-top:12px}
+@media (max-width:860px){
+  .hot{grid-template-columns:1fr}
+  .heat-wrap{display:none}
+  .mlist{display:block}
+  .dt-grid{grid-template-columns:1fr}
+  .heat-legend .ramp,.heat-legend > span:nth-child(-n+4){display:none}
+}
 
 /* 2단 */
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
@@ -159,10 +207,14 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
   <section class="card panel">
     <div class="panel-head">
       <h2>화면 × 문제 유형</h2>
-      <span class="hint">칸을 누르면 아래 요청·리뷰가 그 조건으로 걸러져요</span>
+      <span class="hint">칸이나 카드를 누르면 바로 아래에 상세가 열려요</span>
     </div>
+    <div class="hot-h">가장 많이 언급된 문제 TOP 3</div>
+    <div class="hot" id="hot"></div>
     <div class="heat-wrap"><table class="heat" id="heat"></table></div>
-    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span>· 숫자는 리뷰 수 (한 리뷰가 여러 칸에 들어갈 수 있어요)</span></div>
+    <div class="mlist" id="mlist"></div>
+    <div class="detail" id="detail" hidden></div>
+    <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
   </section>
 
   <section class="grid2">
@@ -252,11 +304,13 @@ Promise.all([
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
 const scope = () => { const now = Date.now(); return S.all.filter((r) => (!S.store || r.store === S.store) && (!S.period || now - r.d < S.period * DAY)); };
-const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.types.includes(S.type)) && (ignore === "screen" || !S.screen || r.screens.includes(S.screen)));
+const OTHER = "기타 화면";
+const onScreen = (r, sc) => sc === OTHER ? r.screens.some((x) => (S.others || []).includes(x)) : r.screens.includes(sc);
+const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.types.includes(S.type)) && (ignore === "screen" || !S.screen || onScreen(r, S.screen)));
 
 function render() {
   const all = scope(), voc = all.filter((r) => r.types.length);
-  kpi(all, voc); heat(voc); types(pick(voc, "type")); ver(); reqs(pick(voc)); list(pick(voc));
+  kpi(all, voc); heat(voc); detail(pick(voc)); types(pick(voc, "type")); ver(); reqs(pick(voc)); list(pick(voc));
 }
 
 function kpi(all, voc) {
@@ -271,40 +325,115 @@ function kpi(all, voc) {
     + tile("개선 요청 문장", rq, "개", `긍정 반응만 있는 리뷰 ${pos}건`);
 }
 
+function select(t, sc) { S.type = t; S.screen = sc; S.shown = 20; S.reqShown = 10; render(); }
+const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
+
 function heat(voc) {
-  const T = S.D.types.map((t) => t.name);
-  const sc = {}; voc.forEach((r) => r.screens.forEach((s) => sc[s] = (sc[s] || 0) + 1));
-  const cols = Object.keys(sc).filter((s) => s !== NONE).sort((a, b) => sc[b] - sc[a]);
-  if (sc[NONE]) cols.push(NONE);
-  const cell = {}; let max = 1;
-  voc.forEach((r) => r.types.forEach((t) => r.screens.forEach((s) => { const k = t + "|" + s; cell[k] = (cell[k] || 0) + 1; })));
-  T.forEach((t) => { if (!typeOf(t).positive) cols.forEach((s) => { if (s !== NONE) max = Math.max(max, cell[t + "|" + s] || 0); }); });
+  const prob = voc.filter((r) => r.types.some((t) => !typeOf(t).positive));
+  const sc = {}; prob.forEach((r) => r.screens.forEach((x) => { if (x !== NONE) sc[x] = (sc[x] || 0) + 1; }));
+  const ranked = Object.keys(sc).sort((a, b) => sc[b] - sc[a]);
+  const top = ranked.slice(0, 8); S.others = ranked.slice(8);
+  const cols = S.others.length ? [...top, OTHER] : top;
+  const T = S.D.types.filter((t) => !t.positive).map((t) => t.name);
+  const cells = {};
+  prob.forEach((r) => {
+    const cs = new Set(r.screens.filter((x) => x !== NONE).map((x) => top.includes(x) ? x : OTHER));
+    r.types.forEach((t) => { if (T.includes(t)) cs.forEach((x) => (cells[t + "|" + x] ||= []).push(r)); });
+  });
+  const rowTot = {}; T.forEach((t) => rowTot[t] = prob.filter((r) => r.types.includes(t)).length);
+  const rows = T.filter((t) => rowTot[t]).sort((a, b) => rowTot[b] - rowTot[a]);
+  let max = 1; Object.values(cells).forEach((a) => max = Math.max(max, a.length));
+
+  // 조합 순위 (기타 화면 제외)
+  const combos = Object.entries(cells).map(([k, a]) => { const [t, x] = k.split("|"); return { t, x, a, avg: avg(a) }; })
+    .filter((c) => c.x !== OTHER).sort((p, q) => q.a.length - p.a.length || p.avg - q.avg);
+  const isSel = (c) => S.type === c.t && S.screen === c.x;
+
+  // TOP 3 카드
+  $("hot").innerHTML = combos.slice(0, 3).map((c, i) => {
+    const rep = [...c.a].sort((p, q) => q.score - p.score)[0];
+    const quote = rep ? (rep.reqs[0] || rep.content).replace(/\s+/g, " ") : "";
+    return `<div class="hcard ${isSel(c) ? "on" : ""}" data-t="${esc(c.t)}" data-s="${esc(c.x)}" role="button" tabindex="0">
+      <div class="tt"><span class="rk">${i + 1}</span>${esc(c.x)}<span>×</span>${esc(c.t)}</div>
+      <div class="mt">${c.a.length}건 · ${c.avg <= 1.5 ? `<b>★${c.avg.toFixed(1)}</b>` : "★" + c.avg.toFixed(1)}</div>
+      <div class="qt">“${esc(quote)}”</div></div>`;
+  }).join("") || `<div class="dt-none">해당 기간에 문제 리뷰가 없어요</div>`;
+
+  // 히트맵
   const sel = S.type || S.screen;
-  let h = `<thead><tr><th style="cursor:default;background:none"></th>${cols.map((s) =>
-    `<th data-s="${esc(s)}" class="${S.screen === s ? "on" : ""}">${esc(s).replace("·", "·<br>")}</th>`).join("")}<th class="tot" style="cursor:default">합계</th></tr></thead><tbody>`;
-  T.forEach((t) => {
-    const ty = typeOf(t), rgb = ty.positive ? "var(--good)" : "var(--heat)";
-    const tot = voc.filter((r) => r.types.includes(t)).length;
-    if (!tot) return;
-    h += `<tr class="${ty.positive ? "pos" : ""}"><th data-t="${esc(t)}" class="${S.type === t ? "on" : ""}"><i style="background:${ty.color}"></i>${esc(t)}</th>`;
-    cols.forEach((s) => {
-      const n = cell[t + "|" + s] || 0;
-      if (!n) { h += `<td class="z">·</td>`; return; }
-      const a = Math.min(1, .08 + n / max * .92);
-      const on = S.type === t && S.screen === s;
-      const dim = sel && !on && !((S.type === t && !S.screen) || (S.screen === s && !S.type));
-      h += `<td data-t="${esc(t)}" data-s="${esc(s)}" class="${on ? "on" : ""} ${dim ? "dim" : ""}" style="background:rgba(${rgb},${a});color:${a > .5 ? "#fff" : "var(--text)"}" title="${esc(t)} · ${esc(s)} ${n}건">${n}</td>`;
+  let h = `<thead><tr><th style="cursor:default;background:none"></th>${cols.map((x) =>
+    `<th data-s="${esc(x)}" class="${S.screen === x ? "on" : ""}" title="${x === OTHER ? esc(S.others.join(", ")) : ""}">${esc(x)}</th>`).join("")}<th class="tot">합계</th></tr></thead><tbody>`;
+  rows.forEach((t) => {
+    const ty = typeOf(t);
+    h += `<tr><th data-t="${esc(t)}" class="${S.type === t ? "on" : ""}"><i style="background:${ty.color}"></i>${esc(t)}</th>`;
+    cols.forEach((x) => {
+      const a = cells[t + "|" + x] || [], n = a.length;
+      if (!n) { h += `<td class="z"></td>`; return; }
+      const al = .07 + Math.pow(n / max, .8) * .93, v = avg(a);
+      const on = S.type === t && S.screen === x;
+      const dim = sel && !on && !((S.type === t && !S.screen) || (S.screen === x && !S.type));
+      const cls = [n <= 2 ? "lo" : "", n / max >= .5 ? "big" : "", on ? "on" : "", dim ? "dim" : ""].join(" ");
+      h += `<td data-t="${esc(t)}" data-s="${esc(x)}" data-n="${n}" data-a="${v.toFixed(1)}" class="${cls}" style="background:rgba(var(--heat),${al.toFixed(2)});color:${al > .55 ? "#fff" : "var(--text)"}">${n}${v <= 1.5 && n >= 3 ? '<i class="hd"></i>' : ""}</td>`;
     });
-    h += `<td class="tot">${tot}</td></tr>`;
+    h += `<td class="tot">${rowTot[t]}</td></tr>`;
   });
   $("heat").innerHTML = h + "</tbody>";
-  $("heat").querySelectorAll("[data-t],[data-s]").forEach((el) => el.onclick = () => {
-    const t = el.dataset.t || "", s = el.dataset.s || "";
-    if (el.tagName === "TD") { const same = S.type === t && S.screen === s; S.type = same ? "" : t; S.screen = same ? "" : s; }
-    else if (t) { S.type = S.type === t && !S.screen ? "" : t; S.screen = ""; }
-    else { S.screen = S.screen === s && !S.type ? "" : s; S.type = ""; }
-    S.shown = 20; S.reqShown = 10; render();
+
+  // 모바일: 4위 이하 조합 리스트
+  const rest = combos.slice(3, 12), mmax = Math.max(1, ...rest.map((c) => c.a.length));
+  $("mlist").innerHTML = rest.length ? `<div class="hot-h" style="margin-top:4px">그 외 많이 언급된 조합</div>` + rest.map((c, i) => `
+    <div class="mrow ${isSel(c) ? "on" : ""}" data-t="${esc(c.t)}" data-s="${esc(c.x)}">
+      <span class="n">${i + 4}</span>
+      <div class="lb">${esc(c.x)} <span>×</span> ${esc(c.t)}<div class="bar"><span style="width:${c.a.length / mmax * 100}%;background:rgb(var(--heat))"></span></div></div>
+      <span class="v">${c.a.length}건 · ★${c.avg.toFixed(1)}</span></div>`).join("") : "";
+
+  // 클릭: 칸/카드/리스트 = 조합, 행·열 머리 = 단일 조건
+  document.querySelectorAll("#hot [data-t], #heat td[data-t], #mlist [data-t]").forEach((el) => {
+    const go = () => { const t = el.dataset.t, x = el.dataset.s; S.type === t && S.screen === x ? select("", "") : select(t, x); };
+    el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
   });
+  $("heat").querySelectorAll("th[data-t]").forEach((el) => el.onclick = () => select(S.type === el.dataset.t && !S.screen ? "" : el.dataset.t, ""));
+  $("heat").querySelectorAll("th[data-s]").forEach((el) => el.onclick = () => select("", S.screen === el.dataset.s && !S.type ? "" : el.dataset.s));
+}
+
+// 툴팁
+const tip = Object.assign(document.createElement("div"), { className: "tip", hidden: true });
+document.body.appendChild(tip);
+$("heat").addEventListener("mousemove", (e) => {
+  const td = e.target.closest("td[data-n]");
+  if (!td) { tip.hidden = true; return; }
+  const x = td.dataset.s;
+  tip.innerHTML = `<b>${esc(x)} × ${esc(td.dataset.t)}</b><br>${td.dataset.n}건 · 평균 ★${td.dataset.a}`
+    + (x === OTHER ? `<br><span class="s">${esc(S.others.join(", "))}</span>` : "")
+    + `<br><span class="s">한 리뷰가 여러 칸에 들어갈 수 있어요 · 눌러서 보기</span>`;
+  tip.hidden = false;
+  const w = tip.offsetWidth, hh = tip.offsetHeight;
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - w - 8) + "px";
+  tip.style.top = (e.clientY + 16 + hh > innerHeight ? e.clientY - hh - 10 : e.clientY + 16) + "px";
+});
+$("heat").addEventListener("mouseleave", () => tip.hidden = true);
+
+// 선택한 조건의 상세 패널
+function detail(a) {
+  const el = $("detail");
+  if (!S.type && !S.screen) { el.hidden = true; return; }
+  el.hidden = false;
+  const reqs = a.flatMap((r) => r.reqs.map((q) => ({ q, r }))).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, 3);
+  const top = [...a].sort((x, y) => y.score - x.score).slice(0, 2);
+  const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
+  const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
+  el.innerHTML = `
+    <div class="dt-head"><div>
+      <div class="dt-t">${esc(comboName(S.type, S.screen))}</div>
+      <div class="dt-s">리뷰 <b>${a.length}건</b> · 평균 <b>★${avg(a).toFixed(1)}</b>${likes ? ` · 공감 ${likes}` : ""}${S.screen === OTHER ? ` · ${esc(S.others.join(", "))}` : ""}</div>
+    </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
+    <div class="dt-grid">
+      <div><div class="dt-h">대표 요청</div>${reqs.length ? reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("") : `<div class="dt-none">요청 문장이 없어요</div>`}</div>
+      <div><div class="dt-h">대표 리뷰 · 영향도순</div>${top.map((r) => `<div class="dt-q">${meta(r)}<div class="dt-q c" style="padding:0;background:none;margin:0">${esc(r.content)}</div></div>`).join("") || `<div class="dt-none">리뷰가 없어요</div>`}</div>
+    </div>
+    <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
+  $("dt-x").onclick = () => select("", "");
+  $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function types(voc) {
