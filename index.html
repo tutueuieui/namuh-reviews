@@ -36,6 +36,7 @@ h2{font-size:16px;margin:0 0 12px;font-weight:600}
 .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .mini .l{font-size:13px;color:var(--sub)}
 .mini .v{font-size:25px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mini .unit{font-size:0.62em;font-weight:600;margin-left:2px;color:var(--sub)}
 .mini .s{font-size:13px;color:var(--faint)}
 .dist-row{display:grid;grid-template-columns:32px 1fr 88px;align-items:center;gap:8px;margin:5px 0;font-size:14px;cursor:pointer;border-radius:6px;padding:1px 4px;margin-left:-4px;margin-right:-4px}
 .dist-row:hover{background:var(--chip)}
@@ -380,7 +381,7 @@ function stores(p) {
       <div class="mini">
         ${storeTile}
         <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}</div><div class="s" title="답변률 ${rep}%">리뷰 평균 ★${avg(a).toFixed(2)}</div></div>
-        <div><div class="l">최근 7일</div><div class="v">${w.length}</div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
+        <div><div class="l">최근 7일</div><div class="v">${w.length}<span class="unit">개</span></div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
       </div>${dist}</div>`;
   }).join("");
   $("stores").querySelectorAll(".dist-row").forEach((el) => el.onclick = () => {
