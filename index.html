@@ -90,7 +90,8 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .side{padding:0;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto}
 .side .acc-head{padding:18px 20px}
 .side .acc-body{padding:0 20px 16px}
-.side .acc-peek{flex:1}
+.acc-ttl{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.acc-ttl .hint{font-size:14px;color:var(--faint)}
 .scat{padding:8px 10px;margin:0 -10px;border-radius:8px;cursor:pointer}
 .scat:hover{background:var(--chip)}
 .scat.on{background:#fff7e0}
@@ -229,12 +230,10 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
     <aside class="card side">
       <details class="acc" data-k="cats" open>
         <summary class="acc-head">
-          <h2 id="cats-title">카테고리별 리뷰</h2>
-          <span class="acc-peek"></span>
+          <div class="acc-ttl"><h2 id="cats-title">카테고리별 리뷰</h2><span class="hint">누르면 목록이 필터돼요</span></div>
           <span class="chev" aria-hidden="true"></span>
         </summary>
         <div class="acc-body">
-          <div class="hint">누르면 목록이 필터돼요</div>
           <div id="cats"></div>
         </div>
       </details>
