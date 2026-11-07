@@ -1,6 +1,6 @@
 {
 "meta": {
-"updated": "2026-11-06T21:46:21.257341+00:00",
+"updated": "2026-11-07T02:22:27.292692+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
@@ -8,14 +8,14 @@
 },
 "ios": {
 "fetched": 500,
-"new": 0
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4587157,
+"score": 2.457358,
 "ratings": 12496,
 "version": "9.95"
 },
@@ -35,6 +35,17 @@
 "content": "모든 알림설정 다 꺼놨는데도 6시쯤부터 왜 움직일까 급등락 종목 알림이 쉴새없이 뜸. 안궁금하다구요. 내 종목 알림도 껐는데 왜 계속 알림이 오는지 미치겠음",
 "version": "9.95",
 "date": "2026-11-05T09:57:11+00:00",
+"likes": 0,
+"replied": false
+},
+{
+"id": "i_14754083741",
+"store": "ios",
+"rating": 1,
+"title": "리뉴얼 부탁좀",
+"content": "종목 숨기기 기능 만들어주십시오",
+"version": "12.73",
+"date": "2026-11-05T07:25:55-07:00",
 "likes": 0,
 "replied": false
 },
