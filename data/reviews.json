@@ -1,14 +1,14 @@
 {
 "meta": {
-"updated": "2026-11-08T07:58:36.891609+00:00",
+"updated": "2026-11-08T16:47:52.672010+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 0,
-"new": 0
+"fetched": 500,
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -27,6 +27,17 @@
 }
 },
 "reviews": [
+{
+"id": "i_14759298058",
+"store": "ios",
+"rating": 1,
+"title": "인증서를 발급하라고 하는 창이 뜨는데...다음으로 넘어가는 창이 안떠요",
+"content": "인증서를 발급하라고 하는데, 이건 이전에 했던 건데, 갑자기 안 되네요.",
+"version": "12.73",
+"date": "2026-11-06T14:58:51-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_1eba8eca-f4a5-48a6-b677-305fc3448e64",
 "store": "android",
