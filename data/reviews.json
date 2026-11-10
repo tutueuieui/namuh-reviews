@@ -1,13 +1,13 @@
 {
 "meta": {
-"updated": "2026-11-10T04:20:05.888310+00:00",
+"updated": "2026-11-10T09:37:04.385558+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 500,
+"fetched": 100,
 "new": 0
 }
 },
@@ -91,7 +91,7 @@
 "version": "9.95",
 "date": "2026-11-05T09:57:11+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14754083741",
@@ -135,7 +135,7 @@
 "version": "9.95",
 "date": "2026-11-04T07:07:01+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_10495ca1-71c2-4352-b879-bb3cc503d951",
@@ -146,7 +146,7 @@
 "version": "9.95",
 "date": "2026-11-03T23:54:15+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_30bc60af-814b-4786-8fab-9ba7c5bb53ed",
@@ -157,7 +157,7 @@
 "version": "9.95",
 "date": "2026-11-03T23:20:35+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_44907cf8-2377-49f2-8239-f78a175ae7de",
@@ -168,7 +168,7 @@
 "version": "9.95",
 "date": "2026-11-03T01:26:22+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_3da23cdd-0406-44a0-a3ea-b60a68727e01",
@@ -179,7 +179,7 @@
 "version": "9.95",
 "date": "2026-11-03T01:23:13+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14744106726",
@@ -234,7 +234,7 @@
 "version": "9.95",
 "date": "2026-11-02T02:24:07+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_4fe9fb71-5fdc-4486-9edd-08cc450b743f",
@@ -245,7 +245,7 @@
 "version": "9.95",
 "date": "2026-11-01T23:05:29+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14740343547",
@@ -267,7 +267,7 @@
 "version": "9.95",
 "date": "2026-10-31T06:20:09+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_49ef0eca-4dba-45ee-888a-18578a6b03f3",
@@ -278,7 +278,7 @@
 "version": "9.95",
 "date": "2026-10-31T06:00:18+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_8845688a-202a-4188-b290-ce3090f0ff26",
@@ -322,7 +322,7 @@
 "version": "9.95",
 "date": "2026-10-30T00:30:06+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14727721920",
@@ -344,7 +344,7 @@
 "version": "",
 "date": "2026-10-29T06:23:10+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_8fac8f4d-c6b0-437b-969a-81bad3bedc78",
@@ -355,7 +355,7 @@
 "version": "9.95",
 "date": "2026-10-29T04:53:31+00:00",
 "likes": 3,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14723425201",
@@ -377,7 +377,7 @@
 "version": "9.95",
 "date": "2026-10-28T09:43:26+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14720571351",
@@ -410,7 +410,7 @@
 "version": "9.95",
 "date": "2026-10-27T06:58:04+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14717597288",
@@ -443,7 +443,7 @@
 "version": "",
 "date": "2026-10-26T14:38:44+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14713397405",
@@ -498,7 +498,7 @@
 "version": "9.93",
 "date": "2026-10-23T11:35:15+00:00",
 "likes": 0,
-"replied": false
+"replied": true
 },
 {
 "id": "a_48ef0497-4ac3-4d31-bb64-9fd5ed618518",
@@ -509,7 +509,7 @@
 "version": "9.88",
 "date": "2026-10-23T00:33:47+00:00",
 "likes": 1,
-"replied": false
+"replied": true
 },
 {
 "id": "i_14696544035",
