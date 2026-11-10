@@ -120,7 +120,11 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .dt-q .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .dt-q.c{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .dt-none{font-size:14px;color:var(--faint)}
-.dt-foot{margin-top:12px}
+.dt-rv{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.dt-rv .list{margin-top:4px}
+.dt-rv .rv{padding:16px 20px}
+.dt-rv .rv .t,.dt-rv .rv .c{font-size:16px}
+.tools input[type=search]{flex:0 1 220px;min-width:160px;padding:7px 12px;font-size:14px}
 @media (max-width:860px){
   .hot{grid-template-columns:1fr}
   .heat-wrap{display:none}
@@ -149,14 +153,10 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 /* 목록 */
 .sec-head{display:flex;align-items:baseline;gap:12px;margin:36px 2px 12px}
 .sec-head h2{margin:0}
-.lbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;margin-bottom:12px}
 input[type=search]{flex:1;min-width:180px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:9px;padding:9px 14px;font:inherit;font-size:15px;outline:none}
 input[type=search]:focus{border-color:var(--text)}
 .btn{border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .btn:hover{background:var(--chip)}
-.filt{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--sub);flex-wrap:wrap;margin:0 0 12px}
-.filt:empty{display:none}
-.filt b{color:var(--text)}
 .clear{border:0;background:var(--chip);color:var(--sub);border-radius:6px;font:inherit;font-size:14px;padding:3px 8px;cursor:pointer}
 .list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .rv{padding:20px 24px}
@@ -199,6 +199,8 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
       <div class="seg" id="f-period" aria-label="기간">
         <button data-v="0" class="on">전체</button><button data-v="7">7일</button><button data-v="30">30일</button><button data-v="90">90일</button>
       </div>
+      <input type="search" id="f-q" placeholder="VOC 검색 (예: 다크모드, 글씨)" aria-label="VOC 검색">
+      <button class="btn" id="csv" title="지금 보이는 조건의 리뷰를 엑셀용 CSV로 저장">CSV 내보내기</button>
     </div>
   </header>
 
@@ -229,25 +231,13 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
     <button class="more" id="req-more" hidden>더 보기</button>
   </section>
 
-  <div class="sec-head"><h2>디자인·사용성 전체 리뷰</h2></div>
-  <section class="card lbar">
-    <input type="search" id="f-q" placeholder="디자인 VOC 안에서 검색 (예: 다크모드, 글씨, 최근조회)">
-    <div class="seg" id="f-sort" aria-label="정렬">
-      <button data-v="impact" class="on">영향도순</button><button data-v="new">최신순</button>
-    </div>
-    <button class="btn" id="csv" title="지금 걸러진 리뷰를 엑셀용 CSV로 저장">CSV 내보내기</button>
-  </section>
-  <div class="filt" id="filt"></div>
-  <div class="list" id="list"></div>
-  <button class="more" id="more" hidden>더 보기</button>
-
-  <p class="note">분류는 design.json 키워드 규칙으로 자동 태깅돼서 일부 오분류가 있을 수 있어요<br>영향도 = 공감(👍) 수와 낮은 별점을 함께 반영한 정렬</p>
+  <p class="note">분류는 design.json 키워드 규칙으로 자동 태깅돼서 일부 오분류가 있을 수 있어요<br>검색어를 넣으면 페이지 전체(히트맵·요청·상세)가 그 키워드가 들어간 리뷰 기준으로 바뀌어요 · 영향도 = 공감(👍) 수와 낮은 별점을 함께 반영한 정렬</p>
 </div>
 
 <script>
 const STORES = { android: "Android", ios: "iOS" };
 const NONE = "화면 미상";
-const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20, reqShown: 10, reqMode: "design" };
+const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", dtShown: 5, reqShown: 10, reqMode: "design" };
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
@@ -301,14 +291,14 @@ Promise.all([
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-const scope = () => { const now = Date.now(); return S.all.filter((r) => (!S.store || r.store === S.store) && (!S.period || now - r.d < S.period * DAY)); };
+const scope = () => { const now = Date.now(), q = S.q.trim().toLowerCase(); return S.all.filter((r) => (!S.store || r.store === S.store) && (!S.period || now - r.d < S.period * DAY) && (!q || (r.title + " " + r.content).toLowerCase().includes(q))); };
 const OTHER = "기타 화면";
 const onScreen = (r, sc) => sc === OTHER ? r.screens.some((x) => (S.others || []).includes(x)) : r.screens.includes(sc);
 const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.types.includes(S.type)) && (ignore === "screen" || !S.screen || onScreen(r, S.screen)));
 
 function render() {
   const all = scope(), voc = all.filter((r) => r.types.length);
-  kpi(all, voc); heat(voc); detail(pick(voc)); reqs(voc); list(pick(voc));
+  kpi(all, voc); heat(voc); detail(pick(voc)); reqs(voc);
 }
 
 function kpi(all, voc) {
@@ -323,7 +313,7 @@ function kpi(all, voc) {
     + tile("디자인 개선 요청", drq, "개", `기능 요청 포함 전체 ${rq}개`);
 }
 
-function select(t, sc, from) { S.dtAll = false; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.dtAll = false; S.dtShown = 5; S.type = t; S.screen = sc; S.from = from || "hot"; S.reqShown = 10; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -428,6 +418,7 @@ function detail(a) {
   const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, S.dtAll ? undefined : 6);
   const more = (S.reqMode === "design" ? dAll : rAll).length - reqs.length;
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
+  const rvs = [...a].sort((x, y) => y.score - x.score || y.d - x.d);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
   el.innerHTML = `
     <div class="dt-head"><div>
@@ -442,13 +433,18 @@ function detail(a) {
         ${reqs.length ? "" : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
         ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기</button>` : ""}
     </div>
-    <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
+    <div class="dt-rv">
+      <div class="dt-h">리뷰 원문 <span class="dt-note">${a.length}건 · 영향도순</span></div>
+      <div class="list">${rvs.slice(0, S.dtShown).map(rvHtml).join("")}</div>
+      ${rvs.length > S.dtShown ? `<button class="more" id="dt-more">리뷰 더 보기 (${Math.min(10, rvs.length - S.dtShown)}건 · 남은 ${rvs.length - S.dtShown}건)</button>` : ""}
+    </div>`;
   $("dt-x").onclick = () => select("", "");
   el.querySelectorAll("#dt-req button").forEach((b) => b.onclick = () => setReqMode(b.dataset.v));
   if ($("dt-reqs")) $("dt-reqs").onclick = () => { S.dtAll = true; detail(pick(scope().filter((r) => r.types.length))); };
-  $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
+  if ($("dt-more")) $("dt-more").onclick = () => { S.dtShown += 10; S.keepScroll = true; detail(pick(scope().filter((r) => r.types.length))); };
+  if (S.keepScroll) { S.keepScroll = false; return; }
   const r = el.getBoundingClientRect();
-  if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function tags(r) {
@@ -474,49 +470,36 @@ function reqs(voc) {
   $("req-more").hidden = items.length <= S.reqShown;
 }
 
-function filtered(voc) {
-  const q = S.q.trim().toLowerCase();
-  const a = voc.filter((r) => !q || (r.title + " " + r.content).toLowerCase().includes(q));
-  return a.sort(S.sort === "impact" ? (x, y) => y.score - x.score || y.d - x.d : (x, y) => y.d - x.d);
-}
-
-function list(voc) {
-  const a = filtered(voc);
-  const conds = [S.type && `유형 <b>${esc(S.type)}</b>`, S.screen && `화면 <b>${esc(S.screen)}</b>`].filter(Boolean);
-  $("filt").innerHTML = `<span>${conds.length ? conds.join(" · ") + " · " : ""}리뷰 <b>${a.length}</b>건</span>` + (conds.length ? `<button class="clear" id="clr">필터 해제</button>` : "");
-  if (conds.length) $("clr").onclick = () => { S.type = S.screen = ""; S.shown = 20; S.reqShown = 10; render(); };
+// 리뷰 카드 (검색어 하이라이트)
+function rvHtml(r) {
   const q = S.q.trim();
   const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
-  $("list").innerHTML = a.length ? a.slice(0, S.shown).map((r) => `
-    <article class="rv">
+  return `<article class="rv">
       <div class="top">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${tags(r)}
         ${r.version ? `<span class="stag">v${esc(r.version)}</span>` : ""}${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>
       ${r.title ? `<div class="t">${hl(r.title)}</div>` : ""}
       <div class="c">${hl(r.content)}</div>
-    </article>`).join("") : `<div class="empty">조건에 맞는 리뷰가 없어요</div>`;
-  $("more").hidden = a.length <= S.shown;
+    </article>`;
 }
 
 function csv() {
-  const a = filtered(pick(scope().filter((r) => r.types.length)));
+  const a = pick(scope().filter((r) => r.types.length)).sort((x, y) => y.score - x.score || y.d - x.d);
   const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const rows = [["날짜", "스토어", "별점", "버전", "문제 유형", "화면", "개선 요청 문장", "공감", "제목", "내용"]].concat(a.map((r) => [
     fmtDate(r.d), STORES[r.store], r.rating, r.version || "", r.types.join(", "), r.screens.join(", "), r.reqs.join(" / "), r.likes || 0, r.title, r.content]));
   const blob = new Blob(["﻿" + rows.map((x) => x.map(cell).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
   const el = document.createElement("a");
   el.href = URL.createObjectURL(blob);
-  el.download = `나무증권_디자인VOC_${[S.store && STORES[S.store], S.type, S.screen].filter(Boolean).join("_") || "전체"}_${fmtDate(new Date()).replace(/\./g, "")}.csv`;
+  el.download = `나무증권_디자인VOC_${[S.store && STORES[S.store], S.type, S.screen, S.q.trim()].filter(Boolean).join("_") || "전체"}_${fmtDate(new Date()).replace(/\./g, "")}.csv`;
   el.click(); setTimeout(() => URL.revokeObjectURL(el.href), 1000);
 }
 
 const seg = (id, fn) => $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
   $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); fn(b.dataset.v);
 });
-seg("f-store", (v) => { S.store = v; S.shown = 20; S.reqShown = 10; render(); });
-seg("f-period", (v) => { S.period = +v; S.shown = 20; S.reqShown = 10; render(); });
-seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
-let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
-$("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
+seg("f-store", (v) => { S.store = v; S.dtShown = 5; S.reqShown = 10; render(); });
+seg("f-period", (v) => { S.period = +v; S.dtShown = 5; S.reqShown = 10; render(); });
+let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.dtShown = 5; S.reqShown = 10; render(); }, 250); };
 // 상세 패널과 디자인 개선 요청 섹션의 토글은 같은 상태를 공유
 function setReqMode(v) {
   S.reqMode = v; S.reqShown = 10;
