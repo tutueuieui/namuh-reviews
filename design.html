@@ -115,6 +115,7 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .linkbtn{border:0;background:none;padding:4px 0;font:inherit;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
 .linkbtn:hover{color:var(--text)}
 .dt-h{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:8px}
+.dt-note{font-size:13px;font-weight:400;color:var(--faint)}
 .dt-q{font-size:15px;line-height:1.55;padding:10px 12px;border-radius:8px;background:#f8f9fb;margin-bottom:6px;word-break:break-word}
 .dt-q .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .dt-q.c{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -304,9 +305,18 @@ const reqTypes = (q) => { const t = q.toLowerCase(); return S.D.types.filter((c)
 // 문장 단위로 나눠 요청 문장만 추출
 function requests(r) {
   const parts = (r.title ? r.title + ". " : "") + r.content;
-  return parts.split(/(?<=[.!?\n~])\s*|(?<=(?:요|다|음|함|됨|셈|임))\s+/).map((s) => (s || "").trim())
-    .filter((s) => s.length >= 14 && has(s.toLowerCase(), S.D.request))
-    .map((s) => s.length > 150 ? s.slice(0, 148) + "…" : s);
+  const ss = parts.split(/(?<=[.!?\n~])\s*|(?<=(?:요|다|음|함|됨|셈|임))\s+/).map((s) => (s || "").trim()).filter(Boolean);
+  const out = [];
+  ss.forEach((s, i) => {
+    // 인사말·감사 표현("안녕하세요", "만들어주셔서")은 요청으로 보지 않음
+    const t = (S.D.requestExclude || []).reduce((x, w) => x.split(w).join(" "), s.toLowerCase());
+    if (s.length < 4 || !has(t, S.D.request)) return;
+    // "돌려놔라!"처럼 짧은 요청은 앞 문장을 붙여 맥락을 살린다
+    let q = s;
+    for (let j = i - 1; j >= 0 && q.length < 14; j--) q = ss[j] + " " + q;
+    if (q.length >= 8) out.push(q.length > 150 ? q.slice(0, 148) + "…" : q);
+  });
+  return out;
 }
 
 Promise.all([
@@ -466,8 +476,9 @@ function detail(a) {
       <div class="dt-s">리뷰 <b>${a.length}건</b> · 평균 <b>★${avg(a).toFixed(1)}</b>${likes ? ` · 공감 ${likes}` : ""}${S.screen === OTHER ? ` · ${esc(S.others.join(", "))}` : ""}</div>
     </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
     <div>
-      <div class="dt-h dt-hrow">대표 요청
-        <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}</span></button></div></div>
+      <div class="dt-h dt-hrow">요청 문장
+        <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}개</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}개</span></button></div>
+        <span class="dt-note">리뷰 ${a.length}건 중 ${new Set((S.reqMode === "design" ? dAll : rAll).map((o) => o.r)).size}건에서 나온 요청 문장</span></div>
         <div class="dt-grid">${reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("")}</div>
         ${reqs.length ? "" : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
         ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기</button>` : ""}
@@ -519,7 +530,7 @@ function reqs(voc) {
   const design = voc.flatMap((r) => r.dreqs.map(({ q, types }) => ({ q, types, r })));
   const all = voc.flatMap((r) => r.reqs.map((q) => ({ q, types: reqTypes(q), r })));
   const items = (S.reqMode === "design" ? design : all).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d);
-  const cnt = $("f-req").querySelectorAll(".cnt"); cnt[0].textContent = design.length; cnt[1].textContent = all.length;
+  const cnt = $("f-req").querySelectorAll(".cnt"); cnt[0].textContent = design.length + "개"; cnt[1].textContent = all.length + "개";
   $("req-title").textContent = S.reqMode === "design" ? "디자인 개선 요청" : "개선 요청 전체";
   $("req-hint").textContent = S.reqMode === "design" ? "요청 문장 안에 디자인·사용성 표현이 있는 것만 · 공감 많은 순" : "“~해주세요”, “~했으면” 같은 요청 문장 전체 (기능 요청 포함) · 공감 많은 순";
   const ttags = (o) => o.types.length
