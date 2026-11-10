@@ -2,8 +2,10 @@ name: 리뷰 수집
 
 on:
   schedule:
-    - cron: "45 1-22/3 * * *" # 3시간마다, 한국시간 02·05·08·11·14·17·20·23시 전후 반영 (UTC 기준, 지연 감안해 15분 일찍)
-  workflow_dispatch: {} # Actions 탭에서 수동 실행 가능
+    # GitHub 예약 실행은 붐빌 때 자주 건너뛰어서, 매시간 시도하고 아래 '간격 확인'에서 3시간이 안 지났으면 건너뛴다.
+    # 정각은 가장 붐비므로 :17분에 실행 (cron은 UTC 기준)
+    - cron: "17 * * * *"
+  workflow_dispatch: {} # Actions 탭에서 수동 실행 가능 (간격과 상관없이 바로 수집)
 
 permissions:
   contents: write
@@ -13,16 +15,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: 간격 확인 (마지막 수집 후 2시간 50분 이상 지났을 때만 수집)
+        id: gate
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os
+          from datetime import datetime, timezone
+          if os.environ.get("GITHUB_EVENT_NAME") != "schedule":
+              print("run=true"); raise SystemExit
+          last = datetime.fromisoformat(json.load(open("data/reviews.json"))["meta"]["updated"])
+          mins = (datetime.now(timezone.utc) - last).total_seconds() / 60
+          print("run=" + ("true" if mins >= 170 else "false"))
+          PY
+          cat "$GITHUB_OUTPUT"
+      - if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
-      - run: python scripts/collect.py
-      - run: python scripts/weekly.py # 월요일(KST) 첫 실행에서 지난주(월~일) 요약 생성
+      - if: steps.gate.outputs.run == 'true'
+        run: pip install -r requirements.txt
+      - if: steps.gate.outputs.run == 'true'
+        run: python scripts/collect.py
+      - if: steps.gate.outputs.run == 'true'
+        run: python scripts/weekly.py # 월요일(KST) 첫 실행에서 지난주(월~일) 요약 생성
       - name: 변경사항 커밋
+        if: steps.gate.outputs.run == 'true'
         run: |
           git config user.name "review-bot"
           git config user.email "review-bot@users.noreply.github.com"
           git add data/
           git diff --cached --quiet || git commit -m "리뷰 데이터 업데이트 $(date -u +'%Y-%m-%d %H:%M')"
+          git pull --rebase
           git push
