@@ -107,13 +107,6 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .scat .top i{width:9px;height:9px;border-radius:3px;flex:none}
 .scat .top .n{margin-left:auto;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
 .scat .bar{height:6px;margin-top:6px}
-.store-ver{margin-top:16px;padding-top:14px;border-top:1px solid var(--chip)}
-.store-ver .sub-h{font-size:13px;color:var(--sub);font-weight:600;margin-bottom:4px}
-.store-ver .sub-h span{font-weight:400;color:var(--faint)}
-.store-ver table{width:100%;border-collapse:collapse;font-size:15px}
-.store-ver td{padding:5px 0;font-variant-numeric:tabular-nums}
-.store-ver td:nth-child(2){color:var(--sub);text-align:right}
-.store-ver td:nth-child(3){text-align:right;font-weight:600;width:84px}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
 .more[hidden],.detail[hidden]{display:none}
 .empty{padding:40px;text-align:center;color:var(--sub)}
@@ -431,22 +424,13 @@ function stores(p) {
         ${storeTile}
         <div><div class="l">수집 리뷰</div><div class="v">${a.length.toLocaleString()}<span class="unit">개</span></div><div class="s" title="답변률 ${rep}%">리뷰 평균 ★${avg(a).toFixed(2)}</div></div>
         <div><div class="l">최근 7일</div><div class="v">${w.length}<span class="unit">개</span></div><div class="s">${w.length ? "★" + avg(w).toFixed(1) + (pw.length ? " · 전주 ★" + avg(pw).toFixed(1) : "") : "새 리뷰 없음"}</div></div>
-      </div>${dist}${verTable(a)}</div>`;
+      </div>${dist}</div>`;
   }).join("");
   $("stores").querySelectorAll(".dist-row").forEach((el) => el.onclick = () => {
     const s = el.dataset.s, n = +el.dataset.r;
     S.rating = S.store === s && S.rating === n ? 0 : n;
     setStore(s); S.shown = 30; render();
   });
-}
-
-function verTable(a) {
-  const m = {};
-  a.forEach((r) => { if (r.version) (m[r.version] ||= []).push(r); });
-  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 5);
-  if (!rows.length) return "";
-  return `<div class="store-ver"><div class="sub-h">버전별 평균 별점 <span>· 최근 5개 버전</span></div><table>${rows.map(([v, rs]) =>
-    `<tr><td>v${esc(v)}</td><td>${rs.length}건</td><td>★${avg(rs).toFixed(2)}</td></tr>`).join("")}</table></div>`;
 }
 
 function trend(all) {
