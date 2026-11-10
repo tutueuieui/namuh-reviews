@@ -288,7 +288,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
     </aside>
   </section>
 
-  <p class="note">Google Play·App Store 공개 데이터 기준 · 스토어 평점은 별점만 남긴 사용자 포함 · 3시간마다 자동 갱신</p>
+  <p class="note">Google Play·App Store 공개 데이터 기준 · 스토어 평점은 별점만 남긴 사용자 포함</p>
 </div>
 
 <script>
@@ -321,20 +321,11 @@ Promise.all([
   render();
 }).catch(() => { $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-// 수집 시각 안내 (3시간 간격 · 월요일 첫 수집에 지난주 요약)
+// 마지막 수집 시각 안내
 function updatedText(last) {
   const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
   const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
-  // 매시 17분에 시도하고 마지막 수집 후 2시간 50분이 지나야 수집 → 그 이후 첫 :17분이 다음 예정
-  const next = new Date(Math.max(+last + 170 * 6e4, Date.now()));
-  if (next.getUTCMinutes() > 17 || next.getUTCSeconds()) next.setUTCHours(next.getUTCHours() + 1);
-  next.setUTCMinutes(17, 0, 0);
-  const kst = new Date(+next + 9 * 36e5), lk = new Date(+last + 9 * 36e5);
-  const fri = kst.getUTCDay() === 1 && lk.getUTCDay() !== 1; // 월요일 첫 수집에 지난주 요약
-  const hh = kst.getUTCHours(), hm = (hh < 12 ? "오전 " : "오후 ") + (hh % 12 || 12) + "시쯤";
-  return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`
-    + `<span class="sep">·</span><span>3시간마다 업데이트</span>`
-    + `<span class="sep">·</span><span>다음 업데이트 <b>${day(next)} ${hm}</b>${fri ? " (주간 요약 포함)" : ""}</span>`;
+  return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
 }
 
 const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };
