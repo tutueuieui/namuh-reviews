@@ -127,9 +127,6 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .ver th:first-child,.ver td:first-child{text-align:left}
 .ver td{padding:7px 0;border-top:1px solid var(--chip);text-align:right;font-variant-numeric:tabular-nums}
 .ver td + td,.ver th + th{padding-left:12px;white-space:nowrap}
-.ver td.share{width:34%;padding-left:16px}
-.ver .sh{display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center}
-.ver .sh b{font-weight:600;font-size:14px}
 .ver td.top{text-align:left;font-size:14px;color:var(--sub)}
 .ver td.top i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
 .sub-note{font-size:13px;color:var(--faint);margin-top:10px}
@@ -257,7 +254,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
         </div>
       </div>
       <table class="ver" id="ver"></table>
-      <div class="sub-note">최근 8개 버전 · 1~2점 비율 = 그 버전 리뷰 중 별점 1~2점 비율</div>
+      <div class="sub-note">최근 8개 버전 · 가장 많은 불만 = 그 버전 리뷰에서 가장 많이 언급된 카테고리 (칭찬·기타 제외)</div>
     </div>
   </section>
 
@@ -379,14 +376,12 @@ function ver(p) {
   const a = p.filter((r) => r.store === S.ver && r.version);
   const m = {}; a.forEach((r) => (m[r.version] ||= []).push(r));
   const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 8);
-  if (!rows.length) { $("ver").innerHTML = `<tr><td class="hint" colspan="5">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
-  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th style="padding-left:16px;text-align:left">1~2점 비율</th><th class="top" style="text-align:left">가장 많은 불만</th><th>평균</th></tr>` + rows.map(([v, rs]) => {
-    const neg = Math.round(rs.filter((r) => r.rating <= 2).length / rs.length * 100);
+  if (!rows.length) { $("ver").innerHTML = `<tr><td class="hint" colspan="4">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
+  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th class="top" style="text-align:left;padding-left:24px">가장 많은 불만</th><th>평균</th></tr>` + rows.map(([v, rs]) => {
     const cnt = {}; rs.forEach((r) => r.cats.forEach((n) => { if (n !== "칭찬" && n !== "기타") cnt[n] = (cnt[n] || 0) + 1; }));
     const top = Object.entries(cnt).sort((x, y) => y[1] - x[1])[0];
     return `<tr><td>v${esc(v)}</td><td>${rs.length}건</td>
-      <td class="share"><div class="sh"><div class="bar"><span style="width:${neg}%;background:var(--bad)"></span></div><b>${neg}%</b></div></td>
-      <td class="top">${top ? `<i style="background:${catOf(top[0]).color}"></i>${esc(top[0])} ${top[1]}` : "–"}</td>
+      <td class="top" style="padding-left:24px">${top ? `<i style="background:${catOf(top[0]).color}"></i>${esc(top[0])} ${top[1]}` : "–"}</td>
       <td>★${avg(rs).toFixed(2)}</td></tr>`;
   }).join("");
 }
