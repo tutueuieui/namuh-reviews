@@ -217,7 +217,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
   <section class="card lbar">
     <input type="search" id="f-q" placeholder="디자인 VOC 안에서 검색 (예: 다크모드, 글씨, 최근조회)">
     <div class="seg" id="f-sort" aria-label="정렬">
-      <button data-v="impact" class="on">영향도순</button><button data-v="new">최신순</button>
+      <button data-v="new" class="on">최신순</button><button data-v="impact">영향도순</button>
     </div>
     <button class="btn" id="csv" title="지금 걸러진 리뷰를 엑셀용 CSV로 저장">CSV 내보내기</button>
   </section>
@@ -231,7 +231,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 <script>
 const STORES = { android: "Android", ios: "iOS" };
 const NONE = "화면 미상";
-const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20 };
+const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "new", ver: "android", shown: 20 };
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
