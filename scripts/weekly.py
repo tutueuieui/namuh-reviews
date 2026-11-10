@@ -1,11 +1,11 @@
 """주간 리뷰 요약 생성기.
 
-매주 금요일 아침 수집이 끝난 뒤 실행되어, 지난 7일(금~목, 한국시간) 리뷰를
+매주 월요일 첫 수집 뒤 실행되어, 지난주(월~일, 한국시간) 리뷰를
 요약해 data/weekly.json 에 쌓는다. 카테고리 분류는 index.html 과 같은 규칙
 (categories.json 키워드 매칭)을 쓴다.
 
-    python scripts/weekly.py          # 금요일(KST)일 때만 생성
-    python scripts/weekly.py --force  # 요일과 상관없이 지금 기준으로 생성
+    python scripts/weekly.py          # 월요일(KST)일 때만 생성
+    python scripts/weekly.py --force  # 요일과 상관없이 가장 최근에 끝난 월~일 주를 생성
 """
 import json
 import sys
@@ -128,10 +128,11 @@ def headline(s):
 
 def main(force=False):
     now = datetime.now(KST)
-    if not force and now.weekday() != 4:  # 4 = 금요일
-        print("금요일이 아니라서 주간 요약을 건너뜀")
+    if not force and now.weekday() != 0:  # 0 = 월요일
+        print("월요일이 아니라서 주간 요약을 건너뜀")
         return
-    end = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # 가장 최근 월요일 00시(KST)까지 = 지난주 월~일
+    end = now.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=now.weekday())
     start, prev_start = end - timedelta(days=7), end - timedelta(days=14)
 
     data = json.loads(REVIEWS.read_text(encoding="utf-8"))
@@ -144,7 +145,7 @@ def main(force=False):
 
     hist = json.loads(WEEKLY.read_text(encoding="utf-8")) if WEEKLY.exists() else []
     key = start.strftime("%Y-%m-%d")
-    # 3시간마다 수집하므로 금요일엔 여러 번 불림 → 이번 주 요약이 이미 있으면 건너뜀
+    # 3시간마다 수집하므로 월요일엔 여러 번 불림 → 이번 주 요약이 이미 있으면 건너뜀
     if not force and any(h["week_start"] == key for h in hist):
         print("이번 주 요약이 이미 있어서 건너뜀")
         return

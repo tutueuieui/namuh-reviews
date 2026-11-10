@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python scripts/collect.py
-      - run: python scripts/weekly.py # 금요일(KST) 첫 실행에서만 주간 요약 생성
+      - run: python scripts/weekly.py # 월요일(KST) 첫 실행에서 지난주(월~일) 요약 생성
       - name: 변경사항 커밋
         run: |
           git config user.name "review-bot"

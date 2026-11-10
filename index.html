@@ -323,13 +323,13 @@ Promise.all([
   render();
 }).catch(() => { $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-// 수집 시각 안내 (한국시간 기준 3시간마다: 02·05·08·11·14·17·20·23시 / 금요일 첫 수집에 주간 요약)
+// 수집 시각 안내 (한국시간 기준 3시간마다: 02·05·08·11·14·17·20·23시 / 월요일 첫 수집에 지난주 요약)
 function updatedText(last) {
   const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
   const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
   const next = new Date(); next.setUTCMinutes(0, 0, 0);
   do next.setUTCHours(next.getUTCHours() + 1); while ((next.getUTCHours() + 9 - 2) % 3); // KST 2시부터 3시간 간격
-  const kst = new Date(+next + 9 * 36e5), fri = kst.getUTCDay() === 5 && kst.getUTCHours() < 3;
+  const kst = new Date(+next + 9 * 36e5), fri = kst.getUTCDay() === 1 && kst.getUTCHours() < 3;
   const hh = kst.getUTCHours(), hm = (hh < 12 ? "오전 " : "오후 ") + (hh % 12 || 12) + "시";
   return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`
     + `<span class="sep">·</span><span>3시간마다 업데이트</span>`
