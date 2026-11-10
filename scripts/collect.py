@@ -8,6 +8,7 @@
 """
 import json
 import sys
+import time
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,29 +45,42 @@ def fetch_android():
     return out
 
 
+def _ios_page(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Cache-Control": "no-cache"})
+    with urllib.request.urlopen(req, timeout=20) as res:
+        feed = json.load(res).get("feed", {})
+    entries = feed.get("entry") or []
+    if isinstance(entries, dict):
+        entries = [entries]
+    return [e for e in entries if "im:rating" in e]
+
+
 def fetch_ios():
-    out = []
+    """애플 RSS는 CDN(Akamai) 캐시 때문에 서버 위치에 따라 며칠 전 내용이 올 수 있다.
+    같은 페이지를 주소를 조금씩 바꿔(캐시 우회) 여러 번 받아 합친다."""
+    stamp = int(time.time())
+    base = f"https://itunes.apple.com/kr/rss/customerreviews"
+    variants = [
+        "{b}/page={p}/id={i}/sortBy=mostRecent/json?cb={t}",
+        "{b}/id={i}/sortBy=mostRecent/page={p}/json?cb={t}",
+        "{b}/page={p}/id={i}/sortby=mostrecent/json?cb={t}",
+        "{b}/page={p}/id={i}/sortBy=mostRecent/json",
+    ]
+    seen = {}
     for page in range(1, 11):
-        url = (
-            f"https://itunes.apple.com/kr/rss/customerreviews/page={page}"
-            f"/id={IOS_ID}/sortBy=mostRecent/json"
-        )
-        try:
-            with urllib.request.urlopen(url, timeout=20) as res:
-                feed = json.load(res).get("feed", {})
-        except Exception as e:  # noqa: BLE001
-            print(f"[ios] page {page} 실패: {e}", file=sys.stderr)
-            break
-        entries = feed.get("entry") or []
-        if isinstance(entries, dict):
-            entries = [entries]
-        entries = [e for e in entries if "im:rating" in e]
-        if not entries:
-            break
-        for e in entries:
-            out.append(
-                {
-                    "id": "i_" + e["id"]["label"],
+        got_any = False
+        for v in variants:
+            url = v.format(b=base, p=page, i=IOS_ID, t=stamp)
+            try:
+                entries = _ios_page(url)
+            except Exception as e:  # noqa: BLE001
+                print(f"[ios] page {page} 실패: {e}", file=sys.stderr)
+                continue
+            got_any = got_any or bool(entries)
+            for e in entries:
+                rid = "i_" + e["id"]["label"]
+                seen.setdefault(rid, {
+                    "id": rid,
                     "store": "ios",
                     "rating": int(e["im:rating"]["label"]),
                     "title": e.get("title", {}).get("label", ""),
@@ -75,8 +89,12 @@ def fetch_ios():
                     "date": e.get("updated", {}).get("label", ""),
                     "likes": 0,
                     "replied": False,
-                }
-            )
+                })
+        if not got_any:
+            break
+    out = list(seen.values())
+    if out:
+        print(f"[ios] 가장 최근 리뷰 {max(r['date'] for r in out)}")
     return out
 
 
