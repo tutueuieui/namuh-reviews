@@ -135,10 +135,6 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .bar span{display:block;height:100%;border-radius:4px}
 
 /* 요청 */
-.reqs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.req{background:#f8f9fb;border-radius:10px;padding:12px 14px}
-.req .q{font-size:15px;font-weight:500;line-height:1.55;word-break:break-word}
-.req .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--sub);margin-top:6px}
 .stars{letter-spacing:1px;font-size:14px;color:var(--star)}
 .stars .off{color:var(--line)}
 .ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
@@ -217,18 +213,6 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
     <div class="mlist" id="mlist"></div>
   </section>
 
-  <section class="card panel">
-    <div class="panel-head inline">
-      <h2 id="req-title">디자인 개선 요청</h2>
-      <span class="hint" id="req-hint"></span>
-    </div>
-    <div class="seg" id="f-req" aria-label="요청 범위" style="margin-bottom:14px">
-      <button data-v="design" class="on">디자인 관련<span class="cnt"></span></button><button data-v="all">전체<span class="cnt"></span></button>
-    </div>
-    <div class="reqs" id="reqs"></div>
-    <button class="more" id="req-more" hidden>더 보기</button>
-  </section>
-
   <div class="sec-head"><h2>디자인·사용성 전체 리뷰</h2></div>
   <section class="card lbar">
     <input type="search" id="f-q" placeholder="디자인 VOC 안에서 검색 (예: 다크모드, 글씨, 최근조회)">
@@ -247,7 +231,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 <script>
 const STORES = { android: "Android", ios: "iOS" };
 const NONE = "화면 미상";
-const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20, reqShown: 10, reqMode: "design" };
+const S = { all: [], D: null, store: "", period: 0, type: "", screen: "", q: "", sort: "impact", ver: "android", shown: 20 };
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
@@ -308,7 +292,7 @@ const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.t
 
 function render() {
   const all = scope(), voc = all.filter((r) => r.types.length);
-  kpi(all, voc); heat(voc); detail(pick(voc)); reqs(voc); list(pick(voc));
+  kpi(all, voc); heat(voc); detail(pick(voc)); list(pick(voc));
 }
 
 function kpi(all, voc) {
@@ -323,7 +307,7 @@ function kpi(all, voc) {
     + tile("디자인 개선 요청", drq, "개", `기능 요청 포함 전체 ${rq}개`);
 }
 
-function select(t, sc, from) { S.dtAll = false; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; S.reqShown = 10; render(); }
+function select(t, sc, from) { S.dtAll = false; S.type = t; S.screen = sc; S.from = from || "hot"; S.shown = 20; render(); }
 const comboName = (t, sc) => sc && t ? `${sc} × ${t}` : sc ? `${sc} 화면` : t;
 
 function heat(voc) {
@@ -455,23 +439,6 @@ function tags(r) {
 }
 const sdot = (r) => `<span class="sdot" style="background:var(--${r.store})" title="${STORES[r.store]}"></span>`;
 
-function reqs(voc) {
-  const design = voc.flatMap((r) => r.dreqs.map(({ q, types }) => ({ q, types, r })));
-  const all = voc.flatMap((r) => r.reqs.map((q) => ({ q, types: reqTypes(q), r })));
-  const items = (S.reqMode === "design" ? design : all).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d);
-  const cnt = $("f-req").querySelectorAll(".cnt"); cnt[0].textContent = design.length + "개"; cnt[1].textContent = all.length + "개";
-  $("req-title").textContent = S.reqMode === "design" ? "디자인 개선 요청" : "개선 요청 전체";
-  $("req-hint").textContent = S.reqMode === "design" ? "요청 문장 안에 디자인·사용성 표현이 있는 것만 · 공감 많은 순" : "“~해주세요”, “~했으면” 같은 요청 문장 전체 (기능 요청 포함) · 공감 많은 순";
-  const ttags = (o) => o.types.length
-    ? o.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("") + o.r.screens.filter((x) => x !== NONE).map((x) => `<span class="stag">${esc(x)}</span>`).join("")
-    : `<span class="stag">기능 요청</span>` + o.r.screens.filter((x) => x !== NONE).map((x) => `<span class="stag">${esc(x)}</span>`).join("");
-  $("reqs").innerHTML = items.length ? items.slice(0, S.reqShown).map((o) => `
-    <div class="req"><div class="q">${esc(o.q)}</div>
-      <div class="meta">${sdot(o.r)}${stars(o.r.rating)}<span>${fmtDate(o.r.d)}</span>${o.r.likes ? `<span>👍 ${o.r.likes}</span>` : ""}${ttags(o)}</div></div>`).join("")
-    : `<div class="empty" style="grid-column:1/-1">해당 조건의 요청 문장이 없어요</div>`;
-  $("req-more").hidden = items.length <= S.reqShown;
-}
-
 function filtered(voc) {
   const q = S.q.trim().toLowerCase();
   const a = voc.filter((r) => !q || (r.title + " " + r.content).toLowerCase().includes(q));
@@ -482,7 +449,7 @@ function list(voc) {
   const a = filtered(voc);
   const conds = [S.type && `유형 <b>${esc(S.type)}</b>`, S.screen && `화면 <b>${esc(S.screen)}</b>`].filter(Boolean);
   $("filt").innerHTML = `<span>${conds.length ? conds.join(" · ") + " · " : ""}리뷰 <b>${a.length}</b>건</span>` + (conds.length ? `<button class="clear" id="clr">필터 해제</button>` : "");
-  if (conds.length) $("clr").onclick = () => { S.type = S.screen = ""; S.shown = 20; S.reqShown = 10; render(); };
+  if (conds.length) $("clr").onclick = () => { S.type = S.screen = ""; S.shown = 20; render(); };
   const q = S.q.trim();
   const hl = (s) => { s = esc(s); if (!q) return s; const re = new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"); return s.replace(re, (m) => `<mark>${m}</mark>`); };
   $("list").innerHTML = a.length ? a.slice(0, S.shown).map((r) => `
@@ -510,19 +477,11 @@ function csv() {
 const seg = (id, fn) => $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
   $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); fn(b.dataset.v);
 });
-seg("f-store", (v) => { S.store = v; S.shown = 20; S.reqShown = 10; render(); });
-seg("f-period", (v) => { S.period = +v; S.shown = 20; S.reqShown = 10; render(); });
+seg("f-store", (v) => { S.store = v; S.shown = 20; render(); });
+seg("f-period", (v) => { S.period = +v; S.shown = 20; render(); });
 seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
 let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
 $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
-// 상세 패널과 디자인 개선 요청 섹션의 토글은 같은 상태를 공유
-function setReqMode(v) {
-  S.reqMode = v; S.reqShown = 10;
-  $("f-req").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v));
-  const voc = scope().filter((r) => r.types.length); detail(pick(voc)); reqs(voc);
-}
-seg("f-req", setReqMode);
-$("req-more").onclick = () => { S.reqShown += 10; reqs(scope().filter((r) => r.types.length)); };
 $("csv").onclick = csv;
 </script>
 </body>
