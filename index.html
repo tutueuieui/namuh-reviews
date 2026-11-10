@@ -128,7 +128,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .ver td{padding:7px 0;border-top:1px solid var(--chip);text-align:right;font-variant-numeric:tabular-nums}
 .ver td + td,.ver th + th{padding-left:12px;white-space:nowrap}
 .ver td.top{text-align:left;font-size:14px;color:var(--sub)}
-.vd{font-size:14px;font-weight:600}.vd.up{color:#1a9b5e}.vd.down{color:var(--bad)}.vd.flat{color:var(--faint);font-weight:400}
+.vd{font-size:14px;font-weight:600;white-space:nowrap}.vd.down{color:var(--bad)}.vd.flat{color:var(--faint);font-weight:400}
 .ver td.top i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
 .sub-note{font-size:13px;color:var(--faint);margin-top:10px}
 .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
@@ -255,7 +255,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
         </div>
       </div>
       <table class="ver" id="ver"></table>
-      <div class="sub-note">최근 8개 버전 · 직전 대비 = 바로 이전 버전보다 평균 별점이 오르면 ▲, 내리면 ▼ · 리뷰가 적은 버전은 변동이 클 수 있어요</div>
+      <div class="sub-note">최근 8개 버전 · 늘어난 불만 = 바로 이전 버전보다 2건 이상 늘어난 카테고리 중 가장 많이 늘어난 것 · 리뷰 수가 많은 버전일수록 늘어나기 쉬워요</div>
     </div>
   </section>
 
@@ -379,14 +379,16 @@ function ver(p) {
   const all = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true }));
   const rows = all.slice(0, 8);
   if (!rows.length) { $("ver").innerHTML = `<tr><td class="hint" colspan="5">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
-  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th class="top" style="text-align:left;padding-left:24px">가장 많은 불만</th><th>평균</th><th>직전 대비</th></tr>` + rows.map(([v, rs], i) => {
-    const prev = all[i + 1], d = prev ? avg(rs) - avg(prev[1]) : null;
-    const dc = d == null ? "" : Math.abs(d) < 0.05 ? `<span class="vd flat">–</span>` : `<span class="vd ${d > 0 ? "up" : "down"}">${d > 0 ? "▲" : "▼"}${Math.abs(d).toFixed(2)}</span>`;
-    const cnt = {}; rs.forEach((r) => r.cats.forEach((n) => { if (n !== "칭찬" && n !== "기타") cnt[n] = (cnt[n] || 0) + 1; }));
+  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th class="top" style="text-align:left;padding-left:24px">가장 많은 불만</th><th>평균</th><th class="top" style="text-align:left;padding-left:24px">늘어난 불만</th></tr>` + rows.map(([v, rs], i) => {
+    const count = (list) => { const c = {}; list.forEach((r) => r.cats.forEach((n) => { if (n !== "칭찬" && n !== "기타") c[n] = (c[n] || 0) + 1; })); return c; };
+    const cnt = count(rs), pc = all[i + 1] ? count(all[i + 1][1]) : null;
     const top = Object.entries(cnt).sort((x, y) => y[1] - x[1])[0];
+    // 직전 버전보다 가장 많이 늘어난 불만 (2건 이상 늘어난 것만)
+    const up = pc && Object.entries(cnt).map(([n, c]) => [n, c - (pc[n] || 0)]).filter(([, d]) => d >= 2).sort((x, y) => y[1] - x[1])[0];
+    const dc = up ? `<span class="vd down"><i style="background:${catOf(up[0]).color}"></i>${esc(up[0])} +${up[1]}</span>` : `<span class="vd flat">–</span>`;
     return `<tr><td>v${esc(v)}</td><td>${rs.length}건</td>
       <td class="top" style="padding-left:24px">${top ? `<i style="background:${catOf(top[0]).color}"></i>${esc(top[0])} ${top[1]}` : "–"}</td>
-      <td>★${avg(rs).toFixed(2)}</td><td>${dc || `<span class="vd flat">–</span>`}</td></tr>`;
+      <td>★${avg(rs).toFixed(2)}</td><td class="top" style="padding-left:24px">${dc}</td></tr>`;
   }).join("");
 }
 
