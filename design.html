@@ -424,9 +424,9 @@ function detail(a) {
   const anchor = S.from === "m" ? $("mlist") : fromHeat ? document.querySelector(".heat-legend") : $("hot");
   if (anchor.nextElementSibling !== el) anchor.after(el);
   el.hidden = false;
-  const dAll = a.flatMap((r) => r.dreqs.map(({ q }) => ({ q, r }))), rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
-  const reqs = (S.reqMode === "design" ? dAll : rAll).sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, S.dtAll ? undefined : 6);
-  const more = (S.reqMode === "design" ? dAll : rAll).length - reqs.length;
+  const rAll = a.flatMap((r) => r.reqs.map((q) => ({ q, r })));
+  const reqs = [...rAll].sort((x, y) => (y.r.likes || 0) - (x.r.likes || 0) || y.r.d - x.r.d).slice(0, S.dtAll ? undefined : 6);
+  const more = rAll.length - reqs.length;
   const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
   const meta = (r) => `<div class="meta">${sdot(r)}${stars(r.rating)}<span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>`;
   el.innerHTML = `
@@ -436,15 +436,13 @@ function detail(a) {
     </div><button class="x" id="dt-x" aria-label="선택 해제">×</button></div>
     <div>
       <div class="dt-h dt-hrow">요청 문장
-        <div class="seg sm" id="dt-req"><button data-v="design" class="${S.reqMode === "design" ? "on" : ""}">디자인 관련<span class="cnt">${dAll.length}개</span></button><button data-v="all" class="${S.reqMode === "all" ? "on" : ""}">전체<span class="cnt">${rAll.length}개</span></button></div>
-        <span class="dt-note">리뷰 ${a.length}건 중 ${new Set((S.reqMode === "design" ? dAll : rAll).map((o) => o.r)).size}건에서 나온 요청 문장</span></div>
+        <span class="dt-note">${rAll.length}개 · 리뷰 ${a.length}건 중 ${new Set(rAll.map((o) => o.r)).size}건에서 나왔어요</span></div>
         <div class="dt-grid">${reqs.map(({ q, r }) => `<div class="dt-q">${meta(r)}${esc(q)}</div>`).join("")}</div>
-        ${reqs.length ? "" : `<div class="dt-none">${S.reqMode === "design" && rAll.length ? "디자인 관련 요청이 없어요 · '전체'에서 기능 요청을 볼 수 있어요" : "요청 문장이 없어요"}</div>`}
+        ${reqs.length ? "" : `<div class="dt-none">요청 문장이 없어요</div>`}
         ${more > 0 ? `<button class="linkbtn" id="dt-reqs">요청 ${more}개 더 보기</button>` : ""}
     </div>
     <div class="dt-foot"><button class="btn" id="dt-more">리뷰 ${a.length}건 전체 보기 ↓</button></div>`;
   $("dt-x").onclick = () => select("", "");
-  el.querySelectorAll("#dt-req button").forEach((b) => b.onclick = () => setReqMode(b.dataset.v));
   if ($("dt-reqs")) $("dt-reqs").onclick = () => { S.dtAll = true; detail(pick(scope().filter((r) => r.types.length))); };
   $("dt-more").onclick = () => $("filt").scrollIntoView({ behavior: "smooth", block: "start" });
   const r = el.getBoundingClientRect();
