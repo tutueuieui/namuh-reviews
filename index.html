@@ -110,6 +110,33 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .more{margin:14px auto 0;display:block;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;padding:9px 20px;border-radius:9px;cursor:pointer}
 .more[hidden],.detail[hidden]{display:none}
 .empty{padding:40px;text-align:center;color:var(--sub)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.grid2 .panel{margin:0}
+.rank{display:grid;grid-template-columns:120px minmax(0,1fr) 92px 50px;gap:10px;align-items:center;font-size:15px;padding:5px 8px;margin:0 -8px;border-radius:8px;cursor:pointer}
+.rank:hover{background:var(--chip)}
+.rank.on{background:#fff7e0;font-weight:600}
+.rank .nm{display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank .nm i{width:9px;height:9px;border-radius:3px;flex:none}
+.rank .n,.rank .a{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:14px;white-space:nowrap}
+.rank .bar{display:flex}
+.rank .bar span{border-radius:0}
+.rank-h{display:grid;grid-template-columns:120px minmax(0,1fr) 92px 50px;gap:10px;font-size:12px;color:var(--faint);padding:0 8px 4px;margin:0 -8px}
+.rank-h span:nth-child(n+3){text-align:right}
+.ver{width:100%;border-collapse:collapse;font-size:15px}
+.ver th{font-size:12px;color:var(--faint);font-weight:500;text-align:right;padding:0 0 6px}
+.ver th:first-child,.ver td:first-child{text-align:left}
+.ver td{padding:7px 0;border-top:1px solid var(--chip);text-align:right;font-variant-numeric:tabular-nums}
+.ver td + td,.ver th + th{padding-left:12px;white-space:nowrap}
+.ver td.share{width:34%;padding-left:16px}
+.ver .sh{display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center}
+.ver .sh b{font-weight:600;font-size:14px}
+.ver td.top{text-align:left;font-size:14px;color:var(--sub)}
+.ver td.top i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+.sub-note{font-size:13px;color:var(--faint);margin-top:10px}
+.legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+@media (max-width:1180px){.grid2{grid-template-columns:1fr}}
+@media (max-width:860px){.rank,.rank-h{grid-template-columns:100px minmax(0,1fr) 84px 46px}.ver td.top{display:none}.ver th.top{display:none}}
+
 .note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center}
 /* 주간 요약 (아코디언) */
 .weekly{padding:0;margin-bottom:16px;overflow:hidden}
@@ -214,6 +241,26 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
     <svg id="trend" role="img" aria-label="주간 평균 별점 추이"></svg>
   </section>
 
+  <section class="grid2">
+    <div class="card panel">
+      <div class="panel-head"><h2>문제 유형 순위</h2><span class="legend" style="margin:0"><span><span class="dot" style="background:var(--android)"></span>Android</span><span><span class="dot" style="background:var(--ios)"></span>iOS</span></span></div>
+      <div class="rank-h"><span>유형</span><span></span><span>리뷰</span><span>평균</span></div>
+      <div id="types"></div>
+      <div class="sub-note">두 스토어 합산 · 칭찬·기타 제외 · 누르면 아래 목록이 해당 유형으로 필터돼요</div>
+    </div>
+    <div class="card panel">
+      <div class="panel-head">
+        <h2>버전별 반응</h2>
+        <div class="seg" id="f-ver">
+          <button data-v="android" class="on"><span class="dot" style="background:var(--android)"></span>Android</button>
+          <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
+        </div>
+      </div>
+      <table class="ver" id="ver"></table>
+      <div class="sub-note">최근 8개 버전 · 1~2점 비율 = 그 버전 리뷰 중 별점 1~2점 비율</div>
+    </div>
+  </section>
+
   <div class="sec-head"><h2>전체 리뷰</h2></div>
   <section class="card filters">
     <div class="seg" id="f-store" aria-label="스토어">
@@ -248,7 +295,7 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 
 <script>
 const STORES = { android: "Android", ios: "iOS" };
-const S = { all: [], meta: {}, cats: [], store: "android", trendStore: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
+const S = { all: [], meta: {}, cats: [], store: "android", trendStore: "android", ver: "android", period: 0, rating: 0, cat: "", q: "", shown: 30 };
 const ETC = { name: "기타", color: "#adb5bd" };
 const catOf = (name) => S.cats.find((c) => c.name === name) || ETC;
 function classify(r) {
@@ -293,7 +340,7 @@ const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.p
 
 function render() {
   const p = inPeriod();
-  stores(p); trend(p);
+  stores(p); trend(p); types(p); ver(p);
   const q = S.q.trim().toLowerCase();
   const mine = p.filter((r) => r.store === S.store);
   const noCat = mine.filter((r) => (!S.rating || r.rating === S.rating) && (!q || (r.title + " " + r.content).toLowerCase().includes(q)));
@@ -307,6 +354,42 @@ function render() {
 }
 
 const allCats = () => [...S.cats, ETC];
+
+// 문제 유형 순위 (두 스토어 합산, 칭찬·기타 제외)
+function types(p) {
+  const rows = S.cats.filter((c) => c.name !== "칭찬").map((c) => ({ c, rs: p.filter((r) => r.cats.includes(c.name)) }))
+    .filter((x) => x.rs.length).sort((x, y) => y.rs.length - x.rs.length);
+  const max = Math.max(1, ...rows.map((x) => x.rs.length));
+  $("types").innerHTML = rows.length ? rows.map(({ c, rs }) => {
+    const an = rs.filter((r) => r.store === "android").length, io = rs.length - an;
+    return `<div class="rank ${S.cat === c.name ? "on" : ""}" data-c="${esc(c.name)}" role="button" tabindex="0" title="Android ${an}건 · iOS ${io}건">
+      <span class="nm"><i style="background:${c.color}"></i>${esc(c.name)}</span>
+      <div class="bar"><span style="width:${an / max * 100}%;background:var(--android)"></span><span style="width:${io / max * 100}%;background:var(--ios)"></span></div>
+      <span class="n">${rs.length}건 · ${Math.round(rs.length / p.length * 100)}%</span><span class="a">★${avg(rs).toFixed(1)}</span>
+    </div>`;
+  }).join("") : `<div class="hint">데이터 없음</div>`;
+  $("types").querySelectorAll(".rank").forEach((el) => {
+    const go = () => { S.cat = S.cat === el.dataset.c ? "" : el.dataset.c; S.shown = 30; render(); if (S.cat) document.querySelector(".sec-head").scrollIntoView({ behavior: "smooth" }); };
+    el.onclick = go; el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+  });
+}
+
+// 버전별 반응 (전체 리뷰 기준)
+function ver(p) {
+  const a = p.filter((r) => r.store === S.ver && r.version);
+  const m = {}; a.forEach((r) => (m[r.version] ||= []).push(r));
+  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 8);
+  if (!rows.length) { $("ver").innerHTML = `<tr><td class="hint" colspan="5">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
+  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th style="padding-left:16px;text-align:left">1~2점 비율</th><th class="top" style="text-align:left">가장 많은 불만</th><th>평균</th></tr>` + rows.map(([v, rs]) => {
+    const neg = Math.round(rs.filter((r) => r.rating <= 2).length / rs.length * 100);
+    const cnt = {}; rs.forEach((r) => r.cats.forEach((n) => { if (n !== "칭찬" && n !== "기타") cnt[n] = (cnt[n] || 0) + 1; }));
+    const top = Object.entries(cnt).sort((x, y) => y[1] - x[1])[0];
+    return `<tr><td>v${esc(v)}</td><td>${rs.length}건</td>
+      <td class="share"><div class="sh"><div class="bar"><span style="width:${neg}%;background:var(--bad)"></span></div><b>${neg}%</b></div></td>
+      <td class="top">${top ? `<i style="background:${catOf(top[0]).color}"></i>${esc(top[0])} ${top[1]}` : "–"}</td>
+      <td>★${avg(rs).toFixed(2)}</td></tr>`;
+  }).join("");
+}
 
 function weekly(weeks, idx) {
   const el = $("weekly");
@@ -496,6 +579,10 @@ function setStore(s) {
   $("f-store").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === s));
 }
 $("f-store").querySelectorAll("button").forEach((b) => b.onclick = () => { if (S.store !== b.dataset.v) S.rating = 0; setStore(b.dataset.v); S.shown = 30; render(); });
+$("f-ver").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  $("f-ver").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+  S.ver = b.dataset.v; ver(inPeriod());
+});
 $("f-trend").querySelectorAll("button").forEach((b) => b.onclick = () => {
   $("f-trend").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
   S.trendStore = b.dataset.v; trend(inPeriod());

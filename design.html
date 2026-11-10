@@ -131,28 +131,8 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 }
 
 /* 2단 */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
-.grid2 .panel{margin:0}
-.rank{display:grid;grid-template-columns:128px minmax(0,1fr) 54px 54px;gap:10px;align-items:center;font-size:15px;padding:5px 8px;margin:0 -8px;border-radius:8px;cursor:pointer}
-.rank:hover{background:var(--chip)}
-.rank.on{background:#fff7e0;font-weight:600}
-.rank .nm{display:flex;align-items:center;gap:7px;white-space:nowrap}
-.rank .nm i{width:9px;height:9px;border-radius:3px;flex:none}
-.rank .n,.rank .a{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:14px}
-.rank-h{display:grid;grid-template-columns:128px minmax(0,1fr) 54px 54px;gap:10px;font-size:12px;color:var(--faint);padding:0 8px 4px;margin:0 -8px}
-.rank-h span:nth-child(n+3){text-align:right}
 .bar{height:8px;background:var(--chip);border-radius:4px;overflow:hidden}
 .bar span{display:block;height:100%;border-radius:4px}
-.ver{width:100%;border-collapse:collapse;font-size:15px}
-.ver th{font-size:12px;color:var(--faint);font-weight:500;text-align:right;padding:0 0 6px}
-.ver th:first-child,.ver td:first-child{text-align:left}
-.ver td{padding:7px 0;border-top:1px solid var(--chip);text-align:right;font-variant-numeric:tabular-nums}
-.ver td + td,.ver th + th{padding-left:12px;white-space:nowrap}
-.ver td.share{width:42%;padding-left:16px}
-.ver .sh{display:grid;grid-template-columns:1fr 40px;gap:8px;align-items:center}
-.ver .sh b{font-weight:600;font-size:14px}
-.ver .hot{color:#862e9c;font-weight:700}
-.ver-note{font-size:13px;color:var(--faint);margin-top:10px}
 
 /* 요청 */
 .reqs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -191,13 +171,11 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .note{font-size:14px;color:var(--faint);margin-top:28px;text-align:center;line-height:1.7}
 
 @media (max-width:860px){
-  .grid2,.reqs{grid-template-columns:1fr}
-  .kpi{grid-template-columns:repeat(2,1fr);row-gap:16px}
+    .kpi{grid-template-columns:repeat(2,1fr);row-gap:16px}
   .kpi > div:nth-child(3){border-left:0}
   .panel{padding:20px 18px}
   .heat-wrap{margin:0 -18px;padding:0 18px}
-  .rank,.rank-h{grid-template-columns:112px minmax(0,1fr) 46px 50px}
-}
+  }
 </style>
 </head>
 <body>
@@ -249,25 +227,6 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
     </div>
     <div class="reqs" id="reqs"></div>
     <button class="more" id="req-more" hidden>더 보기</button>
-  </section>
-
-  <section class="grid2">
-    <div class="card panel">
-      <div class="panel-head"><h2>문제 유형 순위</h2></div>
-      <div class="rank-h"><span>유형</span><span></span><span>리뷰</span><span>평균</span></div>
-      <div id="types"></div>
-    </div>
-    <div class="card panel">
-      <div class="panel-head">
-        <h2>버전별 반응</h2>
-        <div class="seg" id="f-ver">
-          <button data-v="android" class="on"><span class="dot" style="background:var(--android)"></span>Android</button>
-          <button data-v="ios"><span class="dot" style="background:var(--ios)"></span>iOS</button>
-        </div>
-      </div>
-      <table class="ver" id="ver"></table>
-      <div class="ver-note">디자인 VOC 비율 = 그 버전 리뷰 중 디자인·사용성 언급 비율 · 개편 반발이 많은 버전은 보라색으로 표시</div>
-    </div>
   </section>
 
   <div class="sec-head"><h2>디자인·사용성 전체 리뷰</h2></div>
@@ -349,7 +308,7 @@ const pick = (a, ignore) => a.filter((r) => (ignore === "type" || !S.type || r.t
 
 function render() {
   const all = scope(), voc = all.filter((r) => r.types.length);
-  kpi(all, voc); heat(voc); detail(pick(voc)); types(pick(voc, "type")); ver(); reqs(voc); list(pick(voc));
+  kpi(all, voc); heat(voc); detail(pick(voc)); reqs(voc); list(pick(voc));
 }
 
 function kpi(all, voc) {
@@ -492,34 +451,6 @@ function detail(a) {
   if (r.top < 0 || r.top > innerHeight - 120) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-function types(voc) {
-  const rows = S.D.types.map((t) => ({ t, a: voc.filter((r) => r.types.includes(t.name)) })).filter((x) => x.a.length).sort((x, y) => y.a.length - x.a.length);
-  const max = Math.max(1, ...rows.map((x) => x.a.length));
-  $("types").innerHTML = rows.length ? rows.map(({ t, a }) => `
-    <div class="rank ${S.type === t.name ? "on" : ""}" data-t="${esc(t.name)}">
-      <span class="nm"><i style="background:${t.color}"></i>${esc(t.name)}</span>
-      <div class="bar"><span style="width:${a.length / max * 100}%;background:${t.color}"></span></div>
-      <span class="n">${a.length}건</span><span class="a">★${avg(a).toFixed(1)}</span>
-    </div>`).join("") : `<div class="empty">해당 리뷰가 없어요</div>`;
-  $("types").querySelectorAll(".rank").forEach((el) => el.onclick = () => { S.type = S.type === el.dataset.t ? "" : el.dataset.t; S.shown = 20; S.reqShown = 10; render(); });
-}
-
-function ver() {
-  const now = Date.now();
-  const a = S.all.filter((r) => r.store === S.ver && (!S.period || now - r.d < S.period * DAY) && r.version);
-  const m = {}; a.forEach((r) => (m[r.version] ||= []).push(r));
-  const rows = Object.entries(m).sort((x, y) => y[0].localeCompare(x[0], undefined, { numeric: true })).slice(0, 8);
-  if (!rows.length) { $("ver").innerHTML = `<tr><td class="empty" colspan="5">버전 정보가 있는 리뷰가 없어요</td></tr>`; return; }
-  const color = S.ver === "android" ? "var(--android)" : "var(--ios)";
-  $("ver").innerHTML = `<tr><th>버전</th><th>리뷰</th><th style="padding-left:16px;text-align:left">디자인 VOC 비율</th><th>개편 반발</th><th>평균</th></tr>` + rows.map(([v, rs]) => {
-    const voc = rs.filter((r) => r.types.length), p = Math.round(voc.length / rs.length * 100);
-    const neg = voc.filter((r) => r.types.includes("개편·변경 반발")).length;
-    return `<tr><td>v${esc(v)}</td><td>${rs.length}건</td>
-      <td class="share"><div class="sh"><div class="bar"><span style="width:${p}%;background:${color}"></span></div><b>${p}%</b></div></td>
-      <td class="${neg >= 3 && neg / rs.length >= .08 ? "hot" : ""}">${neg}건</td><td>★${avg(rs).toFixed(2)}</td></tr>`;
-  }).join("");
-}
-
 function tags(r) {
   return r.types.map((n) => { const c = typeOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")
     + r.screens.filter((s) => s !== NONE).map((s) => `<span class="stag">${esc(s)}</span>`).join("");
@@ -581,10 +512,8 @@ function csv() {
 const seg = (id, fn) => $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
   $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); fn(b.dataset.v);
 });
-const setVer = (v) => { S.ver = v; $("f-ver").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x.dataset.v === v)); };
-seg("f-store", (v) => { S.store = v; if (v) setVer(v); S.shown = 20; S.reqShown = 10; render(); });
+seg("f-store", (v) => { S.store = v; S.shown = 20; S.reqShown = 10; render(); });
 seg("f-period", (v) => { S.period = +v; S.shown = 20; S.reqShown = 10; render(); });
-seg("f-ver", (v) => { S.ver = v; ver(); });
 seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
 let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
 $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
