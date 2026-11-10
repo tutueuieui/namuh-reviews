@@ -52,6 +52,28 @@ def pick_quotes(rs, n, low=True):
     ]
 
 
+# '좋았던 점'은 별점만 높고 실제론 요청·불만인 리뷰가 섞이지 않도록 엄격하게 고른다
+PRAISE_BLOCK_CATS = ("오류·버그", "속도·렉", "기능 삭제·변경")
+PRAISE_BLOCK_WORDS = ("해주세요", "해 주세요", "주세요", "주실", "했으면", "바랍니다", "부탁", "?",
+                      "근데", "는데", "다만", "불편", "아쉽", "짜증", "안됨", "안되", "안 되", "뜸")
+
+
+def pick_praise(rs, n):
+    pool = [
+        r for r in rs
+        if r["rating"] >= 4 and "칭찬" in r["cats"]
+        and not any(c in PRAISE_BLOCK_CATS for c in r["cats"])
+        and not any(w in r["content"] for w in PRAISE_BLOCK_WORDS)
+        and len(r["content"].strip()) >= 4
+    ]
+    pool.sort(key=lambda r: (r.get("likes", 0), len(r["content"])), reverse=True)
+    return [
+        {"rating": r["rating"], "content": r["content"][:200], "date": r["date"],
+         "likes": r.get("likes", 0), "cats": r["cats"]}
+        for r in pool[:n]
+    ]
+
+
 def summarize_store(cur, prev, stats_now, stats_prev):
     cc, pc = Counter(), Counter()
     for r in cur:
@@ -81,7 +103,7 @@ def summarize_store(cur, prev, stats_now, stats_prev):
         "rising": [c["name"] for c in rising[:3]],
         "praise": cc.get("칭찬", 0),
         "complaints": pick_quotes(cur, 3, low=True),
-        "compliments": pick_quotes(cur, 1, low=False),
+        "compliments": pick_praise(cur, 1),
     }
 
 
