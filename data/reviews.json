@@ -1,6 +1,6 @@
 {
 "meta": {
-"updated": "2026-11-10T22:56:36.794083+00:00",
+"updated": "2026-11-11T06:28:18.814624+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
@@ -8,7 +8,7 @@
 },
 "ios": {
 "fetched": 500,
-"new": 2
+"new": 0
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,8 +20,8 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50569,
-"ratings": 3166,
+"score": 2.50521,
+"ratings": 3167,
 "version": "12.74"
 }
 }
@@ -618,7 +618,7 @@
 "content": "툭하면 프리마켓 반영이 안됨",
 "version": "",
 "date": "2026-10-19T23:17:01+00:00",
-"likes": 1,
+"likes": 2,
 "replied": true
 },
 {
