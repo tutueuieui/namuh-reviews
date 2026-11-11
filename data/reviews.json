@@ -1,32 +1,43 @@
 {
 "meta": {
-"updated": "2026-11-11T06:28:18.814624+00:00",
+"updated": "2026-11-11T15:16:36.308142+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 500,
-"new": 0
+"fetched": 250,
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4561403,
-"ratings": 12502,
+"score": 2.4582639,
+"ratings": 12503,
 "version": "9.96"
 },
 "ios": {
-"score": 2.50521,
-"ratings": 3167,
+"score": 2.50616,
+"ratings": 3165,
 "version": "12.74"
 }
 }
 },
 "reviews": [
+{
+"id": "i_14770338959",
+"store": "ios",
+"rating": 5,
+"title": "미쳤나",
+"content": "업댓후 아이패드에서 가로모드 안되네 미친 업댓\n이번에 신속 수정 했네요 탱큐",
+"version": "12.74",
+"date": "2026-11-09T09:07:48-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14769695735",
 "store": "ios",
