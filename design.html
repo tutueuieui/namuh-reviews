@@ -192,7 +192,9 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   }
 .totop{position:fixed;right:24px;bottom:24px;z-index:30;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s,background .15s}
 .totop.show{opacity:1;visibility:visible;transform:none}
-.totop:hover{background:var(--chip)}
+.totop:hover{box-shadow:0 6px 18px rgba(0,0,0,.16)}
+@media (prefers-color-scheme: light){.totop{background:#fff;border-color:transparent;box-shadow:0 2px 12px rgba(0,0,0,.12)}.totop:hover{background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.16)}}
+@media (prefers-color-scheme: dark){.totop:hover{background:var(--chip)}}
 .totop:focus-visible{outline:2px solid var(--ios);outline-offset:2px}
 .totop svg{width:20px;height:20px}
 @media (max-width:860px){.totop{right:16px;bottom:16px;width:44px;height:44px}}
