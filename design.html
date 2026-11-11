@@ -91,6 +91,7 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .heat thead th{font-size:13px;padding:4px 6px 8px;vertical-align:bottom}
 .heat tbody th{text-align:left;padding:0 12px 0 6px;position:sticky;left:0;background:var(--surface);z-index:1}
 .heat tbody th i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:7px}
+.heat th.corner{cursor:default;background:none}
 .heat th.on{color:var(--text);font-weight:700;background:var(--chip)}
 .heat td{position:relative;min-width:56px;height:42px;text-align:center;border-radius:7px;font-variant-numeric:tabular-nums;cursor:pointer;font-weight:500;font-size:14px;transition:box-shadow .1s,opacity .15s}
 .heat td.big{font-weight:700;font-size:16px}
@@ -111,6 +112,7 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .tip b{font-weight:700}
 .tip .s{color:var(--inv-sub)}
 .mlist{display:none}
+.heat-swipe{display:none;font-size:12px;color:var(--faint);margin:-4px 0 8px}
 .mrow{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--chip);cursor:pointer;font-size:15px}
 .mrow .n{color:var(--faint);font-size:13px;font-weight:600}
 .mrow .lb{min-width:0}
@@ -141,11 +143,17 @@ h2{font-size:21px;margin:0;font-weight:700;letter-spacing:-.02em}
 .dt-foot{margin-top:12px}
 @media (max-width:860px){
   .hot{grid-template-columns:1fr}
-  .heat-wrap{display:none}
-  .mlist{display:block}
   .dt-grid{grid-template-columns:1fr}
-  .heat-legend{display:none}
-  .hot-h{margin-top:0;padding-top:0;border-top:0}
+  /* 모바일: 히트맵을 그대로 보여주고 좌우 스크롤, 유형 이름 열은 고정 */
+  .heat{border-spacing:3px;font-size:13px}
+  .heat thead th{font-size:12px;padding:2px 2px 6px;white-space:normal;word-break:keep-all;line-height:1.3;min-width:40px}
+  .heat tbody th{font-size:13px;padding:0 8px 0 15px}
+  .heat tbody th,.heat thead th.corner{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:0 0 0 3px var(--surface)}
+  .heat thead th.corner{background:var(--surface)}
+  .heat td{min-width:40px;height:36px;font-size:13px;border-radius:6px}
+  .heat td.big{font-size:14px}
+  .heat-legend{font-size:12px;gap:4px 6px}
+  .heat-swipe{display:block}
 }
 
 /* 2단 */
@@ -188,7 +196,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
     .kpi{grid-template-columns:repeat(2,1fr);row-gap:16px}
   .kpi > div:nth-child(3){border-left:0}
   .panel{padding:20px 18px}
-  .heat-wrap{margin:0 -18px;padding:0 18px}
+  .heat-wrap{margin:0 -18px;padding:0 18px 0 0}
   }
 .totop{position:fixed;right:24px;bottom:24px;z-index:30;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s,background .15s}
 .totop.show{opacity:1;visibility:visible;transform:none}
@@ -231,6 +239,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
       <h2>화면 × 문제 유형</h2>
       <span class="hint">칸이나 카드를 누르면 상세가 열려요</span>
     </div>
+    <div class="heat-swipe">← 좌우로 밀어서 화면별로 볼 수 있어요 →</div>
     <div class="heat-wrap"><table class="heat" id="heat"></table></div>
     <div class="heat-legend"><span>적음</span><span class="ramp" id="ramp"></span><span>많음</span><span class="sep">·</span><span><i class="hd-l"></i>평균 ★1.5 이하</span><span class="sep">·</span><span>2건 이하는 점으로 표시</span><span class="sep">·</span><span>화면을 알 수 없는 리뷰와 긍정 반응은 맵에서 제외</span></div>
     <div class="hot-h" id="hot-h">가장 많이 언급된 문제 TOP 3</div>
@@ -369,7 +378,7 @@ function heat(voc) {
 
   // 히트맵
   const sel = S.type || S.screen;
-  let h = `<thead><tr><th style="cursor:default;background:none"></th>${cols.map((x) =>
+  let h = `<thead><tr><th class="corner"></th>${cols.map((x) =>
     `<th data-s="${esc(x)}" class="${S.screen === x ? "on" : ""}" title="${x === OTHER ? esc(S.others.join(", ")) : ""}">${esc(x)}</th>`).join("")}<th class="tot">합계</th></tr></thead><tbody>`;
   rows.forEach((t) => {
     const ty = typeOf(t);
