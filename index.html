@@ -222,6 +222,12 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
   .chips::-webkit-scrollbar{display:none}
   .chip{flex:none;scroll-snap-align:start}}
 @media (max-width:480px){.mini{grid-template-columns:repeat(2,1fr)}}
+.totop{position:fixed;right:24px;bottom:24px;z-index:30;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.12);opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s,background .15s}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover{background:var(--chip)}
+.totop:focus-visible{outline:2px solid var(--ios);outline-offset:2px}
+.totop svg{width:20px;height:20px}
+@media (max-width:860px){.totop{right:16px;bottom:16px;width:44px;height:44px}}
 </style>
 </head>
 <body>
@@ -611,6 +617,15 @@ document.querySelectorAll("details.acc[data-k]").forEach((d) => {
 let t; $("f-q").oninput = (e) => { clearTimeout(t); t = setTimeout(() => { S.q = e.target.value; S.shown = 30; render(); }, 200); };
 $("more").onclick = () => { S.shown += 30; render(); };
 addEventListener("resize", () => trend(inPeriod()));
+</script>
+<button class="totop" id="totop" type="button" aria-label="맨 위로" title="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<script>
+(() => {
+  const b = document.getElementById("totop");
+  const on = () => b.classList.toggle("show", scrollY > 600);
+  addEventListener("scroll", on, { passive: true }); on();
+  b.onclick = () => scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+})();
 </script>
 </body>
 </html>
