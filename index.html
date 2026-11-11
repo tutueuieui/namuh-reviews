@@ -14,7 +14,25 @@
   --ios:#2f62e6; --ios-soft:#e9effd;
   --bad:#e0483e; --mid:#e8a317; --star:#f2a516;
   --chip:#f0f2f5; --shadow:none;
+  --nav-hover:#eceef2; --nav-on:#e4e7ec; --mark:#fff0a8; --warm:#fff7e0; --quote:#f8f9fb;
+  --inv:#fff; --inv-sub:#c9ced6;
+  color-scheme:light dark;
 }
+@media (prefers-color-scheme: dark){
+:root{
+  --bg:#111317; --surface:#1a1d22; --line:#2c3038; --text:#e9ebef; --sub:#a3aab5; --faint:#6f7682;
+  --android:#3cc382; --android-soft:#173225;
+  --ios:#7397ff; --ios-soft:#1c2748;
+  --heat:96,136,255; --good:60,195,130;
+  --bad:#ff6b61; --mid:#f0b43a; --star:#f5b335; --chip:#252930;
+  --nav-hover:#1f2329; --nav-on:#2a2f37; --mark:#5c4a0c; --warm:#3a3117; --quote:#22262c;
+  --inv:#111317; --inv-sub:#4b515b;
+}
+img{opacity:.95}
+.heat tbody th i,.scat .top i,.rank .nm i,.chip i,.ver td.top i,.mrow i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.ctag{color:color-mix(in srgb,var(--cc) 55%,#fff) !important;background:color-mix(in srgb,var(--cc) 24%,transparent) !important}
+}
+
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 "Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
@@ -25,8 +43,8 @@ h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-wei
 .nav .brand{display:flex;align-items:center;gap:10px;padding:0 10px 22px;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.02em}
 .nav .brand img{width:30px;height:30px;border-radius:8px;flex:none;display:block}
 .nav a{display:block;padding:9px 12px;border-radius:8px;font-size:18px;font-weight:500;color:var(--sub);text-decoration:none;transition:background .15s,color .15s}
-.nav a:hover{background:#eceef2;color:var(--text)}
-.nav a.on{background:#e4e7ec;color:var(--text);font-weight:800}
+.nav a:hover{background:var(--nav-hover);color:var(--text)}
+.nav a.on{background:var(--nav-on);color:var(--text);font-weight:800}
 body{padding-left:216px}
 @media (max-width:860px){body{padding-left:0}.nav{position:sticky;bottom:auto;width:auto;flex-direction:row;align-items:center;gap:4px;padding:8px 16px}.nav .brand{padding:0 6px 0 0}.nav .brand span{display:none}.nav .brand img{width:28px;height:28px}.nav a{flex:1;text-align:center;font-size:14px;padding:8px}}
 .updated .sep{color:var(--faint)}
@@ -93,7 +111,7 @@ input[type=search]:focus{border-color:var(--text)}
 .rv .t{font-weight:600;font-size:17px;margin-top:12px}
 .rv .c{margin-top:12px;font-size:17px;font-weight:500;line-height:1.65;white-space:pre-wrap;word-break:break-word}
 .rv .t + .c{margin-top:4px}
-mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .side{padding:0;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto}
 .side .acc-head{padding:18px 20px}
 .side .acc-body{padding:0 20px 16px}
@@ -101,7 +119,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .acc-ttl .hint{font-size:14px;color:var(--faint)}
 .scat{padding:8px 10px;margin:0 -10px;border-radius:8px;cursor:pointer}
 .scat:hover{background:var(--chip)}
-.scat.on{background:#fff7e0}
+.scat.on{background:var(--warm)}
 .scat:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
 .scat .top{display:flex;align-items:center;gap:7px;font-size:15px}
 .scat .top i{width:9px;height:9px;border-radius:3px;flex:none}
@@ -114,7 +132,7 @@ mark{background:#fff0a8;color:inherit;border-radius:2px;padding:0 1px}
 .grid2 .panel{margin:0}
 .rank{display:grid;grid-template-columns:120px minmax(0,1fr) 92px 50px;gap:10px;align-items:center;font-size:15px;padding:5px 8px;margin:0 -8px;border-radius:8px;cursor:pointer}
 .rank:hover{background:var(--chip)}
-.rank.on{background:#fff7e0;font-weight:600}
+.rank.on{background:var(--warm);font-weight:600}
 .rank .nm{display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rank .nm i{width:9px;height:9px;border-radius:3px;flex:none}
 .rank .n,.rank .a{text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:14px;white-space:nowrap}
@@ -183,9 +201,9 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .wk-cat{display:grid;grid-template-columns:110px minmax(0,1fr) 76px;gap:10px;align-items:center;font-size:14px;margin:5px 0}
 .wk-cat .bar{height:7px}
 .wk-cat .n{text-align:right;font-variant-numeric:tabular-nums}
-.quote{font-size:15px;line-height:1.6;padding:10px 14px;border-radius:8px;background:#f8f9fb;margin-bottom:6px}
+.quote{font-size:15px;line-height:1.6;padding:10px 14px;border-radius:8px;background:var(--quote);margin-bottom:6px}
 .quote .meta{font-size:13px;color:var(--sub);margin-bottom:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.quote.good{background:#fff7e0}
+.quote.good{background:var(--warm)}
 .wk-empty{color:var(--sub);font-size:15px;padding:6px 0}
 @media (max-width:600px){.wk-kpi{grid-template-columns:repeat(2,1fr)}.wk-cat{grid-template-columns:100px 1fr 72px}}
 
@@ -194,8 +212,8 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--sub);font:inherit;font-size:14px;padding:5px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .chip i{width:7px;height:7px;border-radius:50%}
 .chip b{font-weight:600;color:var(--faint)}
-.chip.on{background:var(--text);color:#fff;border-color:var(--text)}
-.chip.on b{color:#c9ced6}
+.chip.on{background:var(--text);color:var(--inv);border-color:var(--text)}
+.chip.on b{color:var(--inv-sub)}
 .ctag{border-radius:5px;padding:1px 7px;font-size:13px;font-weight:600}
 @media (max-width:860px){.cat-grid{grid-template-columns:96px 1fr 1fr;gap:4px 8px}.cat-cell{grid-template-columns:1fr}.cat-cell .n{text-align:left}}
 @media (max-width:860px){.stores,.body{grid-template-columns:1fr}.side{display:none}.filters{position:static}
@@ -397,7 +415,7 @@ function weekly(weeks, idx) {
     const d = cur - prev, cls = neutral || Math.abs(d) < (digits ? 0.05 : 1) ? "flat" : d > 0 ? "up" : "down";
     return `<span class="delta ${cls} ${goodWhenUp ? "good" : ""}">${d > 0 ? "▲" : d < 0 ? "▼" : "–"}${Math.abs(d).toFixed(digits)}</span>`;
   };
-  const quote = (q, good) => `<div class="quote ${good ? "good" : ""}"><div class="meta"><span class="stars">${"★".repeat(q.rating)}<span class="off">${"★".repeat(5 - q.rating)}</span></span>${q.likes ? `<span>👍 ${q.likes}</span>` : ""}${q.cats.filter((n) => n !== "기타").map((n) => { const c = catOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}</div>${esc(q.content)}${q.content.length >= 200 ? "…" : ""}</div>`;
+  const quote = (q, good) => `<div class="quote ${good ? "good" : ""}"><div class="meta"><span class="stars">${"★".repeat(q.rating)}<span class="off">${"★".repeat(5 - q.rating)}</span></span>${q.likes ? `<span>👍 ${q.likes}</span>` : ""}${q.cats.filter((n) => n !== "기타").map((n) => { const c = catOf(n); return `<span class="ctag" style="--cc:${c.color};color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}</div>${esc(q.content)}${q.content.length >= 200 ? "…" : ""}</div>`;
   const stores = Object.entries(STORES).map(([k, name]) => {
     const x = w.stores[k];
     if (!x || !x.count) return "";
@@ -558,7 +576,7 @@ function list(a) {
       <div class="top">
         <span class="stars">${"★".repeat(r.rating)}<span class="off">${"★".repeat(5 - r.rating)}</span></span>
         <span>${fmtDate(r.d)}</span>
-        ${r.cats.map((n) => { const c = catOf(n); return `<span class="ctag" style="color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}
+        ${r.cats.map((n) => { const c = catOf(n); return `<span class="ctag" style="--cc:${c.color};color:${c.color};background:${c.color}1a">${esc(n)}</span>`; }).join("")}
         ${r.version ? `<span class="tag">v${esc(r.version)}</span>` : ""}
         ${r.replied ? `<span class="tag rep">답변 완료</span>` : ""}
         ${r.likes ? `<span>👍 ${r.likes}</span>` : ""}
