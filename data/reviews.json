@@ -1,13 +1,13 @@
 {
 "meta": {
-"updated": "2026-11-12T03:02:36.233218+00:00",
+"updated": "2026-11-12T11:18:12.596448+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 1
 },
 "ios": {
-"fetched": 500,
+"fetched": 0,
 "new": 0
 }
 },
@@ -15,18 +15,29 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4616027,
+"score": 2.4607024,
 "ratings": 12503,
 "version": "9.96"
 },
 "ios": {
-"score": 2.50647,
-"ratings": 3167,
+"score": 2.50536,
+"ratings": 3170,
 "version": "12.74"
 }
 }
 },
 "reviews": [
+{
+"id": "a_13fafd70-699e-49c8-b728-988cea4ed467",
+"store": "android",
+"rating": 2,
+"title": "",
+"content": "전체 다크모드가 있었으면 좋겠습니다.. 분할적인다크모드말고요..호가창,차트등등요.. 호가창에서도 프로그램매매 같이 보였으면 1등증권앱이 될거같습니다..",
+"version": "",
+"date": "2026-11-11T09:57:04+00:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_eda7916f-0d5d-4918-b2b8-c4350f98f2f1",
 "store": "android",
