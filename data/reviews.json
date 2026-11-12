@@ -1,10 +1,10 @@
 {
 "meta": {
-"updated": "2026-11-11T22:02:43.650689+00:00",
+"updated": "2026-11-12T03:02:36.233218+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 0
+"new": 1
 },
 "ios": {
 "fetched": 500,
@@ -15,18 +15,29 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4582639,
+"score": 2.4616027,
 "ratings": 12503,
 "version": "9.96"
 },
 "ios": {
-"score": 2.50599,
-"ratings": 3168,
+"score": 2.50647,
+"ratings": 3167,
 "version": "12.74"
 }
 }
 },
 "reviews": [
+{
+"id": "a_eda7916f-0d5d-4918-b2b8-c4350f98f2f1",
+"store": "android",
+"rating": 5,
+"title": "",
+"content": "로그인 대기화면 사진 좀 이쁜 걸로 바꿔주세요 카더가든 보내고 이쁜애로 바꿨다고 광고한 것치곤 a컷이 아니라 b컷급 사진으로 고른 거 같아요",
+"version": "9.96",
+"date": "2026-11-11T00:17:54+00:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14770338959",
 "store": "ios",
