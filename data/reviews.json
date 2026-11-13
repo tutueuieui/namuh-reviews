@@ -1,14 +1,14 @@
 {
 "meta": {
-"updated": "2026-11-13T08:02:05.043622+00:00",
+"updated": "2026-11-13T16:28:55.894927+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 0,
-"new": 0
+"fetched": 500,
+"new": 2
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,13 +20,35 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50566,
-"ratings": 3172,
+"score": 2.5052,
+"ratings": 3173,
 "version": "12.74"
 }
 }
 },
 "reviews": [
+{
+"id": "i_14781121052",
+"store": "ios",
+"rating": 1,
+"title": "얘네 앱 쓰면 자꾸 인증서 재발급 하라고 떠서 거래도 못 함 ㅋㅋ",
+"content": "쓰지 마셈 진짜 ㅋㅋ",
+"version": "12.74",
+"date": "2026-11-12T03:54:27-07:00",
+"likes": 0,
+"replied": false
+},
+{
+"id": "i_14780907939",
+"store": "ios",
+"rating": 1,
+"title": "어플 튕기는것좀  개선하라고 진짜",
+"content": "어플 튕기는거 개선좀 하라고 진짜 타증권사 써봐라 니들처럼 튕기나 하루이 몇번이고 사람 돌겠네 진짜",
+"version": "12.74",
+"date": "2026-11-12T02:37:24-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_1eba8eca-f4a5-48a6-b677-305fc3448e64",
 "store": "android",
