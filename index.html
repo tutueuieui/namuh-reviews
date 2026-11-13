@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <title>나무증권 리뷰 보드</title>
 <link rel="icon" href="assets/app-icon.jpg">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
@@ -230,13 +230,16 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .totop:focus-visible{outline:2px solid var(--ios);outline-offset:2px}
 .totop svg{width:20px;height:20px}
 @media (max-width:860px){.totop{right:16px;bottom:16px;width:44px;height:44px}}
+.nav .ns{display:none}
+@media (max-width:860px){.nav .nl{display:none}.nav .ns{display:inline}.nav a{white-space:nowrap}}
 </style>
 </head>
 <body>
 <nav class="nav" aria-label="보드 전환">
   <div class="brand"><img src="assets/app-icon.jpg" alt=""><span>나무증권 리뷰</span></div>
-  <a class="on" aria-current="page" href="./">전체 리뷰</a>
-  <a href="design.html">디자인·사용성 VOC</a>
+  <a class="on" aria-current="page" href="./"><span class="nl">전체 리뷰</span><span class="ns">전체</span></a>
+  <a href="design.html"><span class="nl">디자인·사용성 VOC</span><span class="ns">디자인 VOC</span></a>
+  <a href="backlog.html"><span class="nl">개선 백로그</span><span class="ns">백로그</span></a>
 </nav>
 <div class="wrap">
   <header>
