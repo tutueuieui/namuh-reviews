@@ -1,6 +1,6 @@
 {
 "meta": {
-"updated": "2026-11-13T22:39:54.628027+00:00",
+"updated": "2026-11-14T03:19:50.246140+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
@@ -8,7 +8,7 @@
 },
 "ios": {
 "fetched": 500,
-"new": 0
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,13 +20,24 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50566,
-"ratings": 3172,
+"score": 2.50473,
+"ratings": 3174,
 "version": "12.74"
 }
 }
 },
 "reviews": [
+{
+"id": "i_14781737296",
+"store": "ios",
+"rating": 1,
+"title": "인증서 발급이 안됨",
+"content": "로그인 하기 위해 인증서를 발급받아야 하는데 인증서 발급이 안 됨 그 사이에 주가 나락감 재산 날리고 싶으면 이 어플 쓰세요",
+"version": "12.74",
+"date": "2026-11-12T07:00:42-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14781121052",
 "store": "ios",
