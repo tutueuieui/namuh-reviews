@@ -1,13 +1,13 @@
 {
 "meta": {
-"updated": "2026-11-16T02:45:51.111699+00:00",
+"updated": "2026-11-16T11:25:24.614307+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 500,
+"fetched": 50,
 "new": 0
 }
 },
@@ -15,8 +15,8 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4682274,
-"ratings": 12508,
+"score": 2.4678361,
+"ratings": 12507,
 "version": "9.96"
 },
 "ios": {
