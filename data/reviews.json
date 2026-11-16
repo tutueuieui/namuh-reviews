@@ -1,13 +1,13 @@
 {
 "meta": {
-"updated": "2026-11-16T11:25:24.614307+00:00",
+"updated": "2026-11-16T22:07:55.359759+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 50,
+"fetched": 500,
 "new": 0
 }
 },
