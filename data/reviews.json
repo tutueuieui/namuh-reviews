@@ -1,14 +1,14 @@
 {
 "meta": {
-"updated": "2026-11-17T04:30:45.296737+00:00",
+"updated": "2026-11-17T14:28:13.111303+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 500,
-"new": 0
+"fetched": 400,
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -27,6 +27,17 @@
 }
 },
 "reviews": [
+{
+"id": "i_14795606038",
+"store": "ios",
+"rating": 3,
+"title": "듀오 최적화 부탁합니다",
+"content": "다른증권사보다 빠르게 해주세요",
+"version": "12.74",
+"date": "2026-11-15T15:48:32-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14784935393",
 "store": "ios",
