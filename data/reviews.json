@@ -1,21 +1,21 @@
 {
 "meta": {
-"updated": "2026-11-18T04:26:05.981426+00:00",
+"updated": "2026-11-18T14:02:45.723517+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 1
+"new": 0
 },
 "ios": {
 "fetched": 500,
-"new": 0
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4673913,
+"score": 2.4698997,
 "ratings": 12509,
 "version": "9.96"
 },
@@ -35,6 +35,17 @@
 "content": "계좌번호 복사도 없고 다크모드는 메뉴 UI만 적용이고 개선 좀 했으면 좋겠네요.",
 "version": "9.96",
 "date": "2026-11-17T00:51:34+00:00",
+"likes": 0,
+"replied": false
+},
+{
+"id": "i_14797601356",
+"store": "ios",
+"rating": 1,
+"title": "해외주식 소숫점",
+"content": "그래서 유지가 된다는거에요?\n아니면 이제 안할꺼라는거에요?\n이거 꽤 중요해서 안된다고 하면 다른 증권사로 갈아 타려구요",
+"version": "12.74",
+"date": "2026-11-16T05:21:55-07:00",
 "likes": 0,
 "replied": false
 },
