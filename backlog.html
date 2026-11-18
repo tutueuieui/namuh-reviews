@@ -222,7 +222,8 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
 .bi summary::-webkit-details-marker{display:none}
-.bi summary:hover{background:color-mix(in srgb,var(--chip) 55%,transparent)}
+.bi summary:hover{background:#fafbfc}
+@media (prefers-color-scheme: dark){.bi summary:hover{background:color-mix(in srgb,var(--chip) 55%,transparent)}}
 .bi summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
 .bi .rk{font-size:15px;font-weight:700;color:var(--faint);font-variant-numeric:tabular-nums;padding-top:2px}
 .bi .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
