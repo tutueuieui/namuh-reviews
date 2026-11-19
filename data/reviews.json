@@ -1,10 +1,10 @@
 {
 "meta": {
-"updated": "2026-11-18T21:58:59.477970+00:00",
+"updated": "2026-11-19T03:31:24.929697+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 0
+"new": 1
 },
 "ios": {
 "fetched": 500,
@@ -15,7 +15,7 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4698997,
+"score": 2.472408,
 "ratings": 12509,
 "version": "9.96"
 },
@@ -27,6 +27,17 @@
 }
 },
 "reviews": [
+{
+"id": "a_9cbdef03-b79b-4da2-866a-8686847f5b7d",
+"store": "android",
+"rating": 4,
+"title": "",
+"content": "거리내역이 이상해요 매도했는데 내역에는 매수한걸로 나와요 어디서 문의하나요",
+"version": "9.96",
+"date": "2026-11-18T03:29:03+00:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_b672d9a8-1636-4900-a702-648ca008e1a2",
 "store": "android",
