@@ -1,6 +1,6 @@
 {
 "meta": {
-"updated": "2026-11-19T21:39:19.583186+00:00",
+"updated": "2026-11-20T03:20:12.947317+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
@@ -15,18 +15,40 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.46995,
-"ratings": 12511,
+"score": 2.4707358,
+"ratings": 12512,
 "version": "9.96"
 },
 "ios": {
 "score": 2.50393,
 "ratings": 3177,
-"version": "12.74"
+"version": "12.75"
 }
 }
 },
 "reviews": [
+{
+"id": "a_b0f9cd95-e644-4128-ae5b-7da83670bd5d",
+"store": "android",
+"rating": 1,
+"title": "",
+"content": "너무 후짐 시가 매수 안됨 천원거래중인걸 1300뭔에 매수 누름 시가 매수가 되야하는데 1300여기거를 매수해버리네 ㅡㅡ 알아서 최저가 매도물량을 매수해야지 이런것도 못한다고?",
+"version": "9.96",
+"date": "2026-11-19T02:01:03+00:00",
+"likes": 0,
+"replied": false
+},
+{
+"id": "a_f1d7c578-f8d9-41f4-84c8-fe07bfcc2718",
+"store": "android",
+"rating": 1,
+"title": "",
+"content": "차트 멈춤 현상 언제 고처지는거지 멈춰질때마다 다시까는게 너무 짜증나네",
+"version": "9.96",
+"date": "2026-11-19T00:38:36+00:00",
+"likes": 0,
+"replied": true
+},
 {
 "id": "a_a275c535-e533-46e6-a66c-72bdc62cdd85",
 "store": "android",
@@ -2137,17 +2159,6 @@
 "version": "9.88",
 "date": "2026-08-06T00:13:42+00:00",
 "likes": 1,
-"replied": true
-},
-{
-"id": "a_f1d7c578-f8d9-41f4-84c8-fe07bfcc2718",
-"store": "android",
-"rating": 1,
-"title": "",
-"content": "글로벌수소 차세대 연료 차트는 안나오나?",
-"version": "9.88",
-"date": "2026-08-05T23:51:36+00:00",
-"likes": 0,
 "replied": true
 },
 {
