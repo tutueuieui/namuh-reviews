@@ -1,6 +1,6 @@
 {
 "meta": {
-"updated": "2026-11-21T11:08:21.170826+00:00",
+"updated": "2026-11-21T17:59:23.385278+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
@@ -8,7 +8,7 @@
 },
 "ios": {
 "fetched": 500,
-"new": 0
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,13 +20,24 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50393,
-"ratings": 3177,
+"score": 2.50346,
+"ratings": 3178,
 "version": "12.75"
 }
 }
 },
 "reviews": [
+{
+"id": "i_14810909479",
+"store": "ios",
+"rating": 1,
+"title": "주문도 못하게 느려지고 이상해 졌네요",
+"content": "내부에서 다양한 테스트 품질검사 해주세요 정말 화납니다\n타이밍이 중요한데 업데이트 이후 가로보기가 돼서 좋았는데 \n무진장 느리고 버튼 누를 때마다 멍때립니다",
+"version": "12.75",
+"date": "2026-11-19T18:31:07-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_b0f9cd95-e644-4128-ae5b-7da83670bd5d",
 "store": "android",
