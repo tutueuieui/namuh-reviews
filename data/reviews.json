@@ -1,13 +1,13 @@
 {
 "meta": {
-"updated": "2026-11-21T23:21:11.025982+00:00",
+"updated": "2026-11-22T06:54:04.584035+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 500,
+"fetched": 50,
 "new": 0
 }
 },
@@ -20,8 +20,8 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50393,
-"ratings": 3177,
+"score": 2.50346,
+"ratings": 3178,
 "version": "12.75"
 }
 }
