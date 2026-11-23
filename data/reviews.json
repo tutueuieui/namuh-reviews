@@ -1,10 +1,10 @@
 {
 "meta": {
-"updated": "2026-11-22T21:49:23.032487+00:00",
+"updated": "2026-11-23T02:48:59.220351+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 0
+"new": 1
 },
 "ios": {
 "fetched": 500,
@@ -15,18 +15,29 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.465719,
-"ratings": 12508,
+"score": 2.4670007,
+"ratings": 12509,
 "version": "9.96"
 },
 "ios": {
 "score": 2.50346,
 "ratings": 3178,
-"version": "12.75"
+"version": "12.76"
 }
 }
 },
 "reviews": [
+{
+"id": "a_fb4a7154-d952-40c9-bb8d-641897d96157",
+"store": "android",
+"rating": 4,
+"title": "",
+"content": "빠르면 ᆢ2 ᆢ2 ᆢ2 ㆍ2ㆍㅂㆍ3",
+"version": "9.96",
+"date": "2026-11-22T01:44:54+00:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14810909479",
 "store": "ios",
