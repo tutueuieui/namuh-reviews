@@ -1,27 +1,27 @@
 {
 "meta": {
-"updated": "2026-11-24T10:58:03.924346+00:00",
+"updated": "2026-11-24T21:14:46.325559+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 1
+"new": 0
 },
 "ios": {
 "fetched": 500,
-"new": 0
+"new": 1
 }
 },
 "android_id": "com.wooriwm.txsmart",
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4644945,
-"ratings": 12509,
+"score": 2.4632108,
+"ratings": 12508,
 "version": "9.96"
 },
 "ios": {
-"score": 2.50346,
-"ratings": 3178,
+"score": 2.50299,
+"ratings": 3179,
 "version": "12.76"
 }
 }
@@ -35,6 +35,17 @@
 "content": "앱 관리를 너무안하는것같음 오류가 엄청많음",
 "version": "9.96",
 "date": "2026-11-23T06:20:18+00:00",
+"likes": 0,
+"replied": false
+},
+{
+"id": "i_14822956191",
+"store": "ios",
+"rating": 1,
+"title": "투자인증서 발급 안됨",
+"content": "넘어가질않음 ; 열받네진짜",
+"version": "12.76",
+"date": "2026-11-22T18:27:39-07:00",
 "likes": 0,
 "replied": false
 },
