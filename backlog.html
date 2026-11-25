@@ -247,6 +247,19 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .pill.pr-높음{--pc:var(--bad)}
 .pill.pr-보통{--pc:#c27c00}
 .pill.pr-낮음{--pc:var(--faint)}
+.axs{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px}
+.ax{display:inline-flex;align-items:center;gap:3px;font-size:13px;color:var(--sub)}
+.ax em{font-style:normal;margin-right:4px}
+.ax i{width:14px;height:6px;border-radius:2px;background:var(--chip)}
+.ax b{font-weight:600;margin-left:5px;color:var(--text)}
+.ax.l1 i:nth-of-type(1),.ax.l2 i:nth-of-type(-n+2),.ax.l3 i{background:var(--axc)}
+.ax,.why > div{--axc:var(--ios)}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.why > div{background:var(--quote);border-radius:10px;padding:12px 14px}
+.why h3{margin-bottom:6px}
+.why .lvt{color:var(--text);font-weight:700;margin-left:2px}
+.why ul{margin:0;padding:0;list-style:none;font-size:14px;line-height:1.65;color:var(--text)}
+.why li::before{content:"·";color:var(--faint);margin-right:6px}
 .up-n{color:var(--bad);font-weight:600}
 .dn-n{color:var(--android);font-weight:600}
 .bi .bd{padding:0 20px 22px 68px}
@@ -271,6 +284,9 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   .bi .tt{font-size:16px}
   .bi .bd{padding:0 16px 18px}
   .bd-grid{grid-template-columns:1fr}
+  .why{grid-template-columns:1fr;gap:8px}
+  .axs{flex-direction:column;gap:3px}
+  .ax em{min-width:72px}
   .bl-bar{padding:12px}
   .bi .mt{gap:2px 12px}
   .bi .mt > span + span::before{display:none}
@@ -297,7 +313,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
       <div class="updated" id="updated">불러오는 중…</div>
     </div>
   </header>
-  <p class="bl-intro">디자인·사용성 VOC를 <b>화면 × 문제 유형</b> 단위로 묶어 개선 후보로 정리했어요. 리뷰가 5건 이상 쌓인 조합이 자동으로 올라오고, 우선순위는 언급 수·최근 증가·낮은 별점·요청 문장을 함께 반영해요.</p>
+  <p class="bl-intro">디자인·사용성 VOC를 <b>화면 × 문제 유형</b> 단위로 묶어 개선 후보로 정리했어요. 리뷰가 5건 이상 쌓인 조합이 자동으로 올라오고, 순위는 단순 건수가 아니라 <b>고객 영향도</b>(별점·저평점 비율·규모·화면 중요도·공감), <b>반복 발생</b>(몇 달·몇 주에 걸쳐 계속 나오는지), <b>개선 가능성</b>(디자인으로 풀 수 있는 유형인지·요청이 구체적인지)을 4 : 3.5 : 2.5로 합쳐 매겨요.</p>
 
   <section class="card bl-kpi" id="kpi"></section>
 
@@ -305,7 +321,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
     <div class="seg" id="f-status" aria-label="상태"></div>
     <span class="sp"></span>
     <div class="seg" id="f-sort" aria-label="정렬">
-      <button data-v="pri" class="on">우선순위순</button><button data-v="recent">최근 증가순</button>
+      <button data-v="pri" class="on">종합</button><button data-v="imp">영향도</button><button data-v="rec">반복</button><button data-v="fix">개선 가능성</button>
     </div>
   </div>
   <div class="bl-list" id="list"></div>
@@ -322,6 +338,15 @@ const NONE = "화면 미상";
 const STATUS = ["신규", "검토중", "진행중", "완료", "보류"];
 const MIN = 5;
 const S = { D: null, B: {}, items: [], status: "", sort: "pri" };
+// 화면 중요도: 돈·거래와 직결된 화면일수록 고객 영향이 큼
+const CRIT = { "주문": 1, "잔고·자산": 1, "로그인·인증": 1, "현재가·종목": 1, "차트": .8, "관심종목": .8, "홈·첫 화면": .8, "계좌개설": .8, "메뉴·검색": .6, "시황·뉴스": .6, "위젯·알림": .6 };
+// 유형별 개선 난이도: 디자인으로 바로 풀 수 있는 유형일수록 높음 (광고·개편 반발·태블릿은 정책·개발 규모가 걸림)
+const FIX = { "가독성": .9, "설정·개인화": .9, "다크모드": .9, "찾기 어려움": .9, "시각 스타일": .9, "조작·터치": .65, "레이아웃·화면 배치": .65, "복잡·정보 과다": .6, "광고·팝업 피로": .35, "개편·변경 반발": .35, "태블릿·폴더블": .35 };
+const AX = [["imp", "고객 영향도"], ["rec", "반복 발생"], ["fix", "개선 가능성"]];
+const lv = (p) => p >= 2 / 3 ? 3 : p >= 1 / 3 ? 2 : 1;
+const LV = ["", "낮음", "보통", "높음"];
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const lg = (v, max) => clamp01(Math.log(1 + v) / Math.log(1 + max));
 const $ = (id) => document.getElementById(id);
 const DAY = 864e5;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
@@ -382,17 +407,39 @@ Promise.all([
     [...a].sort((p, q) => q.score - p.score).forEach((r) => r.reqs.forEach((q) => reqs.push({ q, r, w: rel(q) })));
     reqs.sort((p, q) => q.w - p.w);
     const av = avg(a);
-    // 우선순위 점수: 언급 수 + 최근 30일(가중) + 증가분 + 요청(상한) + 낮은 별점 + 공감(상한)
     const likes = a.reduce((s, r) => s + (r.likes || 0), 0);
-    const score = a.length + r30 * 2 + Math.max(0, r30 - p30) + Math.min(reqs.length, 10) * 0.3 + (av && av <= 1.5 ? 3 : av <= 2 ? 1.5 : 0) + Math.min(likes, 10) * 0.3;
+    const n = a.length || 1;
+    // 고객 영향도: 별점 심각도 + 저평점 비율 + 언급 규모 + 화면 중요도 + 공감 수
+    const low = a.filter((r) => r.rating <= 2).length / n;
+    const crit = CRIT[sc] ?? .6;
+    const imp = a.length ? .3 * (5 - av) / 4 + .15 * low + .25 * lg(a.length, 30) + .15 * crit + .15 * lg(likes, 20) : 0;
+    // 반복 발생: 최근 9개월 중 언급된 달 수 + 최근 12주 중 언급된 주 수 + 최근 30일 추세
+    const mon = new Set(a.filter((r) => age(r) < 274 * DAY).map((r) => r.d.getFullYear() * 12 + r.d.getMonth())).size;
+    const wks = new Set(a.filter((r) => age(r) < 84 * DAY).map((r) => Math.floor(age(r) / (7 * DAY)))).size;
+    const rec = a.length ? .55 * clamp01(mon / 6) + .25 * clamp01(wks / 4) + .2 * (r30 ? (r30 >= p30 ? 1 : .5) : 0) : 0;
+    // 개선 가능성: 유형별 난이도 + 요청이 구체적인 리뷰 비율(해결 방향이 분명할수록 높음)
+    const reqShare = a.filter((r) => r.reqs.length).length / n;
+    const fixBase = FIX[t] ?? .6;
+    const fix = .7 * fixBase + .3 * clamp01(reqShare / .5);
+    const why = {
+      imp: [`평균 ★${a.length ? av.toFixed(1) : "–"}`, `저평점(★1~2) ${Math.round(low * 100)}%`, `리뷰 ${a.length}건`, likes ? `공감 ${likes}` : "", crit >= 1 ? "거래 핵심 화면" : crit >= .8 ? "자주 쓰는 화면" : ""].filter(Boolean),
+      rec: [`최근 9개월 중 ${mon}개월 언급`, `최근 12주 중 ${wks}주 언급`, r30 ? `최근 30일 ${r30}건${r30 > p30 ? " (증가)" : r30 < p30 ? " (감소)" : ""}` : "최근 30일 언급 없음"],
+      fix: [fixBase >= .9 ? "화면 설계로 바로 풀 수 있는 유형" : fixBase >= .6 ? "구조 조정이 필요한 유형" : t === "광고·팝업 피로" ? "사업·정책 판단이 걸린 유형" : t === "개편·변경 반발" ? "되돌리기 어려운 개편 이슈" : "개발 규모가 큰 유형", `요청이 담긴 리뷰 ${Math.round(reqShare * 100)}%`],
+    };
     let after = null;
     if (b.done) {
       const dt = new Date(b.done + "T00:00:00+09:00");
       after = { dt, n: a.filter((r) => r.d >= dt).length, before: a.filter((r) => r.d < dt && dt - r.d < 30 * DAY).length, days: Math.max(1, Math.round((now - dt) / DAY)) };
     }
-    return { k, sc, t, a, n: a.length, r30, p30, av, reqs, score, status: STATUS.includes(b.status) ? b.status : "신규", note: b.note || "", after,
+    return { k, sc, t, a, n: a.length, r30, p30, av, reqs, imp, rec, fix, why, status: STATUS.includes(b.status) ? b.status : "신규", note: b.note || "", after,
       last: a.reduce((m, r) => r.d > m ? r.d : m, new Date(0)) };
   });
+  // 축마다 후보들 사이 상대 순위(0~1)로 바꿔서 높음·보통·낮음을 나누고, 종합은 영향도 40% · 반복 35% · 개선 가능성 25%
+  AX.forEach(([k]) => {
+    const vs = S.items.map((x) => x[k]).sort((p, q) => p - q), m = Math.max(1, vs.length - 1);
+    S.items.forEach((x) => x[k + "P"] = (vs.indexOf(x[k]) + vs.lastIndexOf(x[k])) / 2 / m);
+  });
+  S.items.forEach((x) => x.score = .4 * x.impP + .35 * x.recP + .25 * x.fixP);
   // 우선순위: 진행 전 항목(신규·검토중·진행중) 안에서 점수 순위로 상위 5 높음, 다음 10 보통
   const open = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score);
   open.forEach((x, i) => x.pri = i < 5 ? "높음" : i < 15 ? "보통" : "낮음");
@@ -414,7 +461,7 @@ function render() {
   $("f-status").querySelectorAll("button").forEach((b) => b.onclick = () => { S.status = b.dataset.v; render(); });
 
   const rankOf = { 신규: 0, 검토중: 0, 진행중: 0, 완료: 1, 보류: 2 };
-  const key = S.sort === "recent" ? (x) => (x.r30 - x.p30) * 100 + x.r30 : (x) => x.score;
+  const key = S.sort === "pri" ? (x) => x.score : (x) => x[S.sort + "P"] + x.score * 1e-3;
   const rows = S.items.filter((x) => !S.status || x.status === S.status)
     .sort((p, q) => rankOf[p.status] - rankOf[q.status] || key(q) - key(p));
   if (!rows.length) { $("list").innerHTML = `<div class="empty">${S.status ? `'${S.status}' 상태인 항목이 없어요` : "아직 개선 후보가 없어요"}</div>`; return; }
@@ -438,6 +485,7 @@ function render() {
         <div>
           <div class="hd"><span class="tt"><i style="background:${ty.color}"></i>${esc(x.sc)}<span>×</span>${esc(x.t)}</span>
             <span class="pill st-${x.status}">${x.status}</span>${x.pri ? `<span class="pill pr-${x.pri}">우선순위 ${x.pri}</span>` : ""}</div>
+          <div class="axs">${AX.map(([k, l]) => { const v = lv(x[k + "P"]); return `<span class="ax l${v}" title="${l} ${LV[v]}"><em>${l}</em><i></i><i></i><i></i><b>${LV[v]}</b></span>`; }).join("")}</div>
           <div class="mt"><span>리뷰 <b>${x.n}</b>건</span><span>최근 30일 <b>${x.r30}</b>건 ${trend}</span><span>평균 <span class="${x.av && x.av <= 1.5 ? "lo" : ""}">★${x.av ? x.av.toFixed(1) : "–"}</span></span><span>요청 ${x.reqs.length}개</span>${x.n ? `<span>마지막 언급 ${md(x.last)}</span>` : ""}</div>
           ${top ? `<div class="qt">“${esc(top.replace(/\s+/g, " "))}”</div>` : ""}
         </div>
@@ -446,6 +494,7 @@ function render() {
       <div class="bd">
         ${x.note ? `<div class="memo"><b>메모</b>${esc(x.note)}</div>` : ""}
         ${after}
+        <div class="why">${AX.map(([k, l]) => { const v = lv(x[k + "P"]); return `<div class="l${v}"><h3>${l} <span class="lvt">${LV[v]}</span></h3><ul>${x.why[k].map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>`; }).join("")}</div>
         <div class="bd-grid">
           <div><h3>요청 문장 <span class="dt-note">${x.reqs.length}개</span></h3>${reqHtml}</div>
           <div><h3>대표 리뷰 <span class="dt-note">영향도순 3건</span></h3>${revHtml}</div>
