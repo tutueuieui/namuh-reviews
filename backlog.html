@@ -291,9 +291,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   .bi .mt{gap:2px 12px}
   .bi .mt > span + span::before{display:none}
   .bl-bar .sp{display:none}
-  #f-status{max-width:100%;overflow-x:auto;scrollbar-width:none}
-  #f-status::-webkit-scrollbar{display:none}
-  #f-status button,#f-sort button{white-space:nowrap;padding:6px 11px;flex:none}
+  #f-sort button{white-space:nowrap;padding:6px 11px;flex:none}
 }
 .nav .ns{display:none}
 @media (max-width:860px){.nav .nl{display:none}.nav .ns{display:inline}.nav a{white-space:nowrap}}
@@ -318,8 +316,6 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   <section class="card bl-kpi" id="kpi"></section>
 
   <div class="card bl-bar">
-    <div class="seg" id="f-status" aria-label="상태"></div>
-    <span class="sp"></span>
     <div class="seg" id="f-sort" aria-label="정렬">
       <button data-v="pri" class="on">종합</button><button data-v="imp">영향도</button><button data-v="rec">반복</button><button data-v="fix">개선 가능성</button>
     </div>
@@ -457,8 +453,6 @@ function render() {
     ["완료", cnt("완료"), "개", cnt("보류") ? `보류 ${cnt("보류")}개` : "완료 후 재언급을 추적해요"],
   ].map(([l, v, u, s]) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`).join("");
 
-  $("f-status").innerHTML = ["", ...STATUS].map((s) => `<button data-v="${s}" class="${S.status === s ? "on" : ""}">${s || "전체"}<span class="cnt">${cnt(s)}</span></button>`).join("");
-  $("f-status").querySelectorAll("button").forEach((b) => b.onclick = () => { S.status = b.dataset.v; render(); });
 
   const rankOf = { 신규: 0, 검토중: 0, 진행중: 0, 완료: 1, 보류: 2 };
   const key = S.sort === "pri" ? (x) => x.score : (x) => x[S.sort + "P"] + x.score * 1e-3;
