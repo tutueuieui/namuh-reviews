@@ -210,7 +210,9 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 @media (max-width:860px){.totop{right:16px;bottom:16px;width:44px;height:44px}}
 
 /* 백로그 */
-.bl-intro{font-size:15px;color:var(--sub);margin:-8px 0 20px;line-height:1.6}
+.bl-intro{font-size:15px;color:var(--sub);margin:-8px 0 20px;line-height:1.7;padding:0;list-style:none}
+.bl-intro li{position:relative;padding-left:14px;word-break:keep-all}
+.bl-intro li::before{content:"-";position:absolute;left:0;color:var(--faint)}
 .bl-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:20px 8px;margin-bottom:16px}
 .bl-kpi > div{padding:2px 20px}
 .bl-kpi > div + div{border-left:1px solid var(--chip)}
@@ -327,11 +329,15 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
       <div class="updated" id="updated">불러오는 중…</div>
     </div>
   </header>
-  <p class="bl-intro">디자인·사용성 VOC를 <b>화면 × 문제 유형</b> 단위로 묶어 개선 후보로 정리했어요. 리뷰가 5건 이상 쌓인 조합이 자동으로 올라오고, 순위는 단순 건수가 아니라 <b>고객 영향도</b>(별점·저평점 비율·규모·화면 중요도·공감), <b>반복 발생</b>(몇 달·몇 주에 걸쳐 계속 나오는지), <b>개선 가능성</b>(디자인으로 풀 수 있는 유형인지·요청이 구체적인지)을 4 : 3.5 : 2.5로 합쳐 매겨요.</p>
-
-  <section class="card ag" id="agenda" aria-label="핵심 아젠다"></section>
+  <ul class="bl-intro">
+    <li>디자인·사용성 VOC를 <b>화면 × 문제 유형</b>으로 묶어 정리</li>
+    <li>리뷰 5건 이상 쌓인 조합이 자동으로 후보에 올라옴</li>
+    <li>순위 = <b>고객 영향도</b> 40% + <b>반복 발생</b> 35% + <b>개선 가능성</b> 25%</li>
+  </ul>
 
   <section class="card bl-kpi" id="kpi"></section>
+
+  <section class="card ag" id="agenda" aria-label="핵심 아젠다"></section>
 
   <div class="card bl-bar">
     <input type="search" id="q" placeholder="화면, 문제 유형, 리뷰 내용 검색" aria-label="백로그 검색">
