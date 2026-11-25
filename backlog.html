@@ -222,6 +222,23 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .bl-bar .sp{flex:1}
 #f-sort{margin-left:auto}
 .bl-list{background:var(--surface);border-radius:14px;overflow:hidden}
+.ag{padding:20px 18px 12px;margin-bottom:16px}
+.ag .ag-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:0 8px 8px}
+.ag .ag-h b{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.ag .ag-h span{font-size:13px;color:var(--faint)}
+.ag ol{list-style:none;margin:0;padding:0}
+.ag li + li{border-top:1px solid var(--line)}
+.ag button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 8px;border-radius:10px;cursor:pointer}
+.ag button:hover{background:#fafbfc}
+@media (prefers-color-scheme: dark){.ag button:hover{background:color-mix(in srgb,var(--chip) 35%,transparent)}}
+.ag button:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
+.ag .n{font-size:15px;font-weight:700;color:var(--ios);font-variant-numeric:tabular-nums}
+.ag .tl{font-size:16px;font-weight:600;line-height:1.4}
+.ag .sc{font-size:13px;color:var(--sub);margin-top:2px}
+.ag .ct{font-size:13px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ag .ct b{color:var(--text);font-weight:600}
+.ag .tl,.ag .sc{word-break:keep-all}
+@media (max-width:860px){.ag{padding:16px 12px 8px}.ag button{grid-template-columns:22px minmax(0,1fr);align-items:start;row-gap:4px}.ag .n{padding-top:1px}.ag .ct{grid-column:2}}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
 .bi summary::-webkit-details-marker{display:none}
@@ -311,6 +328,8 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
     </div>
   </header>
   <p class="bl-intro">디자인·사용성 VOC를 <b>화면 × 문제 유형</b> 단위로 묶어 개선 후보로 정리했어요. 리뷰가 5건 이상 쌓인 조합이 자동으로 올라오고, 순위는 단순 건수가 아니라 <b>고객 영향도</b>(별점·저평점 비율·규모·화면 중요도·공감), <b>반복 발생</b>(몇 달·몇 주에 걸쳐 계속 나오는지), <b>개선 가능성</b>(디자인으로 풀 수 있는 유형인지·요청이 구체적인지)을 4 : 3.5 : 2.5로 합쳐 매겨요.</p>
+
+  <section class="card ag" id="agenda" aria-label="핵심 아젠다"></section>
 
   <section class="card bl-kpi" id="kpi"></section>
 
@@ -437,8 +456,28 @@ Promise.all([
   open.forEach((x, i) => x.pri = i < 5 ? "높음" : i < 15 ? "보통" : "낮음");
   const u = new Date((d.meta || {}).updated);
   $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })}`;
+  renderAgenda();
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
+
+// 핵심 아젠다: 진행 전 상위 15개 항목을 문제 유형으로 묶어 점수 합이 큰 5개
+const AG = { "설정·개인화": "화면 구성을 내 마음대로 설정할 수 있게", "조작·터치": "자주 쓰는 조작을 더 쉽고 빠르게", "개편·변경 반발": "개편으로 바뀐 화면·기능 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자가 더 잘 읽히게", "시각 스타일": "화면 디자인 톤 정리", "찾기 어려움": "기능·메뉴를 찾기 쉽게", "레이아웃·화면 배치": "화면 배치·정보 위치 정리", "복잡·정보 과다": "한 화면의 정보량 줄이기", "광고·팝업 피로": "광고·팝업 노출 줄이기", "태블릿·폴더블": "태블릿·폴더블 화면 대응" };
+function renderAgenda() {
+  const top = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score).slice(0, 15);
+  const g = {};
+  top.forEach((x) => (g[x.t] ||= []).push(x));
+  const ags = Object.entries(g).map(([t, xs]) => ({ t, xs, s: xs.reduce((a, x) => a + x.score, 0), n: new Set(xs.flatMap((x) => x.a)).size }))
+    .sort((p, q) => q.s - p.s).slice(0, 5);
+  if (!ags.length) { $("agenda").hidden = true; return; }
+  $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${ags.length}</b><span>우선순위 상위 15개 항목을 문제 유형으로 묶었어요</span></div><ol>${ags.map((a, i) => {
+    const sc = a.xs.map((x) => x.sc), shown = sc.slice(0, 3).join(" · ") + (sc.length > 3 ? ` 외 ${sc.length - 3}개` : "");
+    return `<li><button type="button" data-t="${esc(a.t)}"><span class="n">${i + 1}</span><div><div class="tl">${esc(AG[a.t] || a.t)}</div><div class="sc">${esc(a.t)} · ${esc(shown)}</div></div><span class="ct">리뷰 <b>${a.n}</b>건</span></button></li>`;
+  }).join("")}</ol>`;
+  $("agenda").querySelectorAll("button").forEach((b) => b.onclick = () => {
+    S.q = b.dataset.t; $("q").value = S.q; render();
+    $("q").closest(".bl-bar").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  });
+}
 
 function render() {
   const cnt = (s) => S.items.filter((x) => !s || x.status === s).length;
