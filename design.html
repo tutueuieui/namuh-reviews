@@ -259,7 +259,6 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
     <div class="seg" id="f-sort" aria-label="정렬">
       <button data-v="new" class="on">최신순</button><button data-v="impact">영향도순</button>
     </div>
-    <button class="btn" id="csv" title="지금 걸러진 리뷰를 엑셀용 CSV로 저장">CSV 내보내기</button>
   </section>
   <div class="filt" id="filt"></div>
   <div class="list" id="list"></div>
@@ -504,18 +503,6 @@ function list(voc) {
   $("more").hidden = a.length <= S.shown;
 }
 
-function csv() {
-  const a = filtered(pick(scope().filter((r) => r.types.length)));
-  const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const rows = [["날짜", "스토어", "별점", "버전", "문제 유형", "화면", "개선 요청 문장", "공감", "제목", "내용"]].concat(a.map((r) => [
-    fmtDate(r.d), STORES[r.store], r.rating, r.version || "", r.types.join(", "), r.screens.join(", "), r.reqs.join(" / "), r.likes || 0, r.title, r.content]));
-  const blob = new Blob(["﻿" + rows.map((x) => x.map(cell).join(",")).join("\r\n")], { type: "text/csv;charset=utf-8" });
-  const el = document.createElement("a");
-  el.href = URL.createObjectURL(blob);
-  el.download = `나무증권_디자인VOC_${[S.store && STORES[S.store], S.type, S.screen].filter(Boolean).join("_") || "전체"}_${fmtDate(new Date()).replace(/\./g, "")}.csv`;
-  el.click(); setTimeout(() => URL.revokeObjectURL(el.href), 1000);
-}
-
 const seg = (id, fn) => $(id).querySelectorAll("button").forEach((b) => b.onclick = () => {
   $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); fn(b.dataset.v);
 });
@@ -524,7 +511,6 @@ seg("f-period", (v) => { S.period = +v; S.shown = 20; render(); });
 seg("f-sort", (v) => { S.sort = v; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); });
 let tm; $("f-q").oninput = (e) => { clearTimeout(tm); tm = setTimeout(() => { S.q = e.target.value; S.shown = 20; list(pick(scope().filter((r) => r.types.length))); }, 200); };
 $("more").onclick = () => { S.shown += 20; list(pick(scope().filter((r) => r.types.length))); };
-$("csv").onclick = csv;
 </script>
 <button class="totop" id="totop" type="button" aria-label="맨 위로" title="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <script>
