@@ -219,6 +219,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .bl-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;margin-bottom:12px}
 .bl-bar .sp{flex:1}
 #f-sort{margin-left:auto}
+#q{flex:0 1 340px;min-width:0}
 .bl-list{background:var(--surface);border-radius:14px;overflow:hidden}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
@@ -292,6 +293,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   .bi .mt > span + span::before{display:none}
   .bl-bar .sp{display:none}
   #f-sort button{white-space:nowrap;padding:6px 11px;flex:none}
+  #q{flex:1 1 100%}
 }
 .nav .ns{display:none}
 @media (max-width:860px){.nav .nl{display:none}.nav .ns{display:inline}.nav a{white-space:nowrap}}
@@ -316,6 +318,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   <section class="card bl-kpi" id="kpi"></section>
 
   <div class="card bl-bar">
+    <input type="search" id="q" placeholder="화면, 문제 유형, 리뷰 내용 검색" aria-label="백로그 검색">
     <div class="seg" id="f-sort" aria-label="정렬">
       <button data-v="pri" class="on">종합</button><button data-v="imp">영향도</button><button data-v="rec">반복</button><button data-v="fix">개선 가능성</button>
     </div>
@@ -333,7 +336,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 const NONE = "화면 미상";
 const STATUS = ["신규", "검토중", "진행중", "완료", "보류"];
 const MIN = 5;
-const S = { D: null, B: {}, items: [], status: "", sort: "pri" };
+const S = { D: null, B: {}, items: [], status: "", sort: "pri", q: "" };
 // 화면 중요도: 돈·거래와 직결된 화면일수록 고객 영향이 큼
 const CRIT = { "주문": 1, "잔고·자산": 1, "로그인·인증": 1, "현재가·종목": 1, "차트": .8, "관심종목": .8, "홈·첫 화면": .8, "계좌개설": .8, "메뉴·검색": .6, "시황·뉴스": .6, "위젯·알림": .6 };
 // 유형별 개선 난이도: 디자인으로 바로 풀 수 있는 유형일수록 높음 (광고·개편 반발·태블릿은 정책·개발 규모가 걸림)
@@ -456,9 +459,11 @@ function render() {
 
   const rankOf = { 신규: 0, 검토중: 0, 진행중: 0, 완료: 1, 보류: 2 };
   const key = S.sort === "pri" ? (x) => x.score : (x) => x[S.sort + "P"] + x.score * 1e-3;
-  const rows = S.items.filter((x) => !S.status || x.status === S.status)
+  const q = S.q.trim().toLowerCase();
+  const hit = (x) => !q || (x.sc + " " + x.t).toLowerCase().includes(q) || x.a.some((r) => (r.title + " " + r.content).toLowerCase().includes(q));
+  const rows = S.items.filter((x) => (!S.status || x.status === S.status) && hit(x))
     .sort((p, q) => rankOf[p.status] - rankOf[q.status] || key(q) - key(p));
-  if (!rows.length) { $("list").innerHTML = `<div class="empty">${S.status ? `'${S.status}' 상태인 항목이 없어요` : "아직 개선 후보가 없어요"}</div>`; return; }
+  if (!rows.length) { $("list").innerHTML = `<div class="empty">${q ? `'${esc(S.q.trim())}'에 해당하는 항목이 없어요` : "아직 개선 후보가 없어요"}</div>`; return; }
 
   $("list").innerHTML = rows.map((x, i) => {
     const ty = typeOf(x.t) || { color: "#adb5bd" };
@@ -499,6 +504,7 @@ function render() {
   }).join("");
 }
 
+$("q").addEventListener("input", (e) => { S.q = e.target.value; if (S.items.length) render(); });
 $("f-sort").querySelectorAll("button").forEach((b) => b.onclick = () => {
   S.sort = b.dataset.v; $("f-sort").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); render();
 });
