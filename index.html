@@ -178,7 +178,8 @@ summary:focus-visible{outline:2px solid var(--ios);outline-offset:-2px;border-ra
 .wk-title .period{font-size:15px;color:var(--sub)}
 .wk-body{padding:0 24px 22px}
 .wk-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.wk-tools select{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--surface);color:var(--text)}
+.wk-tools select{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:6px 34px 6px 12px;background-color:var(--surface);color:var(--text);-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:14px}
+@media (prefers-color-scheme: dark){.wk-tools select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa1ad' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}}
 .wk-lines{margin:0 0 14px;padding:0;list-style:none;font-size:16px;line-height:1.7}
 .wk-lines li{padding-left:14px;position:relative}
 .wk-lines li::before{content:"";position:absolute;left:0;top:.7em;width:5px;height:5px;border-radius:50%;background:var(--star)}
