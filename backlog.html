@@ -252,6 +252,19 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag-rv .rv-x{all:unset;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sub);background:var(--chip);flex:none}
 .ag-rv .rv-x:focus-visible{outline:2px solid var(--ios)}
 .ag-rv .dt-q b{font-size:15px}
+.rv-why{background:var(--quote);border-radius:12px;padding:14px 16px 12px;margin-bottom:16px}
+.rw-t{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.rw-row{display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1fr);gap:16px;padding:10px 0}
+.rw-row + .rw-row{border-top:1px solid var(--line)}
+.rw-sc{font-size:16px;font-weight:700}
+.rw-sc span{display:block;font-size:12px;font-weight:400;color:var(--faint);margin-top:2px;word-break:keep-all}
+.rw-l{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.rw-l em{font-style:normal;font-size:13px;color:var(--sub)}
+.rw-c ul{margin:0;padding:0;list-style:none;font-size:14px;line-height:1.6}
+.rw-c li::before{content:"·";color:var(--faint);margin-right:6px}
+.rw-n{font-size:12px;color:var(--faint);margin-top:6px}
+.rv-sub{font-size:14px;font-weight:600;color:var(--sub);margin:0 0 8px}
+@media (max-width:860px){.rv-why{padding:12px 12px 10px}.rw-row{grid-template-columns:1fr;gap:10px}}
 .ag .n{font-size:15px;font-weight:700;color:var(--ios);font-variant-numeric:tabular-nums}
 .ag .tl{font-size:16px;font-weight:600;line-height:1.4}
 .ag .sc{font-size:13px;color:var(--sub);margin-top:2px}
@@ -484,6 +497,12 @@ Promise.all([
 // 핵심 아젠다: 진행 전 상위 30개 항목을 점수순으로 훑으며 '문제 유형 1개 + 화면 최대 2개'로 묶고, 같은 유형은 최대 2개 아젠다까지
 const AG = { "설정·개인화": "표시 항목·구성을 직접 설정", "조작·터치": "자주 쓰는 조작을 더 쉽게", "개편·변경 반발": "개편으로 바뀐 부분 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자 가독성 올리기", "시각 스타일": "디자인 톤 정리", "찾기 어려움": "기능을 찾기 쉽게", "레이아웃·화면 배치": "화면 배치 정리", "복잡·정보 과다": "한 화면 정보량 줄이기", "광고·팝업 피로": "광고·팝업 줄이기", "태블릿·폴더블": "태블릿·폴더블 대응" };
 const shortSc = (sc) => sc.split("·")[0];
+// 순위 근거: 아젠다에 묶인 화면마다 고객 영향도·반복 발생 수준과 근거 숫자
+function why(xs) {
+  const cell = (x, k, l) => { const v = lv(x[k + "P"]); return `<div class="rw-c"><div class="rw-l"><em>${l}</em><span class="ax l${v}"><i></i><i></i><i></i><b>${LV[v]}</b></span></div><ul>${x.why[k].map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>`; };
+  return `<div class="rv-why"><div class="rw-t">순위 근거</div>${xs.map((x) => `<div class="rw-row"><div class="rw-sc">${esc(shortSc(x.sc))}<span>${esc(x.sc)} × ${esc(x.t)} · 종합 ${S.rank.get(x.k)}위</span></div>${AX.map(([k, l]) => cell(x, k, l)).join("")}</div>`).join("")}<div class="rw-n">종합 = 고객 영향도 60% + 반복 발생 40% · 개선 후보 ${S.items.length}개 중 상대 순위</div></div>`;
+}
+
 function renderAgenda() {
   const top = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score).slice(0, 30);
   const ags = [];
@@ -494,6 +513,7 @@ function renderAgenda() {
     else if (same.length < 2) ags.push({ t: x.t, xs: [x] });
   });
   const list = ags.slice(0, 10);
+  S.rank = new Map(top.map((x, i) => [x.k, i + 1]));
   if (!list.length) { $("agenda").hidden = true; return; }
   $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
     const n = new Set(a.xs.flatMap((x) => x.a)).size;
@@ -507,7 +527,9 @@ function renderAgenda() {
     if (b.getAttribute("aria-expanded") === "true") return close();
     const i = +b.dataset.i, a = list[i];
     const rs = [...new Set(a.xs.flatMap((x) => x.a))].sort((p, q) => q.d - p.d);
-    pane.innerHTML = `<div class="rv-h"><div><span class="n">${i + 1}</span><b><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</b><span class="rv-c">리뷰 ${rs.length}건 · 최신순</span></div><button type="button" class="rv-x" aria-label="닫기">×</button></div>`
+    pane.innerHTML = `<div class="rv-h"><div><span class="n">${i + 1}</span><b><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</b><span class="rv-c">리뷰 ${rs.length}건</span></div><button type="button" class="rv-x" aria-label="닫기">×</button></div>`
+      + why(a.xs)
+      + `<div class="rv-sub">리뷰 ${rs.length}건 · 최신순</div>`
       + rs.map((r) => `<div class="dt-q"><div class="meta">${stars(r.rating)}<span>${r.store === "ios" ? "iOS" : "Android"}</span><span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>${r.title ? `<b>${esc(r.title)}</b><br>` : ""}${esc(r.content)}</div>`).join("");
     btns.forEach((x) => x.setAttribute("aria-expanded", x === b ? "true" : "false"));
     pane.hidden = false;
