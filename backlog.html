@@ -213,7 +213,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .bl-intro{font-size:15px;color:var(--sub);margin:-8px 0 20px;line-height:1.7;padding:0;list-style:none}
 .bl-intro li{position:relative;padding-left:14px;word-break:keep-all}
 .bl-intro li::before{content:"•";position:absolute;left:2px;color:var(--faint)}
-.bl-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:20px 8px;margin-bottom:16px}
+.bl-kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:20px 8px;margin-bottom:16px}
 .bl-kpi > div{padding:2px 20px}
 .bl-kpi > div + div{border-left:1px solid var(--chip)}
 .bl-kpi .l{font-size:14px;color:var(--sub)}
@@ -298,8 +298,6 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .bd .foot a:hover{color:var(--text)}
 .clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 @media (max-width:860px){
-  .bl-kpi{grid-template-columns:repeat(2,1fr);row-gap:16px}
-  .bl-kpi > div:nth-child(3){border-left:0}
   .bi summary{grid-template-columns:24px minmax(0,1fr) 28px;gap:8px;padding:16px}
   .bi .tt{font-size:16px}
   .bi .bd{padding:0 16px 18px}
@@ -491,12 +489,9 @@ function renderAgenda() {
 }
 
 function render() {
-  const cnt = (s) => S.items.filter((x) => !s || x.status === s).length;
   $("kpi").innerHTML = [
     ["개선 후보", S.items.length, "개", `리뷰 ${MIN}건 이상 쌓인 화면×유형`],
-    ["우선순위 높음", S.items.filter((x) => x.pri === "높음").length, "개", "진행 전 항목 중 상위 5개"],
-    ["검토·진행 중", cnt("검토중") + cnt("진행중"), "개", `검토중 ${cnt("검토중")} · 진행중 ${cnt("진행중")}`],
-    ["완료", cnt("완료"), "개", cnt("보류") ? `보류 ${cnt("보류")}개` : "완료 후 재언급을 추적해요"],
+    ["우선순위 높음", S.items.filter((x) => x.pri === "높음").length, "개", "종합 점수 상위 5개"],
   ].map(([l, v, u, s]) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`).join("");
 
 
@@ -526,7 +521,7 @@ function render() {
         <span class="rk">${i + 1}</span>
         <div>
           <div class="hd"><span class="tt"><i style="background:${ty.color}"></i>${esc(x.sc)}<span>×</span>${esc(x.t)}</span>
-            <span class="pill st-${x.status}">${x.status}</span>${x.pri ? `<span class="pill pr-${x.pri}">우선순위 ${x.pri}</span>` : ""}</div>
+            ${x.status !== "신규" ? `<span class="pill st-${x.status}">${x.status}</span>` : ""}${x.pri ? `<span class="pill pr-${x.pri}">우선순위 ${x.pri}</span>` : ""}</div>
           <div class="axs">${AX.map(([k, l]) => { const v = lv(x[k + "P"]); return `<span class="ax l${v}" title="${l} ${LV[v]}"><em>${l}</em><i></i><i></i><i></i><b>${LV[v]}</b></span>`; }).join("")}</div>
           <div class="mt"><span>리뷰 <b>${x.n}</b>건</span><span>최근 30일 <b>${x.r30}</b>건 ${trend}</span><span>평균 <span class="${x.av && x.av <= 1.5 ? "lo" : ""}">★${x.av ? x.av.toFixed(1) : "–"}</span></span><span>요청 ${x.reqs.length}개</span>${x.n ? `<span>마지막 언급 ${md(x.last)}</span>` : ""}</div>
           ${top ? `<div class="qt">“${esc(top.replace(/\s+/g, " "))}”</div>` : ""}
