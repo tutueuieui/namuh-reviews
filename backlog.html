@@ -232,10 +232,17 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .ag-h span{font-size:13px;color:var(--faint)}
 .ag ol{list-style:none;margin:0;padding:0}
 .ag li + li{border-top:1px solid var(--line)}
-.ag button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 8px;border-radius:10px;cursor:pointer}
+.ag li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:4px}
+.ag button{all:unset;box-sizing:border-box;cursor:pointer;border-radius:10px}
+.ag .ag-main{width:100%;display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;align-items:center;padding:12px 8px}
+.ag .ct{padding:8px 10px;display:inline-flex;align-items:center;gap:4px}
+.ag .ct::after{content:"";width:6px;height:6px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-2px) rotate(45deg);margin-left:4px;transition:transform .15s}
+.ag .ct[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
 .ag button:hover{background:#fafbfc}
 @media (prefers-color-scheme: dark){.ag button:hover{background:color-mix(in srgb,var(--chip) 35%,transparent)}}
 .ag button:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
+.ag .ag-revs{grid-column:1/-1;padding:0 8px 14px 46px}
+.ag .ag-revs[hidden]{display:none}
 .ag .n{font-size:15px;font-weight:700;color:var(--ios);font-variant-numeric:tabular-nums}
 .ag .tl{font-size:16px;font-weight:600;line-height:1.4}
 .ag .sc{font-size:13px;color:var(--sub);margin-top:2px}
@@ -244,7 +251,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .tl,.ag .sc{word-break:keep-all}
 .ag .ag-sc{color:var(--ios);margin-right:2px}
 .ag .sc{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
-@media (max-width:860px){.ag{padding:16px 12px 8px}.ag button{grid-template-columns:22px minmax(0,1fr);align-items:start;row-gap:4px}.ag .n{padding-top:1px}.ag .ct{grid-column:2}}
+@media (max-width:860px){.ag{padding:16px 12px 8px}.ag li{grid-template-columns:minmax(0,1fr)}.ag .ag-main{grid-template-columns:22px minmax(0,1fr);align-items:start;padding-bottom:4px}.ag .n{padding-top:1px}.ag .ct{justify-self:start;margin:0 0 8px 34px;padding:4px 8px}.ag .ag-revs{padding:0 0 12px}}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
 .bi summary::-webkit-details-marker{display:none}
@@ -488,9 +495,18 @@ function renderAgenda() {
   $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
     const n = new Set(a.xs.flatMap((x) => x.a)).size;
     const r = a.xs.map((x) => x.reqs[0]).find((o) => o && o.w);
-    return `<li><button type="button" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div><span class="ct">리뷰 <b>${n}</b>건</span></button></li>`;
+    return `<li><button type="button" class="ag-main" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div></button><button type="button" class="ct" data-i="${i}" aria-expanded="false" aria-controls="ag-r${i}"><span>리뷰 <b>${n}</b>건</span></button><div class="ag-revs" id="ag-r${i}" hidden></div></li>`;
   }).join("")}</ol>`;
-  $("agenda").querySelectorAll("button").forEach((b) => b.onclick = () => {
+  // 리뷰 N건 → 이 아젠다에 묶인 리뷰 전체를 최신순으로 펼침
+  $("agenda").querySelectorAll(".ct").forEach((b) => b.onclick = () => {
+    const box = $("ag-r" + b.dataset.i), open = b.getAttribute("aria-expanded") !== "true";
+    if (open && !box.innerHTML) {
+      const rs = [...new Set(list[+b.dataset.i].xs.flatMap((x) => x.a))].sort((p, q) => q.d - p.d);
+      box.innerHTML = rs.map((r) => `<div class="dt-q"><div class="meta">${stars(r.rating)}<span>${r.store === "ios" ? "iOS" : "Android"}</span><span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>${r.title ? `<b>${esc(r.title)}</b><br>` : ""}${esc(r.content)}</div>`).join("");
+    }
+    box.hidden = !open; b.setAttribute("aria-expanded", open);
+  });
+  $("agenda").querySelectorAll(".ag-main").forEach((b) => b.onclick = () => {
     const a = list[+b.dataset.i];
     S.pick = new Set(a.xs.map((x) => x.k)); S.q = ""; $("q").value = `${a.xs.map((x) => shortSc(x.sc)).join("·")} ${AG[a.t] || a.t}`; render();
     $("q").closest(".bl-bar").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
