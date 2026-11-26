@@ -240,6 +240,8 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .ct{font-size:13px;color:var(--sub);white-space:nowrap;font-variant-numeric:tabular-nums}
 .ag .ct b{color:var(--text);font-weight:600}
 .ag .tl,.ag .sc{word-break:keep-all}
+.ag .ag-sc{color:var(--ios);margin-right:2px}
+.ag .sc{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
 @media (max-width:860px){.ag{padding:16px 12px 8px}.ag button{grid-template-columns:22px minmax(0,1fr);align-items:start;row-gap:4px}.ag .n{padding-top:1px}.ag .ct{grid-column:2}}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
@@ -468,21 +470,28 @@ Promise.all([
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-// 핵심 아젠다: 진행 전 상위 15개 항목을 문제 유형으로 묶어 점수 합이 큰 5개
-const AG = { "설정·개인화": "화면 구성을 내 마음대로 설정할 수 있게", "조작·터치": "자주 쓰는 조작을 더 쉽고 빠르게", "개편·변경 반발": "개편으로 바뀐 화면·기능 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자가 더 잘 읽히게", "시각 스타일": "화면 디자인 톤 정리", "찾기 어려움": "기능·메뉴를 찾기 쉽게", "레이아웃·화면 배치": "화면 배치·정보 위치 정리", "복잡·정보 과다": "한 화면의 정보량 줄이기", "광고·팝업 피로": "광고·팝업 노출 줄이기", "태블릿·폴더블": "태블릿·폴더블 화면 대응" };
+// 핵심 아젠다: 진행 전 상위 15개 항목을 점수순으로 훑으며 '문제 유형 1개 + 화면 최대 2개'로 묶고, 같은 유형은 최대 2개 아젠다까지
+const AG = { "설정·개인화": "표시 항목·구성을 직접 설정", "조작·터치": "자주 쓰는 조작을 더 쉽게", "개편·변경 반발": "개편으로 바뀐 부분 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자 가독성 올리기", "시각 스타일": "디자인 톤 정리", "찾기 어려움": "기능을 찾기 쉽게", "레이아웃·화면 배치": "화면 배치 정리", "복잡·정보 과다": "한 화면 정보량 줄이기", "광고·팝업 피로": "광고·팝업 줄이기", "태블릿·폴더블": "태블릿·폴더블 대응" };
+const shortSc = (sc) => sc.split("·")[0];
 function renderAgenda() {
   const top = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score).slice(0, 15);
-  const g = {};
-  top.forEach((x) => (g[x.t] ||= []).push(x));
-  const ags = Object.entries(g).map(([t, xs]) => ({ t, xs, s: xs.reduce((a, x) => a + x.score, 0), n: new Set(xs.flatMap((x) => x.a)).size }))
-    .sort((p, q) => q.s - p.s).slice(0, 5);
-  if (!ags.length) { $("agenda").hidden = true; return; }
-  $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${ags.length}</b><span>우선순위 상위 15개 항목을 문제 유형으로 묶었어요</span></div><ol>${ags.map((a, i) => {
-    const sc = a.xs.map((x) => x.sc), shown = sc.slice(0, 3).join(" · ") + (sc.length > 3 ? ` 외 ${sc.length - 3}개` : "");
-    return `<li><button type="button" data-t="${esc(a.t)}"><span class="n">${i + 1}</span><div><div class="tl">${esc(AG[a.t] || a.t)}</div><div class="sc">${esc(a.t)} · ${esc(shown)}</div></div><span class="ct">리뷰 <b>${a.n}</b>건</span></button></li>`;
+  const ags = [];
+  top.forEach((x) => {
+    const same = ags.filter((a) => a.t === x.t);
+    const room = same.find((a) => a.xs.length < 2);
+    if (room) room.xs.push(x);
+    else if (same.length < 2) ags.push({ t: x.t, xs: [x] });
+  });
+  const list = ags.slice(0, 5);
+  if (!list.length) { $("agenda").hidden = true; return; }
+  $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
+    const n = new Set(a.xs.flatMap((x) => x.a)).size;
+    const r = a.xs.map((x) => x.reqs[0]).find((o) => o && o.w);
+    return `<li><button type="button" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div><span class="ct">리뷰 <b>${n}</b>건</span></button></li>`;
   }).join("")}</ol>`;
   $("agenda").querySelectorAll("button").forEach((b) => b.onclick = () => {
-    S.q = b.dataset.t; $("q").value = S.q; render();
+    const a = list[+b.dataset.i];
+    S.pick = new Set(a.xs.map((x) => x.k)); S.q = ""; $("q").value = `${a.xs.map((x) => shortSc(x.sc)).join("·")} ${AG[a.t] || a.t}`; render();
     $("q").closest(".bl-bar").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
 }
@@ -501,7 +510,7 @@ function render() {
   const key = S.sort === "pri" ? (x) => x.score : (x) => x[S.sort + "P"] + x.score * 1e-3;
   const q = S.q.trim().toLowerCase();
   const hit = (x) => !q || (x.sc + " " + x.t).toLowerCase().includes(q) || x.a.some((r) => (r.title + " " + r.content).toLowerCase().includes(q));
-  const rows = S.items.filter((x) => (!S.status || x.status === S.status) && hit(x))
+  const rows = S.items.filter((x) => (!S.status || x.status === S.status) && (S.pick ? S.pick.has(x.k) : hit(x)))
     .sort((p, q) => rankOf[p.status] - rankOf[q.status] || key(q) - key(p));
   if (!rows.length) { $("list").innerHTML = `<div class="empty">${q ? `'${esc(S.q.trim())}'에 해당하는 항목이 없어요` : "아직 개선 후보가 없어요"}</div>`; return; }
 
@@ -544,7 +553,7 @@ function render() {
   }).join("");
 }
 
-$("q").addEventListener("input", (e) => { S.q = e.target.value; if (S.items.length) render(); });
+$("q").addEventListener("input", (e) => { S.pick = null; S.q = e.target.value; if (S.items.length) render(); });
 $("f-sort").querySelectorAll("button").forEach((b) => b.onclick = () => {
   S.sort = b.dataset.v; $("f-sort").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); render();
 });
