@@ -10,7 +10,7 @@ import json
 import sys
 import time
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from google_play_scraper import Sort, reviews
@@ -18,6 +18,8 @@ from google_play_scraper import Sort, reviews
 ANDROID_ID = "com.wooriwm.txsmart"
 IOS_ID = "486312400"
 ANDROID_BATCH = 500
+# 이 날짜(한국시간) 이전 리뷰는 저장하지 않는다 (iOS RSS는 최신 500개라 더 오래된 리뷰가 다시 들어올 수 있음)
+SINCE = datetime(2025, 9, 1, tzinfo=timezone(timedelta(hours=9)))
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "reviews.json"
@@ -147,7 +149,11 @@ def main():
         counts[name] = {"fetched": len(got), "new": new}
         print(f"[{name}] 가져옴 {len(got)}건, 신규 {new}건")
 
-    all_reviews = sorted(existing.values(), key=lambda r: r["date"], reverse=True)
+    all_reviews = sorted(
+        (r for r in existing.values() if datetime.fromisoformat(r["date"]) >= SINCE),
+        key=lambda r: r["date"],
+        reverse=True,
+    )
     meta.update(
         {
             "updated": datetime.now(timezone.utc).isoformat(),

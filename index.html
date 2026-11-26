@@ -360,12 +360,9 @@ Promise.all([
 function updatedText(last) {
   const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
   const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
-  // 스토어마다 가장 오래된 리뷰 날짜 = 그 스토어 데이터가 시작된 날
-  const ymd = (d) => k(d, { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
-  const since = [["ios", "iOS"], ["android", "Android"]].map(([s, n]) => {
-    const ds = S.all.filter((r) => r.store === s).map((r) => r.d);
-    return ds.length ? `${n} ${ymd(new Date(Math.min(...ds)))}` : "";
-  }).filter(Boolean).join(" · ");
+  // 가장 오래된 리뷰 날짜 = 데이터 시작일 (수집기는 2025-09-01 이후만 저장)
+  const ymd = (d) => k(d, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
+  const since = S.all.length ? ymd(new Date(Math.min(...S.all.map((r) => r.d)))) : "";
   return `${since ? `<span>수집 시작 ${since}</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
 }
 
