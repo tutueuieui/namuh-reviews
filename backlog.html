@@ -503,6 +503,9 @@ Promise.all([
 // 핵심 아젠다: 진행 전 상위 30개 항목을 점수순으로 훑으며 '문제 유형 1개 + 화면 최대 2개'로 묶고, 같은 유형은 최대 2개 아젠다까지
 const AG = { "설정·개인화": "표시 항목·구성을 직접 설정", "조작·터치": "자주 쓰는 조작을 더 쉽게", "개편·변경 반발": "개편으로 바뀐 부분 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자 가독성 올리기", "시각 스타일": "디자인 톤 정리", "찾기 어려움": "기능을 찾기 쉽게", "레이아웃·화면 배치": "화면 배치 정리", "복잡·정보 과다": "한 화면 정보량 줄이기", "광고·팝업 피로": "광고·팝업 줄이기", "태블릿·폴더블": "태블릿·폴더블 대응" };
 const shortSc = (sc) => sc.split("·")[0];
+// 리뷰 내용을 읽고 직접 쓴 구체적인 제목 (아젠다 첫 화면×유형 기준, 없으면 유형별 기본 문구)
+const AGX = { "잔고·자산|개편·변경 반발": "국내·해외 잔고 분리, 달러 수익률 표시 되살리기" };
+const agTitle = (a) => AGX[a.xs[0].k] || AG[a.t] || a.t;
 // 순위 근거: 아젠다에 묶인 화면마다 고객 영향도·반복 발생 수준과 근거 숫자
 function why(xs) {
   const cell = (x, k, l) => { const v = lv(x[k + "P"]); return `<div class="rw-c"><div class="rw-l"><em>${l}</em><span class="ax l${v}"><i></i><i></i><i></i><b>${LV[v]}</b></span></div><ul>${x.why[k].map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>`; };
@@ -524,7 +527,7 @@ function renderAgenda() {
   $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
     const n = new Set(a.xs.flatMap((x) => x.a)).size;
     const r = a.xs.map((x) => x.reqs[0]).find((o) => o && o.w);
-    return `<li><button type="button" class="ag-main" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div></button><button type="button" class="ct" data-i="${i}" aria-expanded="false" aria-controls="ag-rv"><span>리뷰 <b>${n}</b>건</span></button></li>`;
+    return `<li><button type="button" class="ag-main" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(agTitle(a))}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div></button><button type="button" class="ct" data-i="${i}" aria-expanded="false" aria-controls="ag-rv"><span>리뷰 <b>${n}</b>건</span></button></li>`;
   }).join("")}</ol>`;
   // 리뷰 N건 → 아젠다 박스 아래 패널에 묶인 리뷰 전체를 최신순으로 (한 번에 하나, 같은 걸 다시 누르면 닫힘)
   const pane = $("ag-rv"), btns = [...$("agenda").querySelectorAll(".ct")];
@@ -533,7 +536,7 @@ function renderAgenda() {
     if (b.getAttribute("aria-expanded") === "true") return close();
     const i = +b.dataset.i, a = list[i];
     const rs = [...new Set(a.xs.flatMap((x) => x.a))].sort((p, q) => q.d - p.d);
-    pane.innerHTML = `<div class="rv-h"><div><span class="n">${i + 1}</span><b><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</b><span class="rv-c">리뷰 ${rs.length}건</span></div><button type="button" class="rv-x" aria-label="닫기">×</button></div>`
+    pane.innerHTML = `<div class="rv-h"><div><span class="n">${i + 1}</span><b><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(agTitle(a))}</b><span class="rv-c">리뷰 ${rs.length}건</span></div><button type="button" class="rv-x" aria-label="닫기">×</button></div>`
       + why(a.xs)
       + `<div class="rv-sub">리뷰 ${rs.length}건 · 최신순</div>`
       + rs.map((r) => `<div class="dt-q"><div class="meta">${stars(r.rating)}<span>${r.store === "ios" ? "iOS" : "Android"}</span><span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>${r.title ? `<b>${esc(r.title)}</b><br>` : ""}${esc(r.content)}</div>`).join("");
