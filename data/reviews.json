@@ -1,14 +1,14 @@
 {
 "meta": {
-"updated": "2026-11-26T09:33:29.274188+00:00",
+"updated": "2026-11-26T19:38:26.205675+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
 "new": 0
 },
 "ios": {
-"fetched": 0,
-"new": 0
+"fetched": 500,
+"new": 67
 }
 },
 "android_id": "com.wooriwm.txsmart",
@@ -20,13 +20,24 @@
 "version": "9.96"
 },
 "ios": {
-"score": 2.50314,
-"ratings": 3182,
+"score": 2.50362,
+"ratings": 3181,
 "version": "12.76"
 }
 }
 },
 "reviews": [
+{
+"id": "i_14831035333",
+"store": "ios",
+"rating": 1,
+"title": "인증서 발급 오류 안 고쳐요???",
+"content": "내가 매번 들어갈 때마다 발급하고 신분증 스캔하라는 거에요? 언제 고칠 건데?? 11/8 에 글 올렸는데 지금 24일까지도 고친 게 없네? 증권앱이 장난해요?",
+"version": "12.76",
+"date": "2026-11-24T18:42:55-07:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "a_191c8b8b-c17b-46be-a244-5a3496e766b6",
 "store": "android",
