@@ -241,8 +241,17 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag button:hover{background:#fafbfc}
 @media (prefers-color-scheme: dark){.ag button:hover{background:color-mix(in srgb,var(--chip) 35%,transparent)}}
 .ag button:focus-visible{outline:2px solid var(--ios);outline-offset:-2px}
-.ag .ag-revs{grid-column:1/-1;padding:0 8px 14px 46px}
-.ag .ag-revs[hidden]{display:none}
+.ag-rv{padding:18px 20px 14px;margin:-4px 0 16px;scroll-margin-top:16px}
+.ag-rv[hidden]{display:none}
+.ag-rv .rv-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.ag-rv .rv-h > div{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ag-rv .n{font-size:15px;font-weight:700;color:var(--ios)}
+.ag-rv b{font-size:16px;font-weight:600}
+.ag-rv .ag-sc{color:var(--ios)}
+.ag-rv .rv-c{font-size:13px;color:var(--sub)}
+.ag-rv .rv-x{all:unset;cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sub);background:var(--chip);flex:none}
+.ag-rv .rv-x:focus-visible{outline:2px solid var(--ios)}
+.ag-rv .dt-q b{font-size:15px}
 .ag .n{font-size:15px;font-weight:700;color:var(--ios);font-variant-numeric:tabular-nums}
 .ag .tl{font-size:16px;font-weight:600;line-height:1.4}
 .ag .sc{font-size:13px;color:var(--sub);margin-top:2px}
@@ -251,7 +260,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .tl,.ag .sc{word-break:keep-all}
 .ag .ag-sc{color:var(--ios);margin-right:2px}
 .ag .sc{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
-@media (max-width:860px){.ag{padding:16px 12px 8px}.ag li{grid-template-columns:minmax(0,1fr)}.ag .ag-main{grid-template-columns:22px minmax(0,1fr);align-items:start;padding-bottom:4px}.ag .n{padding-top:1px}.ag .ct{justify-self:start;margin:0 0 8px 34px;padding:4px 8px}.ag .ag-revs{padding:0 0 12px}}
+@media (max-width:860px){.ag{padding:16px 12px 8px}.ag li{grid-template-columns:minmax(0,1fr)}.ag .ag-main{grid-template-columns:22px minmax(0,1fr);align-items:start;padding-bottom:4px}.ag .n{padding-top:1px}.ag .ct{justify-self:start;margin:0 0 8px 34px;padding:4px 8px}.ag-rv{padding:16px 12px 10px}}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
 .bi summary::-webkit-details-marker{display:none}
@@ -349,6 +358,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   <section class="card bl-kpi" id="kpi"></section>
 
   <section class="card ag" id="agenda" aria-label="핵심 아젠다"></section>
+  <section class="card ag-rv" id="ag-rv" aria-label="아젠다 리뷰" hidden></section>
 
   <div class="card bl-bar">
     <input type="search" id="q" placeholder="화면, 문제 유형, 리뷰 내용 검색" aria-label="백로그 검색">
@@ -495,16 +505,21 @@ function renderAgenda() {
   $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
     const n = new Set(a.xs.flatMap((x) => x.a)).size;
     const r = a.xs.map((x) => x.reqs[0]).find((o) => o && o.w);
-    return `<li><button type="button" class="ag-main" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div></button><button type="button" class="ct" data-i="${i}" aria-expanded="false" aria-controls="ag-r${i}"><span>리뷰 <b>${n}</b>건</span></button><div class="ag-revs" id="ag-r${i}" hidden></div></li>`;
+    return `<li><button type="button" class="ag-main" data-i="${i}"><span class="n">${i + 1}</span><div><div class="tl"><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</div><div class="sc">${r ? `“${esc(r.q.replace(/\s+/g, " "))}”` : esc(a.t)}</div></div></button><button type="button" class="ct" data-i="${i}" aria-expanded="false" aria-controls="ag-rv"><span>리뷰 <b>${n}</b>건</span></button></li>`;
   }).join("")}</ol>`;
-  // 리뷰 N건 → 이 아젠다에 묶인 리뷰 전체를 최신순으로 펼침
-  $("agenda").querySelectorAll(".ct").forEach((b) => b.onclick = () => {
-    const box = $("ag-r" + b.dataset.i), open = b.getAttribute("aria-expanded") !== "true";
-    if (open && !box.innerHTML) {
-      const rs = [...new Set(list[+b.dataset.i].xs.flatMap((x) => x.a))].sort((p, q) => q.d - p.d);
-      box.innerHTML = rs.map((r) => `<div class="dt-q"><div class="meta">${stars(r.rating)}<span>${r.store === "ios" ? "iOS" : "Android"}</span><span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>${r.title ? `<b>${esc(r.title)}</b><br>` : ""}${esc(r.content)}</div>`).join("");
-    }
-    box.hidden = !open; b.setAttribute("aria-expanded", open);
+  // 리뷰 N건 → 아젠다 박스 아래 패널에 묶인 리뷰 전체를 최신순으로 (한 번에 하나, 같은 걸 다시 누르면 닫힘)
+  const pane = $("ag-rv"), btns = [...$("agenda").querySelectorAll(".ct")];
+  const close = () => { pane.hidden = true; pane.innerHTML = ""; btns.forEach((x) => x.setAttribute("aria-expanded", "false")); };
+  btns.forEach((b) => b.onclick = () => {
+    if (b.getAttribute("aria-expanded") === "true") return close();
+    const i = +b.dataset.i, a = list[i];
+    const rs = [...new Set(a.xs.flatMap((x) => x.a))].sort((p, q) => q.d - p.d);
+    pane.innerHTML = `<div class="rv-h"><div><span class="n">${i + 1}</span><b><span class="ag-sc">${esc(a.xs.map((x) => shortSc(x.sc)).join("·"))}</span> ${esc(AG[a.t] || a.t)}</b><span class="rv-c">리뷰 ${rs.length}건 · 최신순</span></div><button type="button" class="rv-x" aria-label="닫기">×</button></div>`
+      + rs.map((r) => `<div class="dt-q"><div class="meta">${stars(r.rating)}<span>${r.store === "ios" ? "iOS" : "Android"}</span><span>${fmtDate(r.d)}</span>${r.likes ? `<span>👍 ${r.likes}</span>` : ""}</div>${r.title ? `<b>${esc(r.title)}</b><br>` : ""}${esc(r.content)}</div>`).join("");
+    btns.forEach((x) => x.setAttribute("aria-expanded", x === b ? "true" : "false"));
+    pane.hidden = false;
+    pane.querySelector(".rv-x").onclick = close;
+    pane.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
   $("agenda").querySelectorAll(".ag-main").forEach((b) => b.onclick = () => {
     const a = list[+b.dataset.i];
