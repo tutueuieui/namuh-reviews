@@ -453,9 +453,9 @@ Promise.all([
     S.items.forEach((x) => x[k + "P"] = (vs.indexOf(x[k]) + vs.lastIndexOf(x[k])) / 2 / m);
   });
   S.items.forEach((x) => x.score = .6 * x.impP + .4 * x.recP);
-  // 우선순위: 진행 전 항목(신규·검토중·진행중) 안에서 점수 순위로 상위 5 높음, 다음 10 보통
+  // 우선순위: 진행 전 항목(신규·검토중·진행중) 안에서 점수 순위로 상위 10 높음, 다음 10 보통
   const open = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score);
-  open.forEach((x, i) => x.pri = i < 5 ? "높음" : i < 15 ? "보통" : "낮음");
+  open.forEach((x, i) => x.pri = i < 10 ? "높음" : i < 20 ? "보통" : "낮음");
   const u = new Date((d.meta || {}).updated);
   $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })}`;
   renderAgenda();
@@ -491,7 +491,7 @@ function renderAgenda() {
 function render() {
   $("kpi").innerHTML = [
     ["개선 후보", S.items.length, "개", `리뷰 ${MIN}건 이상 쌓인 화면×유형`],
-    ["우선순위 높음", S.items.filter((x) => x.pri === "높음").length, "개", "종합 점수 상위 5개"],
+    ["우선순위 높음", S.items.filter((x) => x.pri === "높음").length, "개", "종합 점수 상위 10개"],
   ].map(([l, v, u, s]) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`).join("");
 
 
