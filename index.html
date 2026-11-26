@@ -363,7 +363,7 @@ function updatedText(last) {
   // 가장 오래된 리뷰 날짜 = 데이터 시작일 (수집기는 2025-09-01 이후만 저장)
   const ymd = (d) => k(d, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
   const since = S.all.length ? ymd(new Date(Math.min(...S.all.map((r) => r.d)))) : "";
-  return `${since ? `<span>수집 시작 ${since}</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
+  return `${since ? `<span>수집 시작 ${since}부터</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
 }
 
 const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };

@@ -465,7 +465,7 @@ Promise.all([
     const day = (x) => k(x, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(x, { weekday: "short" })})`;
     const ymd = (x) => k(x, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
     const first = d.reviews.length ? new Date(Math.min(...d.reviews.map((r) => new Date(r.date)))) : null;
-    $("updated").innerHTML = `${first ? `<span>수집 시작 ${ymd(first)}</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(u)} ${k(u, { hour: "numeric", minute: "2-digit" })}</span>`;
+    $("updated").innerHTML = `${first ? `<span>수집 시작 ${ymd(first)}부터</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(u)} ${k(u, { hour: "numeric", minute: "2-digit" })}</span>`;
   }
   renderAgenda();
   render();
