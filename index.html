@@ -48,6 +48,7 @@ h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-wei
 body{padding-left:216px}
 @media (max-width:860px){body{padding-left:0}.nav{position:sticky;bottom:auto;width:auto;flex-direction:row;align-items:center;gap:4px;padding:8px 16px}.nav .brand{padding:0 6px 0 0}.nav .brand span{display:none}.nav .brand img{width:28px;height:28px}.nav a{flex:1;text-align:center;font-size:14px;padding:8px}}
 .updated .sep{color:var(--faint)}
+@media (max-width:600px){.updated{flex-direction:column}.updated .sep{display:none}}
 .updated b{font-weight:600;color:var(--text)}
 .card{background:var(--surface);border-radius:14px;box-shadow:var(--shadow)}
 h2{font-size:21px;margin:0 0 12px;font-weight:700;letter-spacing:-.02em}
@@ -359,7 +360,13 @@ Promise.all([
 function updatedText(last) {
   const k = (d, o) => d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
   const day = (d) => k(d, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(d, { weekday: "short" })})`;
-  return `<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
+  // 스토어마다 가장 오래된 리뷰 날짜 = 그 스토어 데이터가 시작된 날
+  const ymd = (d) => k(d, { year: "2-digit", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
+  const since = [["ios", "iOS"], ["android", "Android"]].map(([s, n]) => {
+    const ds = S.all.filter((r) => r.store === s).map((r) => r.d);
+    return ds.length ? `${n} ${ymd(new Date(Math.min(...ds)))}` : "";
+  }).filter(Boolean).join(" · ");
+  return `${since ? `<span>수집 시작 ${since}</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(last)} ${k(last, { hour: "numeric", minute: "2-digit" })}</span>`;
 }
 
 const inPeriod = () => { const now = Date.now(); return S.all.filter((r) => !S.period || now - r.d < S.period * DAY); };
