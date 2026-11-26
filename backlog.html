@@ -47,7 +47,9 @@ h1{font-size:34px;line-height:1.25;margin:0 0 6px;letter-spacing:-.03em;font-wei
 .nav a.on{background:var(--nav-on);color:var(--text);font-weight:800}
 body{padding-left:216px}
 @media (max-width:860px){body{padding-left:0}.nav{position:sticky;bottom:auto;width:auto;flex-direction:row;align-items:center;gap:4px;padding:8px 16px}.nav .brand{padding:0 6px 0 0}.nav .brand span{display:none}.nav .brand img{width:28px;height:28px}.nav a{flex:1;text-align:center;font-size:14px;padding:8px}}
-.updated{color:var(--sub);font-size:14px}
+.updated{color:var(--sub);font-size:14px;display:flex;flex-wrap:wrap;gap:0 6px;margin-top:2px}
+.updated .sep{color:var(--faint)}
+@media (max-width:600px){.updated{flex-direction:column}.updated .sep{display:none}}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .card{background:var(--surface);border-radius:14px}
 .panel{padding:22px 24px;margin-bottom:16px}
@@ -457,7 +459,14 @@ Promise.all([
   const open = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score);
   open.forEach((x, i) => x.pri = i < 10 ? "높음" : i < 20 ? "보통" : "낮음");
   const u = new Date((d.meta || {}).updated);
-  $("updated").textContent = `마지막 수집 ${u.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", weekday: "short", hour: "numeric", minute: "2-digit" })}`;
+  {
+    // 전체 탭과 같은 표기: 수집 시작(가장 오래된 리뷰) · 마지막 수집
+    const k = (x, o) => x.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", ...o });
+    const day = (x) => k(x, { month: "numeric", day: "numeric" }).replace(/\.\s*/g, "/").replace(/\/$/, "") + `(${k(x, { weekday: "short" })})`;
+    const ymd = (x) => k(x, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\.\s*/g, ".").replace(/\.$/, "");
+    const first = d.reviews.length ? new Date(Math.min(...d.reviews.map((r) => new Date(r.date)))) : null;
+    $("updated").innerHTML = `${first ? `<span>수집 시작 ${ymd(first)}</span><span class="sep">·</span>` : ""}<span>마지막 수집 ${day(u)} ${k(u, { hour: "numeric", minute: "2-digit" })}</span>`;
+  }
   renderAgenda();
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
