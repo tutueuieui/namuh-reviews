@@ -360,13 +360,6 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
   <section class="card ag" id="agenda" aria-label="핵심 아젠다"></section>
   <section class="card ag-rv" id="ag-rv" aria-label="아젠다 리뷰" hidden></section>
 
-  <div class="card bl-bar">
-    <input type="search" id="q" placeholder="화면, 문제 유형, 리뷰 내용 검색" aria-label="백로그 검색">
-    <div class="seg" id="f-sort" aria-label="정렬">
-      <button data-v="pri" class="on">종합</button><button data-v="imp">영향도</button><button data-v="rec">반복</button>
-    </div>
-  </div>
-  <div class="bl-list" id="list"></div>
 
   <p class="note">분류는 design.json 키워드 규칙으로 자동 태깅돼서 일부 오분류가 있을 수 있어요</p>
 </div>
@@ -521,11 +514,7 @@ function renderAgenda() {
     pane.querySelector(".rv-x").onclick = close;
     pane.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   });
-  $("agenda").querySelectorAll(".ag-main").forEach((b) => b.onclick = () => {
-    const a = list[+b.dataset.i];
-    S.pick = new Set(a.xs.map((x) => x.k)); S.q = ""; $("q").value = `${a.xs.map((x) => shortSc(x.sc)).join("·")} ${AG[a.t] || a.t}`; render();
-    $("q").closest(".bl-bar").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-  });
+  $("agenda").querySelectorAll(".ag-main").forEach((b) => b.onclick = () => btns[+b.dataset.i].click());
 }
 
 function render() {
@@ -533,6 +522,7 @@ function render() {
     ["개선 후보", S.items.length, "개", `리뷰 ${MIN}건 이상 쌓인 화면×유형`],
     ["우선순위 높음", S.items.filter((x) => x.pri === "높음").length, "개", "종합 점수 상위 10개"],
   ].map(([l, v, u, s]) => `<div><div class="l">${l}</div><div class="v">${v}<span class="unit">${u}</span></div><div class="s">${s}</div></div>`).join("");
+  if (!$("list")) return; // 목록은 페이지에서 뺐음 (핵심 아젠다 + 리뷰 패널만 사용)
 
 
   const rankOf = { 신규: 0, 검토중: 0, 진행중: 0, 완료: 1, 보류: 2 };
@@ -582,10 +572,7 @@ function render() {
   }).join("");
 }
 
-$("q").addEventListener("input", (e) => { S.pick = null; S.q = e.target.value; if (S.items.length) render(); });
-$("f-sort").querySelectorAll("button").forEach((b) => b.onclick = () => {
-  S.sort = b.dataset.v; $("f-sort").querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b)); render();
-});
+
 </script>
 <button class="totop" id="totop" type="button" aria-label="맨 위로" title="맨 위로"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <script>
