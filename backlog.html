@@ -228,8 +228,9 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .ag-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:0 8px 8px}
 .ag .ag-h b{font-size:18px;font-weight:700;letter-spacing:-.01em}
 .ag .ag-h span{font-size:13px;color:var(--faint)}
-.ag ol{list-style:none;margin:0;padding:0}
+.ag ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column;column-gap:24px}
 .ag li + li{border-top:1px solid var(--line)}
+.ag li:nth-child(6){border-top:0}
 .ag button{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 8px;border-radius:10px;cursor:pointer}
 .ag button:hover{background:#fafbfc}
 @media (prefers-color-scheme: dark){.ag button:hover{background:color-mix(in srgb,var(--chip) 35%,transparent)}}
@@ -242,7 +243,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
 .ag .tl,.ag .sc{word-break:keep-all}
 .ag .ag-sc{color:var(--ios);margin-right:2px}
 .ag .sc{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
-@media (max-width:860px){.ag{padding:16px 12px 8px}.ag button{grid-template-columns:22px minmax(0,1fr);align-items:start;row-gap:4px}.ag .n{padding-top:1px}.ag .ct{grid-column:2}}
+@media (max-width:860px){.ag ol{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row}.ag li:nth-child(6){border-top:1px solid var(--line)}.ag{padding:16px 12px 8px}.ag button{grid-template-columns:22px minmax(0,1fr);align-items:start;row-gap:4px}.ag .n{padding-top:1px}.ag .ct{grid-column:2}}
 .bi + .bi{border-top:1px solid var(--line)}
 .bi summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:34px minmax(0,1fr) 32px;gap:12px;align-items:start;padding:18px 20px 18px 22px}
 .bi summary::-webkit-details-marker{display:none}
@@ -462,11 +463,11 @@ Promise.all([
   render();
 }).catch((e) => { console.error(e); $("updated").textContent = "데이터를 불러오지 못했어요"; });
 
-// 핵심 아젠다: 진행 전 상위 15개 항목을 점수순으로 훑으며 '문제 유형 1개 + 화면 최대 2개'로 묶고, 같은 유형은 최대 2개 아젠다까지
+// 핵심 아젠다: 진행 전 상위 30개 항목을 점수순으로 훑으며 '문제 유형 1개 + 화면 최대 2개'로 묶고, 같은 유형은 최대 2개 아젠다까지
 const AG = { "설정·개인화": "표시 항목·구성을 직접 설정", "조작·터치": "자주 쓰는 조작을 더 쉽게", "개편·변경 반발": "개편으로 바뀐 부분 다시 정리", "다크모드": "다크모드 색·대비 다듬기", "가독성": "글자·숫자 가독성 올리기", "시각 스타일": "디자인 톤 정리", "찾기 어려움": "기능을 찾기 쉽게", "레이아웃·화면 배치": "화면 배치 정리", "복잡·정보 과다": "한 화면 정보량 줄이기", "광고·팝업 피로": "광고·팝업 줄이기", "태블릿·폴더블": "태블릿·폴더블 대응" };
 const shortSc = (sc) => sc.split("·")[0];
 function renderAgenda() {
-  const top = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score).slice(0, 15);
+  const top = S.items.filter((x) => !["완료", "보류"].includes(x.status)).sort((p, q) => q.score - p.score).slice(0, 30);
   const ags = [];
   top.forEach((x) => {
     const same = ags.filter((a) => a.t === x.t);
@@ -474,7 +475,7 @@ function renderAgenda() {
     if (room) room.xs.push(x);
     else if (same.length < 2) ags.push({ t: x.t, xs: [x] });
   });
-  const list = ags.slice(0, 5);
+  const list = ags.slice(0, 10);
   if (!list.length) { $("agenda").hidden = true; return; }
   $("agenda").innerHTML = `<div class="ag-h"><b>핵심 아젠다 ${list.length}</b><span>우선순위 상위 항목을 문제 유형별로, 화면 2개까지 묶었어요</span></div><ol>${list.map((a, i) => {
     const n = new Set(a.xs.flatMap((x) => x.a)).size;
