@@ -1,10 +1,10 @@
 {
 "meta": {
-"updated": "2026-11-27T02:52:08.201249+00:00",
+"updated": "2026-11-27T12:27:13.506801+00:00",
 "last_run": {
 "android": {
 "fetched": 500,
-"new": 0
+"new": 1
 },
 "ios": {
 "fetched": 500,
@@ -15,7 +15,7 @@
 "ios_id": "486312400",
 "store_stats": {
 "android": {
-"score": 2.4674459,
+"score": 2.4661653,
 "ratings": 12515,
 "version": "9.96"
 },
@@ -27,6 +27,17 @@
 }
 },
 "reviews": [
+{
+"id": "a_6fdb8a11-d286-4322-883c-a0d558b63a56",
+"store": "android",
+"rating": 1,
+"title": "",
+"content": "제일 별루임. 진짜 뭐하자는건지.. 사용자 위주가 아니라 본인들 위주임",
+"version": "",
+"date": "2026-11-26T03:56:38+00:00",
+"likes": 0,
+"replied": false
+},
 {
 "id": "i_14831035333",
 "store": "ios",
